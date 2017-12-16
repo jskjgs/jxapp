@@ -62,7 +62,8 @@ public interface RegisterMapper extends MyMapper<Register> {
                     "<foreach item = 'item' index = 'index' collection = 'idList' open = '(' separator = ',' close = ')'>#{item}</foreach>" +
                     "<if test = \"registerId != null \"> and id = #{registerId} </if>"+
                     "<if test = \"status != null \"> and status = #{status} </if>"+
-                    "<if test = \"enable != null \"> and enable = #{enable} </if>"+
+                    "<if test = \"enable != null \"> and enable = #{enable} </if>" +
+                    " order by id desc "+
                     //无效病人的就不返回了。
 
                     "</script>"
