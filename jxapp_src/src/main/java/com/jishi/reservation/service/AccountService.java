@@ -210,7 +210,7 @@ public class AccountService {
     }
 
     /**
-     * 新增账号 (如果存在就修改)
+     * 新增账号
      *
      * @param account
      * @param passwd
@@ -222,11 +222,13 @@ public class AccountService {
      */
     public Account addAccount(String account, String passwd, String headPortrait, String nick, String phone, String email) throws Exception {
         log.info("账号注册 account:" + account + " passwd:" + passwd + " phone:" + phone);
-        if (Helpers.isNullOrEmpty(account) || Helpers.isNullOrEmpty(passwd))
-            throw new Exception("账号密码不能为空!");
+        //todo zhoubinshan 使用自己封装的DPreconditions
+        DPreconditions.checkNotNullAndEmpty(account,TextVersion.null_user_password);
+        DPreconditions.checkNotNullAndEmpty(passwd,TextVersion.null_user_password);
         List<Account> queryAccount = queryAccount(null, phone, null);
-        if (queryAccount.size() != 0)
-            throw new Exception("该手机号已经注册!");
+        //todo zhoubinshan 习惯性判空
+        if (queryAccount!= null && queryAccount.size() != 0)
+            throw new ShowException("该手机号已经注册!");
         Account insertAccount = new Account();
         insertAccount.setAccount(account);
         insertAccount.setPasswd(MD5Encryption.getMD5(passwd));

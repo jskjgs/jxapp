@@ -19,17 +19,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class MyBaseController extends BaseController {
 
 
-
-
-    @Override
-    @ExceptionHandler
-    @ResponseBody
-    public JSONObject exceptionHandle(Exception e) {
-        doExceptionLog(e);
-        int code = ReturnCodeEnum.ERR.getCode();
-        String message = (e != null && e.getMessage() != null && e.getMessage().length() <= 30) ? e.getMessage() : ReturnCodeEnum.ERR.getDesc();
-        return this.ResponseWrapper().addMessage(message).ExeFaild(code);
-    }
+    //todo zhoubinsha 试试原生的拦截器
+//    @Override
+//    @ExceptionHandler
+//    @ResponseBody
+//    public JSONObject exceptionHandle(Exception e) {
+//        doExceptionLog(e);
+//        int code = ReturnCodeEnum.ERR.getCode();
+//        String message = (e != null && e.getMessage() != null && e.getMessage().length() <= 30) ? e.getMessage() : ReturnCodeEnum.ERR.getDesc();
+//        return this.ResponseWrapper().addMessage(message).ExeFaild(code);
+//    }
 
     @ExceptionHandler
     @ResponseBody

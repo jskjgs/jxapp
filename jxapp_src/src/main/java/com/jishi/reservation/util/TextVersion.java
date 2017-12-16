@@ -6,4 +6,5 @@ package com.jishi.reservation.util;
 public class TextVersion {
     public final static String  verification_code_error = "验证码错误!";
     public final static String  user_to_repeat = "用户账号已存在!";
+    public final static String  null_user_password = "账号密码不能为空!";
 }
