@@ -38,11 +38,6 @@ import java.util.regex.Pattern;
 @Log4j
 public class AccountService {
 
-    @Value("expire_time.login")
-    static int loginExpireTime;
-    @Value("expire_time.dynamic_code")
-    static int dynamicExpireTime;
-
     @Autowired
     private AccountMapper accountMapper;
     @Autowired
@@ -68,8 +63,8 @@ public class AccountService {
     //保存登陆信息
     //todo zhoubinshan 可采用@Value的方式进行处理
     public final static String ADD_TOKEN = ""
-            + " redis.call('set',KEYS[1],KEYS[2],'ex'," + loginExpireTime + "); "
-            + " redis.call('set',KEYS[2],KEYS[1],'ex'," + loginExpireTime + "); "
+            + " redis.call('set',KEYS[1],KEYS[2],'ex'," + Constant.EXPIRE_TIME_LOGIN_TOKEN + "); "
+            + " redis.call('set',KEYS[2],KEYS[1],'ex'," + Constant.EXPIRE_TIME_LOGIN_TOKEN + "); "
             + " return 1 ";
 
     //注销用户
@@ -94,7 +89,7 @@ public class AccountService {
         //todo zhoubinshan 使用redis的pool,并验证
         DPreconditions.checkNotNull(redisOperation.usePool().set(prefix + "_" + phone, code),"写入redis错误!");
         //todo zhoubinshan 可采用@Value的方式进行处理
-        redisOperation.usePool().expire(prefix + "_" + phone, dynamicExpireTime);
+        redisOperation.usePool().expire(prefix + "_" + phone, Constant.EXPIRE_TIME_DYNAMIC_CODE);
         dayuSupport.sendynamicCode(phone, code, templateCode);
         return code;
     }

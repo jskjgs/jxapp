@@ -33,6 +33,7 @@ spring:
 redis:
     host: 120.78.217.180 #119.29.108.150
     port: 6379
+    password: Jskj1010
 
 his:
     host: http://hpx10ddns.xicp.io
@@ -43,13 +44,6 @@ his:
 pay-callback:
     host: http://doc.hpx10.com
     port: 50002
-
-#过期时间
-expire_time:
-    #登录失效时间 90天
-    login: 90 * 24 * 60 * 60
-    #短信验证码 15分钟
-    dynamic_code: 15 * 60
 
 ---
 #测试环境

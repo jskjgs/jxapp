@@ -20,10 +20,9 @@ public class RedisTest {
 
     @Test
     public void redis() throws Exception {
-        RedisOperation redisOperation = new RedisOperation();
         redisOperation.usePool().get("aaa");
-        redisOperation.usePool().set("aaa","bbbb");
-        System.out.println("aaa = " + redisOperation.get("aaa"));
+        redisOperation.usePool().set("constant.dynamic_code_key.login_or_register_13678113250","bbbb");
+        System.out.println("插入的值为:" + redisOperation.get("constant.dynamic_code_key.login_or_register_13678113250"));
     }
 
 }
