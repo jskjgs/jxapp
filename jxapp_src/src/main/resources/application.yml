@@ -1,0 +1,120 @@
+server:
+    port: 50002
+    # 统一接口访问前缀
+    servlet-path: /reservation
+
+management:
+    address: 127.0.0.1
+mybatis:
+    my:
+        beanPath: com.jishi.reservation.dao.models
+        mapperXmlPath: classpath:mapper/*.xml
+        mapperPath: com.jishi.reservation.dao.mapper
+
+
+constant:
+    dynamic_code_key:
+        login_or_register: login_or_register
+        change_phone_origin: change_phone_origin
+        change_phone_new: change_phone_new
+
+#开发环境
+spring:
+    profiles:
+        active: dev
+    datasource:
+        beanPath: com.jishi.reservation.dao.models
+        mapperXmlPath: classpath:mapper/*.xml
+        mapperPath: com.jishi.reservation.dao.mapper
+        master:
+            name: ReadAndWrite
+            url: jdbc:mysql://182.92.78.118:3306/his?useUnicode=true&characterEncoding=utf-8&useSSL=false
+            username: root
+            password: root
+        slave1:
+            name: ReadAndWrite
+            url: jdbc:mysql://182.92.78.118:3306/his?useUnicode=true&characterEncoding=utf-8&useSSL=false
+            username: root
+            password: root
+redis:
+    host: 119.29.108.150
+    port: 6379
+#his:
+#    host: http://hpx10ddns.xicp.io
+#    port: 80
+#    token: 359894CB16E4B68531A11083F2046B0E
+#    key: 929A715701492111
+pay-callback:
+    host: http://doc.hpx10.com
+    port: 50002
+
+his:
+    host: http://218.88.215.142
+    port: 8081
+    token: 359894CB16E4B68531A11083F2046B0E
+    key: 929A715701492111
+
+---
+#测试环境
+spring:
+    profiles: test
+    datasource:
+        beanPath: com.jishi.reservation.dao.models
+        mapperXmlPath: classpath:mapper/*.xml
+        mapperPath: com.jishi.reservation.dao.mapper
+        master:
+            name: ReadAndWrite
+            url: jdbc:mysql://182.92.78.118:3306/his?useUnicode=true&characterEncoding=utf-8&useSSL=false
+            username: root
+            password: root
+        slave1:
+            name: ReadAndWrite
+            url: jdbc:mysql://182.92.78.118:3306/his?useUnicode=true&characterEncoding=utf-8&useSSL=false
+            username: root
+            password: root
+redis:
+    host: 119.29.108.150
+    port: 6379
+his:
+    host: http://hpx10ddns.xicp.io
+    port: 80
+    token: 359894CB16E4B68531A11083F2046B0E
+    key: 929A715701492111
+pay-callback:
+    host: http://doc.hpx10.com
+    port: 50002
+
+#线上正式环境
+---
+spring:
+    profiles: pro
+    datasource:
+        beanPath: com.jishi.reservation.dao.models
+        mapperXmlPath: classpath:mapper/*.xml
+        mapperPath: com.jishi.reservation.dao.mapper
+        master:
+            name: ReadAndWrite
+            url: jdbc:mysql://rm-wz96u1z25sua002ln.mysql.rds.aliyuncs.com:3306/jinxinapp?useUnicode=true&characterEncoding=utf-8&useSSL=false
+            username: root
+            password: Jskj1010
+        slave1:
+            name: ReadAndWrite
+            url: jdbc:mysql://rm-wz96u1z25sua002ln.mysql.rds.aliyuncs.com:3306/jinxinapp?useUnicode=true&characterEncoding=utf-8&useSSL=false
+            username: root
+            password: Jskj1010
+#redis服务器NOAUTH Authentication required暂时使用测试服务器
+redis:
+    host: r-wz911707093dd3a4.redis.rds.aliyuncs.com
+    port: 6379
+    password: Jskj1010
+#redis:
+#    host: 119.29.108.150
+#    port: 6379
+his:
+    host: http://218.88.215.142
+    port: 8081
+    token: 359894CB16E4B68531A11083F2046B0E
+    key: 929A715701492111
+pay-callback:
+    host: jixinapp.hpx10.com
+    port: 80

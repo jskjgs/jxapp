@@ -1,0 +1,976 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" targetNamespace="http://tempuri.org/"
+                  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GetOracleSysDate">
+        <s:complexType />
+      </s:element>
+      <s:element name="GetOracleSysDateResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetOracleSysDateResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Public">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="PublicResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PublicResult">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="OutPatient">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="OutPatientResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="OutPatientResult">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Hospitalization">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="HospitalizationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="HospitalizationResult">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="MedicalTechnology">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="MedicalTechnologyResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="MedicalTechnologyResult">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="PhysicalExamination">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="PhysicalExaminationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="PhysicalExaminationResult">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UserManager">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UserManagerResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="UserManagerResult">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Information">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="InformationResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="InformationResult">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Custom">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CustomResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CustomResult">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="InsideBasic">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="InsideBasicResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="InsideBasicResult">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="Inside">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ReData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="InsideResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="InsideResult">
+              <s:complexType mixed="true">
+                <s:sequence>
+                  <s:any />
+                </s:sequence>
+              </s:complexType>
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="string" nillable="true" type="s:string" />
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetOracleSysDateSoapIn">
+    <wsdl:part name="parameters" element="tns:GetOracleSysDate" />
+  </wsdl:message>
+  <wsdl:message name="GetOracleSysDateSoapOut">
+    <wsdl:part name="parameters" element="tns:GetOracleSysDateResponse" />
+  </wsdl:message>
+  <wsdl:message name="PublicSoapIn">
+    <wsdl:part name="parameters" element="tns:Public" />
+  </wsdl:message>
+  <wsdl:message name="PublicSoapOut">
+    <wsdl:part name="parameters" element="tns:PublicResponse" />
+  </wsdl:message>
+  <wsdl:message name="OutPatientSoapIn">
+    <wsdl:part name="parameters" element="tns:OutPatient" />
+  </wsdl:message>
+  <wsdl:message name="OutPatientSoapOut">
+    <wsdl:part name="parameters" element="tns:OutPatientResponse" />
+  </wsdl:message>
+  <wsdl:message name="HospitalizationSoapIn">
+    <wsdl:part name="parameters" element="tns:Hospitalization" />
+  </wsdl:message>
+  <wsdl:message name="HospitalizationSoapOut">
+    <wsdl:part name="parameters" element="tns:HospitalizationResponse" />
+  </wsdl:message>
+  <wsdl:message name="MedicalTechnologySoapIn">
+    <wsdl:part name="parameters" element="tns:MedicalTechnology" />
+  </wsdl:message>
+  <wsdl:message name="MedicalTechnologySoapOut">
+    <wsdl:part name="parameters" element="tns:MedicalTechnologyResponse" />
+  </wsdl:message>
+  <wsdl:message name="PhysicalExaminationSoapIn">
+    <wsdl:part name="parameters" element="tns:PhysicalExamination" />
+  </wsdl:message>
+  <wsdl:message name="PhysicalExaminationSoapOut">
+    <wsdl:part name="parameters" element="tns:PhysicalExaminationResponse" />
+  </wsdl:message>
+  <wsdl:message name="UserManagerSoapIn">
+    <wsdl:part name="parameters" element="tns:UserManager" />
+  </wsdl:message>
+  <wsdl:message name="UserManagerSoapOut">
+    <wsdl:part name="parameters" element="tns:UserManagerResponse" />
+  </wsdl:message>
+  <wsdl:message name="InformationSoapIn">
+    <wsdl:part name="parameters" element="tns:Information" />
+  </wsdl:message>
+  <wsdl:message name="InformationSoapOut">
+    <wsdl:part name="parameters" element="tns:InformationResponse" />
+  </wsdl:message>
+  <wsdl:message name="CustomSoapIn">
+    <wsdl:part name="parameters" element="tns:Custom" />
+  </wsdl:message>
+  <wsdl:message name="CustomSoapOut">
+    <wsdl:part name="parameters" element="tns:CustomResponse" />
+  </wsdl:message>
+  <wsdl:message name="InsideBasicSoapIn">
+    <wsdl:part name="parameters" element="tns:InsideBasic" />
+  </wsdl:message>
+  <wsdl:message name="InsideBasicSoapOut">
+    <wsdl:part name="parameters" element="tns:InsideBasicResponse" />
+  </wsdl:message>
+  <wsdl:message name="InsideSoapIn">
+    <wsdl:part name="parameters" element="tns:Inside" />
+  </wsdl:message>
+  <wsdl:message name="InsideSoapOut">
+    <wsdl:part name="parameters" element="tns:InsideResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetOracleSysDateHttpGetIn" />
+  <wsdl:message name="GetOracleSysDateHttpGetOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="PublicHttpGetIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="PublicHttpGetOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="OutPatientHttpGetIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="OutPatientHttpGetOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="HospitalizationHttpGetIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="HospitalizationHttpGetOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="MedicalTechnologyHttpGetIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="MedicalTechnologyHttpGetOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="PhysicalExaminationHttpGetIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="PhysicalExaminationHttpGetOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="UserManagerHttpGetIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="UserManagerHttpGetOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="InformationHttpGetIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="InformationHttpGetOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="CustomHttpGetIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CustomHttpGetOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="InsideBasicHttpGetIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="InsideBasicHttpGetOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="InsideHttpGetIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="InsideHttpGetOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="GetOracleSysDateHttpPostIn" />
+  <wsdl:message name="GetOracleSysDateHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
+  <wsdl:message name="PublicHttpPostIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="PublicHttpPostOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="OutPatientHttpPostIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="OutPatientHttpPostOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="HospitalizationHttpPostIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="HospitalizationHttpPostOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="MedicalTechnologyHttpPostIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="MedicalTechnologyHttpPostOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="PhysicalExaminationHttpPostIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="PhysicalExaminationHttpPostOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="UserManagerHttpPostIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="UserManagerHttpPostOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="InformationHttpPostIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="InformationHttpPostOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="CustomHttpPostIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="CustomHttpPostOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="InsideBasicHttpPostIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="InsideBasicHttpPostOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:message name="InsideHttpPostIn">
+    <wsdl:part name="ReData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="InsideHttpPostOut">
+    <wsdl:part name="Body" />
+  </wsdl:message>
+  <wsdl:portType name="ZL_InformationServiceSoap">
+    <wsdl:operation name="GetOracleSysDate">
+      <wsdl:input message="tns:GetOracleSysDateSoapIn" />
+      <wsdl:output message="tns:GetOracleSysDateSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Public">
+      <wsdl:input message="tns:PublicSoapIn" />
+      <wsdl:output message="tns:PublicSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OutPatient">
+      <wsdl:input message="tns:OutPatientSoapIn" />
+      <wsdl:output message="tns:OutPatientSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Hospitalization">
+      <wsdl:input message="tns:HospitalizationSoapIn" />
+      <wsdl:output message="tns:HospitalizationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="MedicalTechnology">
+      <wsdl:input message="tns:MedicalTechnologySoapIn" />
+      <wsdl:output message="tns:MedicalTechnologySoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="PhysicalExamination">
+      <wsdl:input message="tns:PhysicalExaminationSoapIn" />
+      <wsdl:output message="tns:PhysicalExaminationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UserManager">
+      <wsdl:input message="tns:UserManagerSoapIn" />
+      <wsdl:output message="tns:UserManagerSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Information">
+      <wsdl:input message="tns:InformationSoapIn" />
+      <wsdl:output message="tns:InformationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Custom">
+      <wsdl:input message="tns:CustomSoapIn" />
+      <wsdl:output message="tns:CustomSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="InsideBasic">
+      <wsdl:input message="tns:InsideBasicSoapIn" />
+      <wsdl:output message="tns:InsideBasicSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Inside">
+      <wsdl:input message="tns:InsideSoapIn" />
+      <wsdl:output message="tns:InsideSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="ZL_InformationServiceHttpGet">
+    <wsdl:operation name="GetOracleSysDate">
+      <wsdl:input message="tns:GetOracleSysDateHttpGetIn" />
+      <wsdl:output message="tns:GetOracleSysDateHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Public">
+      <wsdl:input message="tns:PublicHttpGetIn" />
+      <wsdl:output message="tns:PublicHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OutPatient">
+      <wsdl:input message="tns:OutPatientHttpGetIn" />
+      <wsdl:output message="tns:OutPatientHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Hospitalization">
+      <wsdl:input message="tns:HospitalizationHttpGetIn" />
+      <wsdl:output message="tns:HospitalizationHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="MedicalTechnology">
+      <wsdl:input message="tns:MedicalTechnologyHttpGetIn" />
+      <wsdl:output message="tns:MedicalTechnologyHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="PhysicalExamination">
+      <wsdl:input message="tns:PhysicalExaminationHttpGetIn" />
+      <wsdl:output message="tns:PhysicalExaminationHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UserManager">
+      <wsdl:input message="tns:UserManagerHttpGetIn" />
+      <wsdl:output message="tns:UserManagerHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Information">
+      <wsdl:input message="tns:InformationHttpGetIn" />
+      <wsdl:output message="tns:InformationHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Custom">
+      <wsdl:input message="tns:CustomHttpGetIn" />
+      <wsdl:output message="tns:CustomHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="InsideBasic">
+      <wsdl:input message="tns:InsideBasicHttpGetIn" />
+      <wsdl:output message="tns:InsideBasicHttpGetOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Inside">
+      <wsdl:input message="tns:InsideHttpGetIn" />
+      <wsdl:output message="tns:InsideHttpGetOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:portType name="ZL_InformationServiceHttpPost">
+    <wsdl:operation name="GetOracleSysDate">
+      <wsdl:input message="tns:GetOracleSysDateHttpPostIn" />
+      <wsdl:output message="tns:GetOracleSysDateHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Public">
+      <wsdl:input message="tns:PublicHttpPostIn" />
+      <wsdl:output message="tns:PublicHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="OutPatient">
+      <wsdl:input message="tns:OutPatientHttpPostIn" />
+      <wsdl:output message="tns:OutPatientHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Hospitalization">
+      <wsdl:input message="tns:HospitalizationHttpPostIn" />
+      <wsdl:output message="tns:HospitalizationHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="MedicalTechnology">
+      <wsdl:input message="tns:MedicalTechnologyHttpPostIn" />
+      <wsdl:output message="tns:MedicalTechnologyHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="PhysicalExamination">
+      <wsdl:input message="tns:PhysicalExaminationHttpPostIn" />
+      <wsdl:output message="tns:PhysicalExaminationHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UserManager">
+      <wsdl:input message="tns:UserManagerHttpPostIn" />
+      <wsdl:output message="tns:UserManagerHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Information">
+      <wsdl:input message="tns:InformationHttpPostIn" />
+      <wsdl:output message="tns:InformationHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Custom">
+      <wsdl:input message="tns:CustomHttpPostIn" />
+      <wsdl:output message="tns:CustomHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="InsideBasic">
+      <wsdl:input message="tns:InsideBasicHttpPostIn" />
+      <wsdl:output message="tns:InsideBasicHttpPostOut" />
+    </wsdl:operation>
+    <wsdl:operation name="Inside">
+      <wsdl:input message="tns:InsideHttpPostIn" />
+      <wsdl:output message="tns:InsideHttpPostOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ZL_InformationServiceSoap" type="tns:ZL_InformationServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetOracleSysDate">
+      <soap:operation soapAction="http://tempuri.org/GetOracleSysDate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Public">
+      <soap:operation soapAction="http://tempuri.org/Public" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OutPatient">
+      <soap:operation soapAction="http://tempuri.org/OutPatient" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Hospitalization">
+      <soap:operation soapAction="http://tempuri.org/Hospitalization" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MedicalTechnology">
+      <soap:operation soapAction="http://tempuri.org/MedicalTechnology" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PhysicalExamination">
+      <soap:operation soapAction="http://tempuri.org/PhysicalExamination" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UserManager">
+      <soap:operation soapAction="http://tempuri.org/UserManager" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Information">
+      <soap:operation soapAction="http://tempuri.org/Information" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Custom">
+      <soap:operation soapAction="http://tempuri.org/Custom" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InsideBasic">
+      <soap:operation soapAction="http://tempuri.org/InsideBasic" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Inside">
+      <soap:operation soapAction="http://tempuri.org/Inside" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="ZL_InformationServiceSoap12" type="tns:ZL_InformationServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetOracleSysDate">
+      <soap12:operation soapAction="http://tempuri.org/GetOracleSysDate" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Public">
+      <soap12:operation soapAction="http://tempuri.org/Public" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OutPatient">
+      <soap12:operation soapAction="http://tempuri.org/OutPatient" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Hospitalization">
+      <soap12:operation soapAction="http://tempuri.org/Hospitalization" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MedicalTechnology">
+      <soap12:operation soapAction="http://tempuri.org/MedicalTechnology" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PhysicalExamination">
+      <soap12:operation soapAction="http://tempuri.org/PhysicalExamination" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UserManager">
+      <soap12:operation soapAction="http://tempuri.org/UserManager" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Information">
+      <soap12:operation soapAction="http://tempuri.org/Information" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Custom">
+      <soap12:operation soapAction="http://tempuri.org/Custom" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InsideBasic">
+      <soap12:operation soapAction="http://tempuri.org/InsideBasic" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Inside">
+      <soap12:operation soapAction="http://tempuri.org/Inside" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="ZL_InformationServiceHttpGet" type="tns:ZL_InformationServiceHttpGet">
+    <http:binding verb="GET" />
+    <wsdl:operation name="GetOracleSysDate">
+      <http:operation location="/GetOracleSysDate" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Public">
+      <http:operation location="/Public" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OutPatient">
+      <http:operation location="/OutPatient" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Hospitalization">
+      <http:operation location="/Hospitalization" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MedicalTechnology">
+      <http:operation location="/MedicalTechnology" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PhysicalExamination">
+      <http:operation location="/PhysicalExamination" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UserManager">
+      <http:operation location="/UserManager" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Information">
+      <http:operation location="/Information" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Custom">
+      <http:operation location="/Custom" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InsideBasic">
+      <http:operation location="/InsideBasic" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Inside">
+      <http:operation location="/Inside" />
+      <wsdl:input>
+        <http:urlEncoded />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="ZL_InformationServiceHttpPost" type="tns:ZL_InformationServiceHttpPost">
+    <http:binding verb="POST" />
+    <wsdl:operation name="GetOracleSysDate">
+      <http:operation location="/GetOracleSysDate" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Public">
+      <http:operation location="/Public" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="OutPatient">
+      <http:operation location="/OutPatient" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Hospitalization">
+      <http:operation location="/Hospitalization" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="MedicalTechnology">
+      <http:operation location="/MedicalTechnology" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="PhysicalExamination">
+      <http:operation location="/PhysicalExamination" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UserManager">
+      <http:operation location="/UserManager" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Information">
+      <http:operation location="/Information" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Custom">
+      <http:operation location="/Custom" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InsideBasic">
+      <http:operation location="/InsideBasic" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Inside">
+      <http:operation location="/Inside" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:content part="Body" type="text/xml" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ZL_InformationService">
+    <wsdl:port name="ZL_InformationServiceSoap" binding="tns:ZL_InformationServiceSoap">
+      <soap:address location="http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="ZL_InformationServiceSoap12" binding="tns:ZL_InformationServiceSoap12">
+      <soap12:address location="http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="ZL_InformationServiceHttpGet" binding="tns:ZL_InformationServiceHttpGet">
+      <http:address location="http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="ZL_InformationServiceHttpPost" binding="tns:ZL_InformationServiceHttpPost">
+      <http:address location="http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
