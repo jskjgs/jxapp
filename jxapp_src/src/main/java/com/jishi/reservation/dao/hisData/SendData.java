@@ -1,6 +1,7 @@
 package com.jishi.reservation.dao.hisData;
 
 
+import com.jishi.reservation.util.Constant;
 import lombok.extern.log4j.Log4j;
 
 
@@ -23,7 +24,9 @@ public class SendData {
         return sb.toString();
     }
     //todo  切换成可以用的地址...
-    static final String url = "http://hpx10ddns.xicp.io/EXTERNALSERVICES/ZL_INFORMATIONSERVICE.ASMX";
+    //static final String url = "http://hpx10ddns.xicp.io/EXTERNALSERVICES/ZL_INFORMATIONSERVICE.ASMX";
+    //todo 线上环境
+    static final String url = Constant.BASE_URL;;
     //static final String url = "http://192.168.100.13:8086/EXTERNALSERVICES/ZL_INFORMATIONSERVICE.ASMX/";
 
 //    public static void main(String[] args) throws Exception {

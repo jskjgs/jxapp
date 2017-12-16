@@ -7,6 +7,8 @@
 
 package com.jishi.reservation.mypackage;
 
+import com.jishi.reservation.util.Constant;
+
 public class ZL_InformationServiceLocator extends org.apache.axis.client.Service implements ZL_InformationService {
 
     public ZL_InformationServiceLocator() {
@@ -22,7 +24,9 @@ public class ZL_InformationServiceLocator extends org.apache.axis.client.Service
     }
 
     // Use to get a proxy class for ZL_InformationServiceSoap
-    private String ZL_InformationServiceSoap_address = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx";
+   // private String ZL_InformationServiceSoap_address = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx";
+    private String ZL_InformationServiceSoap_address = Constant.BASE_URL;
+
 
     public String getZL_InformationServiceSoapAddress() {
         return ZL_InformationServiceSoap_address;
@@ -67,7 +71,9 @@ public class ZL_InformationServiceLocator extends org.apache.axis.client.Service
 
 
     // Use to get a proxy class for ZL_InformationServiceSoap12
-    private String ZL_InformationServiceSoap12_address = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx";
+   // private String ZL_InformationServiceSoap12_address = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx";
+    private String ZL_InformationServiceSoap12_address = Constant.BASE_URL;
+
     public String getZL_InformationServiceSoap12Address() {
         return ZL_InformationServiceSoap12_address;
     }
@@ -121,8 +127,7 @@ public class ZL_InformationServiceLocator extends org.apache.axis.client.Service
             if (ZL_InformationServiceSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
                 ZL_InformationServiceSoap_BindingStub _stub = new ZL_InformationServiceSoap_BindingStub(new java.net.URL(ZL_InformationServiceSoap_address), this);
                 _stub.setPortName(getZL_InformationServiceSoapWSDDServiceName());
-                return _stub;
-            }
+                return _stub;}
             if (ZL_InformationServiceSoap_PortType.class.isAssignableFrom(serviceEndpointInterface)) {
                 ZL_InformationServiceSoap12Stub _stub = new ZL_InformationServiceSoap12Stub(new java.net.URL(ZL_InformationServiceSoap12_address), this);
                 _stub.setPortName(getZL_InformationServiceSoap12WSDDServiceName());
