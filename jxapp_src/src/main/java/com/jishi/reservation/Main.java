@@ -12,6 +12,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * Created by zbs on 2017/7/3.
  */
 @SpringBootApplication
+
+
+
+
 @ServletComponentScan
 @EnableTransactionManagement
 @EnableScheduling

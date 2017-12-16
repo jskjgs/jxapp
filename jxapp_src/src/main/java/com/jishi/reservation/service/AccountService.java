@@ -10,6 +10,7 @@ import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.protocol.LoginData;
 import com.jishi.reservation.dao.mapper.*;
 import com.jishi.reservation.dao.models.*;
+import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 
 import com.jishi.reservation.service.exception.ShowException;
@@ -378,8 +379,8 @@ public class AccountService {
             return -1L;
 
         }
-        String redis_token = redisOperation.get("30");
-        String redis_id = redisOperation.get(redis_token);
+//        String redis_token = redisOperation.get("30");
+//        String redis_id = redisOperation.get(redis_token);
 
         String user_id = redisOperation.get(token);
         return redisOperation.usePool().get(token) != null ?
