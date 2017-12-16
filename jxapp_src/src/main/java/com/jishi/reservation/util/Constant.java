@@ -44,8 +44,8 @@ public class Constant {
     public final static String TOKEN_HEADER = "token_";
     public final static String TOKEN = "token";
 
-    //public final static int EXPIRE_TIME_LOGIN_TOKEN = 90 * 24 * 60 * 60;  //登录失效时间 90天
-    //public final static int EXPIRE_TIME_DYNAMIC_CODE = 15 * 60;  //短信验证码 15分钟
+    public final static int EXPIRE_TIME_LOGIN_TOKEN = 90 * 24 * 60 * 60;  //登录失效时间 90天
+    public final static int EXPIRE_TIME_DYNAMIC_CODE = 15 * 60;  //短信验证码 15分钟
 
     public final static String SMS_URL="http://121.40.152.170:9087/system-sms/api/send";
     public final static String SMS_TYPE="SystemWarning";
