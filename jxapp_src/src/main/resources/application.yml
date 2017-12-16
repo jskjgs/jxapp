@@ -31,9 +31,8 @@ spring:
             username: root
             password: root
 redis:
-    host: 120.78.217.180 #119.29.108.150
+    host: 119.29.108.150
     port: 6379
-    password: Jskj1010
 
 his:
     host: http://hpx10ddns.xicp.io
@@ -90,15 +89,15 @@ spring:
             password: Jskj1010
 
 #redis服务器NOAUTH Authentication required暂时使用测试服务器
-#redis:
-#    host: r-wz911707093dd3a4.redis.rds.aliyuncs.com
-#    port: 6379
-#    password: Jskj1010
-
 redis:
-    host: 120.78.217.180
+    host: r-wz911707093dd3a4.redis.rds.aliyuncs.com
     port: 6379
     password: Jskj1010
+
+#redis:
+#    host: 120.78.217.180
+#    port: 6379
+#    password: Jskj1010
 
 #redis:
 #    host: 119.29.108.150
