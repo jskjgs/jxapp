@@ -84,6 +84,7 @@ public class OrderInfoService {
 
     public ConfirmRegister returnConfirmRegister(Long orderId,String orderNumber) {
 
+        log.info("请求订单确认接口：orderId:"+orderId+",orderNumber:"+orderNumber);
         ConfirmRegister confirmRegister = new ConfirmRegister();
         OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(orderId,orderNumber);
         Register register = registerMapper.queryByOrderId(orderInfo.getId());

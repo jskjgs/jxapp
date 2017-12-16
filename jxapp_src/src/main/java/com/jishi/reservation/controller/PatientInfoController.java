@@ -77,12 +77,11 @@ public class PatientInfoController extends MyBaseController
     @RequestMapping(value = "queryAllPatientInfo", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryAllPatientInfo(
-            @ApiParam(value = "有效否(为空 查询全部  0 正常 1 禁用 99 删除)", required = false) @RequestParam(value = "enable", required = false) Integer enable,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "pageNum", required = false) Integer pageNum,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @ApiParam(value = "排序", required = false) @RequestParam(value = "orderBy", required = false) String orderBy,
             @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
-        PageInfo<PatientInfo> patientInfo = patientInfoService.queryPatientInfoPagaInfo(null, null, enable, Paging.create(pageNum,pageSize,orderBy,desc));
+        PageInfo<PatientInfo> patientInfo = patientInfoService.queryPatientInfoPagaInfo(null, null, 0, Paging.create(pageNum,pageSize,orderBy,desc));
         return ResponseWrapper().addData(patientInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

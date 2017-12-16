@@ -40,9 +40,9 @@ public interface RegisterMapper extends MyMapper<Register> {
     Register queryById(@Param("registerId") Long registerId);
 
     @Select({
-            "select * from register where br_id = #{brid} and agreed_time = #{agreeDate} and doctor_id = #{doctorId} and status = 1"
+            "select * from register where br_id = #{brid} and  date_format( agreed_time,\"%Y-%c-%d %I\" ) = #{timeStr} and doctor_id = #{doctorId} and status = 1"
     })
-    List<Register> queryByBrIdTimeDoctorId(@Param("brid") String brid,@Param("agreeDate") Date agreeDate,@Param("doctorId") String doctorId);
+    List<Register> queryByBrIdTimeDoctorId(@Param("brid") String brid,@Param("timeStr") String timeStr,@Param("doctorId") String doctorId);
 
 
     @Select({
@@ -51,7 +51,21 @@ public interface RegisterMapper extends MyMapper<Register> {
                     "<if test = \"registerId != null \"> and id = #{registerId} </if>"+
                     "<if test = \"status != null \"> and status = #{status} </if>"+
                     "<if test = \"enable != null \"> and enable = #{enable} </if>"+
+                    //无效病人的就不返回了。
+
                     "</script>"
     })
     List<Register> selectCondition(@Param("accountId") Long accountId,@Param("registerId") Long registerId,@Param("status") Integer status,@Param("enable") Integer enable);
+
+    @Select({
+            " <script> select * from register where 1  = 1 and br_id in " +
+                    "<foreach item = 'item' index = 'index' collection = 'idList' open = '(' separator = ',' close = ')'>#{item}</foreach>" +
+                    "<if test = \"registerId != null \"> and id = #{registerId} </if>"+
+                    "<if test = \"status != null \"> and status = #{status} </if>"+
+                    "<if test = \"enable != null \"> and enable = #{enable} </if>"+
+                    //无效病人的就不返回了。
+
+                    "</script>"
+    })
+    List<Register> selectConditionByBridList(@Param("idList") List<String> idList,@Param("registerId") Long registerId,@Param("status") Integer status,@Param("enable") Integer enable);
 }

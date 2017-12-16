@@ -293,7 +293,12 @@ public class RegisterService {
     private boolean canRegister(String brid, Date agreeDate, String doctorId) {
 
         log.info("开始检测本地的库.....");
-        List<Register> registerList = registerMapper.queryByBrIdTimeDoctorId(brid, agreeDate, doctorId);
+        log.info("病人ID："+brid+",预约时间："+agreeDate.getTime()+",医生id:"+doctorId);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh");
+        String timeStr = sdf.format(agreeDate);
+        log.info("转换后的预约时间："+timeStr);
+        List<Register> registerList = registerMapper.queryByBrIdTimeDoctorId(brid, timeStr, doctorId);
+        log.info("本地的查询预约列表："+JSONObject.toJSONString(registerList));
         if(registerList == null || registerList.size() == 0){
             log.info("为空了。。。");
         }else{
@@ -325,9 +330,18 @@ public class RegisterService {
         if(Helpers.isNullOrEmpty(accountId) && Helpers.isNullOrEmpty(registerId))
             throw new Exception("查询条件不能都为空");
 
-        List<Register> list = registerMapper.selectCondition(accountId, registerId, status, enable);
-        log.info("~~~:"+ JSONObject.toJSONString(list));
-        return list;
+        //找到所有有效的病人
+        List<String> patientIdList =  patientInfoMapper.queryValidPatientHisId(accountId);
+        if(patientIdList != null && patientIdList.size() != 0){
+            return registerMapper.selectConditionByBridList(patientIdList, registerId, status, enable);
+
+
+        }else{
+            return null;
+        }
+
+
+       // List<Register> list = registerMapper.selectCondition(accountId, registerId, status, enable);
     }
 
     /**
@@ -373,8 +387,8 @@ public class RegisterService {
 
     @Transactional
     public Integer failureRegister(Long registerId) throws Exception {
-        if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
-            throw new Exception("预约信息为空.");
+ /*       if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
+            throw new Exception("预约信息为空.");*/
 
 
         Register register = registerMapper.queryById(registerId);

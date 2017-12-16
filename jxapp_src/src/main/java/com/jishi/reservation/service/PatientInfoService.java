@@ -92,6 +92,7 @@ public class PatientInfoService {
         newPregnant.setEnable(EnableEnum.EFFECTIVE.getCode());
         newPregnant.setPatientId(newPatientInfo.getId());
         pregnantMapper.insert(newPregnant);
+        log.info("添加孕妇信息："+JSONObject.toJSONString(newPregnant));
 
         return newPatientInfo.getId();
 
@@ -191,7 +192,7 @@ public class PatientInfoService {
             throw new Exception("就诊人ID为空");
         if(queryPatientInfo(patientInfoId,null,null) == null)
             throw new Exception("没有查询到就诊人");
-        patientInfoMapper.deleteByPrimaryKey(patientInfoId);
+        patientInfoMapper.deleteSoft(patientInfoId);
     }
 
     public void wrapPregnant(List<PatientInfo> patientInfos) {
