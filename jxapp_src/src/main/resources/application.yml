@@ -11,7 +11,6 @@ mybatis:
         mapperXmlPath: classpath:mapper/*.xml
         mapperPath: com.jishi.reservation.dao.mapper
 
-
 constant:
     dynamic_code_key:
         login_or_register: login_or_register
@@ -31,28 +30,26 @@ spring:
             url: jdbc:mysql://182.92.78.118:3306/his?useUnicode=true&characterEncoding=utf-8&useSSL=false
             username: root
             password: root
-        slave1:
-            name: ReadAndWrite
-            url: jdbc:mysql://182.92.78.118:3306/his?useUnicode=true&characterEncoding=utf-8&useSSL=false
-            username: root
-            password: root
 redis:
     host: 119.29.108.150
     port: 6379
-#his:
-#    host: http://hpx10ddns.xicp.io
-#    port: 80
-#    token: 359894CB16E4B68531A11083F2046B0E
-#    key: 929A715701492111
+
+his:
+    host: http://hpx10ddns.xicp.io
+    port: 80
+    token: 359894CB16E4B68531A11083F2046B0E
+    key: 929A715701492111
+
 pay-callback:
     host: http://doc.hpx10.com
     port: 50002
 
-his:
-    host: http://218.88.215.142
-    port: 8081
-    token: 359894CB16E4B68531A11083F2046B0E
-    key: 929A715701492111
+#过期时间
+expire_time:
+    #登录失效时间 90天
+    login: 90 * 24 * 60 * 60
+    #短信验证码 15分钟
+    dynamic_code: 15 * 60
 
 ---
 #测试环境

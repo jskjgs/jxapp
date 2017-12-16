@@ -1,6 +1,7 @@
 package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.doraemon.base.guava.DPreconditions;
 import com.doraemon.base.redis.RedisOperation;
 import com.doraemon.base.util.MD5Encryption;
 import com.github.pagehelper.PageHelper;
@@ -11,12 +12,15 @@ import com.jishi.reservation.dao.mapper.*;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 
+import com.jishi.reservation.service.exception.ShowException;
 import com.jishi.reservation.service.support.AliDayuSupport;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import com.jishi.reservation.util.NewRandomUtil;
+import com.jishi.reservation.util.TextVersion;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +37,11 @@ import java.util.regex.Pattern;
 @Service
 @Log4j
 public class AccountService {
+
+    @Value("expire_time.login")
+    static int loginExpireTime;
+    @Value("expire_time.dynamic_code")
+    static int dynamicExpireTime;
 
     @Autowired
     private AccountMapper accountMapper;
@@ -56,11 +65,11 @@ public class AccountService {
     public static final String REGEX_MOBILE = "^((17[0-9])|(14[0-9])|(13[0-9])|(15[0-9])|(18[0-9]))\\d{8}$";
 
 
-
     //保存登陆信息
+    //todo zhoubinshan 可采用@Value的方式进行处理
     public final static String ADD_TOKEN = ""
-            + " redis.call('set',KEYS[1],KEYS[2],'ex'," + Constant.EXPIRE_TIME_LOGIN_TOKEN + "); "
-            + " redis.call('set',KEYS[2],KEYS[1],'ex'," + Constant.EXPIRE_TIME_LOGIN_TOKEN + "); "
+            + " redis.call('set',KEYS[1],KEYS[2],'ex'," + loginExpireTime + "); "
+            + " redis.call('set',KEYS[2],KEYS[1],'ex'," + loginExpireTime + "); "
             + " return 1 ";
 
     //注销用户
@@ -78,13 +87,14 @@ public class AccountService {
      * @return
      * @throws Exception
      */
-    public String sendDynamicCode(String phone,String prefix,String templateCode) throws Exception {
-        log.info("发送手机动态验证码!"+prefix);
+    public String sendDynamicCode(String phone, String prefix, String templateCode) throws Exception {
+        log.info("发送手机动态验证码!" + prefix);
         String code = NewRandomUtil.getRandomNum(6);
-        log.info("redis key:"+prefix + "_" + phone+",value:"+code);
+        log.info("redis key:" + prefix + "_" + phone + ",value:" + code);
         redisOperation.set(prefix + "_" + phone, code);
-        redisOperation.expire(prefix + "_" + phone, Constant.EXPIRE_TIME_DYNAMIC_CODE);
-        dayuSupport.sendynamicCode(phone, code,templateCode);
+        //todo zhoubinshan 可采用@Value的方式进行处理
+        redisOperation.expire(prefix + "_" + phone, dynamicExpireTime);
+        dayuSupport.sendynamicCode(phone, code, templateCode);
         return code;
     }
 
@@ -97,34 +107,21 @@ public class AccountService {
      * @return
      * @throws Exception
      */
-    public LoginData loginOrRegisterThroughPhone(String phone, String  prefix,String dynamicCode) throws Exception {
-        Account accountLogin;
-        if(!Constant.TEST_PHONE.contains(phone)){
-            log.info("账号采用手机进行登陆: phone:" + phone + " dynamicCode:" + dynamicCode);
-            String code = redisOperation.get(prefix + "_" + phone);
-
-            if (!dynamicCode.equals(code))
-                return null;
-            List<Account> account = queryAccount(null, phone, null);
-
-            if (account.size() == 0){
-                accountLogin = addAccount(phone, phone, Constant.DEFAULT_AVATAR, phone, phone, null);
-
-            }else {
-                accountLogin = account.get(0);
-            }
-
-            //删除已核对的验证码
-            redisOperation.del(prefix + "_" + phone);
-            log.info("删除已核对的验证码："+prefix + "_" + phone);
-
-        }else {
-            //如果是测试账号
-
-
-            accountLogin = accountMapper.queryByTelephone(phone);
-
-        }
+    public LoginData loginOrRegisterThroughPhone(String phone, String prefix, String dynamicCode) throws Exception {
+        //todo zhoubinsahn 如果是错误直接报出去,如果需要显示在页面上,采用ShowException
+        //todo zhoubinshan redisOperation 尽量使用pool,避免redis的开销
+        String code = redisOperation.usePool().get(prefix + "_" + phone);
+        if (!dynamicCode.equals(code))
+            throw new ShowException(TextVersion.verification_code_error);
+        List<Account> account = queryAccount(null, phone, null);
+        //todo zhoubinshan 采用二元表达式,对代码进行精简整洁度提升
+        Account accountLogin =  account == null || account.size() == 0 ?
+                addAccount(phone, phone, Constant.DEFAULT_AVATAR, phone, phone, null) :
+                account.get(0);
+        //todo zhoubinshan redisOperation 尽量使用pool,避免redis的开销
+        //删除已核对的验证码
+        redisOperation.usePool().del(prefix + "_" + phone);
+        log.info("删除已核对的验证码：" + prefix + "_" + phone);
         String token = login(phone);
         LoginData loginData = new LoginData();
         loginData.setToken(token);
@@ -133,23 +130,20 @@ public class AccountService {
         loginData.setTelephone(accountLogin.getPhone());
         loginData.setPushId(accountLogin.getPushId());
         loginData.setAccountId(accountLogin.getId());
-
         return loginData;
-
-
     }
 
 
-    public boolean checkOriginalPhoneCode(String phone, String prefix,String dynamicCode) throws Exception {
+    public boolean checkOriginalPhoneCode(String phone, String prefix, String dynamicCode) throws Exception {
         log.info("账号进行换绑操作: oldPhone:" + phone + " dynamicCode:" + dynamicCode);
         String code = redisOperation.get(prefix + "_" + phone);
-        log.info("原验证码："+code);
-        if (!dynamicCode.equals(code)){
+        log.info("原验证码：" + code);
+        if (!dynamicCode.equals(code)) {
             log.info("验证码验证失败..");
-            return  false;
-        }else {
+            return false;
+        } else {
             redisOperation.del(prefix + "_" + phone);
-            log.info("删除已核对的验证码："+prefix + "_" + phone);
+            log.info("删除已核对的验证码：" + prefix + "_" + phone);
             return true;
         }
 
@@ -174,22 +168,22 @@ public class AccountService {
 
     /**
      * 创建token值
+     *
      * @param phone
      * @return
      * @throws Exception
      */
     private String login(String phone) throws Exception {
-
-        Account account = accountMapper.queryByTelephone(phone);
+        //todo zhoubinshan 需要对返回的数据做空值判断,避免空指针异常
+        Account account = DPreconditions.checkNotNull(accountMapper.queryByTelephone(phone),"没有查询到登陆用户.");
         checkLoginState(account.getId());
-
         String token = Constant.TOKEN_HEADER + createToken(account.getId());
         List<String> keys = new ArrayList<String>();
         keys.add(String.valueOf(account.getId()));
         keys.add(token);
-        Preconditions.checkState(Integer.valueOf(String.valueOf(redisOperation.eval(ADD_TOKEN,keys,new ArrayList<String>()))) == 1,"保存登陆信息失败.");
+        //todo zhoubinshan 使用DPreconditions,替换Preconditions
+        DPreconditions.checkState(Integer.valueOf(String.valueOf(redisOperation.eval(ADD_TOKEN, keys, new ArrayList<String>()))) == 1, "保存登陆信息失败.");
         return token;
-
     }
 
     // 检查是否是重复登录
@@ -200,11 +194,12 @@ public class AccountService {
         }
         List<String> keys = new ArrayList<String>();
         keys.add(token);
-        redisOperation.eval(DEL_TOKEN,keys,new ArrayList<String>());
+        redisOperation.eval(DEL_TOKEN, keys, new ArrayList<String>());
     }
 
     /**
      * 创建token值
+     *
      * @param user
      * @return
      * @throws Exception
@@ -239,10 +234,10 @@ public class AccountService {
         insertAccount.setNick(nick);
         insertAccount.setPhone(phone);
         insertAccount.setEmail(email);
-        insertAccount.setPushId("hpx10_"+NewRandomUtil.getRandomNum(6));
+        insertAccount.setPushId("hpx10_" + NewRandomUtil.getRandomNum(6));
         insertAccount.setEnable(EnableEnum.EFFECTIVE.getCode());
-        accountMapper.insertReturnId(insertAccount);
-
+        //todo zhoubinshan 没有对插入数据是否成功做校验,采用我们自己封装的DPreconditions做校验
+        DPreconditions.checkState(accountMapper.insertReturnId(insertAccount)==1,"增加用户入库未知错误.");
         return insertAccount;
     }
 
@@ -254,12 +249,13 @@ public class AccountService {
      * @param headPortrait
      * @param email
      */
-    public void modifyAccountInfo(Long accountId, String passwd, String nick, String headPortrait, String email, String phone,Integer enable) throws Exception {
+    public void modifyAccountInfo(Long accountId, String passwd, String nick, String headPortrait, String email, String phone, Integer enable) throws Exception {
         log.info("修改账号信息 accountId:" + accountId + " nicke:" + nick + " headPortrait" + headPortrait + " email:" + email);
         if (Helpers.isNullOrEmpty(accountId) && Helpers.isNullOrEmpty(phone))
             throw new Exception("账号ID和手机号不能同时为空.");
         List<Account> queryAccountList = queryAccount(accountId, phone, null);
-        if (queryAccountList.size() == 0)
+        //todo zhoubinshan 习惯行的判空可以提高代码的健壮性
+        if (queryAccountList == null || queryAccountList.size() == 0)
             throw new Exception("没有查到该账号");
         Account newAccount = new Account();
         newAccount.setId(queryAccountList.get(0).getId());
@@ -269,7 +265,7 @@ public class AccountService {
         newAccount.setPasswd(passwd == null ? null : MD5Encryption.getMD5(passwd));
         newAccount.setPhone(phone);
         newAccount.setEnable(enable);
-        Preconditions.checkState(accountMapper.updateByPrimaryKeySelective(newAccount) == 1,"更新失败!");
+        Preconditions.checkState(accountMapper.updateByPrimaryKeySelective(newAccount) == 1, "更新失败!");
         imAccountService.updateUser(queryAccountList.get(0).getId()); //更改账户信息时同步更新IM账号
     }
 
@@ -286,19 +282,20 @@ public class AccountService {
         Account newAccount = new Account();
         newAccount.setId(queryAccountList.get(0).getId());
         newAccount.setPhone(phone);
-        Preconditions.checkState(accountMapper.updateByPrimaryKeySelective(newAccount) == 1,"更新失败!");
+        Preconditions.checkState(accountMapper.updateByPrimaryKeySelective(newAccount) == 1, "更新失败!");
         imAccountService.updateUser(queryAccountList.get(0).getId()); //更改账户信息时同步更新IM账号
     }
 
     /**
      * 修改密码
+     *
      * @param accountId
      * @param phone
      * @param oldPasswd
      * @param newPasswd
      * @throws Exception
      */
-    public void modifyAccountPasswd(Long accountId, String phone,String oldPasswd, String newPasswd) throws Exception {
+    public void modifyAccountPasswd(Long accountId, String phone, String oldPasswd, String newPasswd) throws Exception {
         if (Helpers.isNullOrEmpty(accountId) && Helpers.isNullOrEmpty(phone))
             throw new Exception("账号ID和手机号不能同时为空.");
         if (Helpers.isNullOrEmpty(oldPasswd) || Helpers.isNullOrEmpty(newPasswd))
@@ -306,9 +303,9 @@ public class AccountService {
         List<Account> queryAccountList = queryAccount(accountId, phone, null);
         if (queryAccountList.size() == 0)
             throw new Exception("没有查到该账号,或密码错误.");
-        if(!queryAccountList.get(0).getPasswd().equals(MD5Encryption.getMD5(oldPasswd)))
+        if (!queryAccountList.get(0).getPasswd().equals(MD5Encryption.getMD5(oldPasswd)))
             throw new Exception("没有查到该账号,或密码错误.");
-        modifyAccountInfo(accountId, newPasswd, null, null, null, phone,null);
+        modifyAccountInfo(accountId, newPasswd, null, null, null, phone, null);
     }
 
     /**
@@ -362,23 +359,23 @@ public class AccountService {
         log.info("失效账号 accountId:" + accountId + " phone:" + phone);
         if (Helpers.isNullOrEmpty(accountId) && Helpers.isNullOrEmpty(phone))
             throw new Exception("账号ID和手机不能同时为空.");
-        if(queryAccount(accountId, phone, null).size() == 0)
+        if (queryAccount(accountId, phone, null).size() == 0)
             throw new Exception("没有查到该账号");
-        modifyAccountInfo(accountId,null,null,null,null,phone,EnableEnum.INVALID.getCode());
+        modifyAccountInfo(accountId, null, null, null, null, phone, EnableEnum.INVALID.getCode());
     }
 
     public Account loginByTelephoneAndPassword(String accountInput, String password) throws NoSuchAlgorithmException {
-        Account queryAccount = accountMapper.selectByAccountAndPassword(accountInput,MD5Encryption.getMD5(password));
+        Account queryAccount = accountMapper.selectByAccountAndPassword(accountInput, MD5Encryption.getMD5(password));
 
-        log.info("查询结果"+ JSONObject.toJSONString(queryAccount));
+        log.info("查询结果" + JSONObject.toJSONString(queryAccount));
         return queryAccount;
     }
 
 
     public Long returnIdByToken(HttpServletRequest request) throws Exception {
         String token = request.getHeader(Constant.TOKEN);
-        log.info("token："+token);
-        if(token == null || "".equals(token) || "null".equals(token)){
+        log.info("token：" + token);
+        if (token == null || "".equals(token) || "null".equals(token)) {
             log.info("token為空...");
             return -1L;
 
@@ -387,7 +384,7 @@ public class AccountService {
         String redis_id = redisOperation.get(redis_token);
 
         String user_id = redisOperation.get(token);
-        return redisOperation.usePool().get(token)!=null?
+        return redisOperation.usePool().get(token) != null ?
                 Long.valueOf(redisOperation.usePool().get(token)) : Long.valueOf(-1);
 
 
@@ -396,7 +393,7 @@ public class AccountService {
     public void logout(String token) throws Exception {
         List<String> keys = new ArrayList<String>();
         keys.add(token);
-        Preconditions.checkState(Integer.valueOf(String.valueOf(redisOperation.eval(DEL_TOKEN,keys,new ArrayList<String>()))) == 1,"注销用户登陆信息失败.");
+        Preconditions.checkState(Integer.valueOf(String.valueOf(redisOperation.eval(DEL_TOKEN, keys, new ArrayList<String>()))) == 1, "注销用户登陆信息失败.");
 
     }
 
@@ -415,7 +412,7 @@ public class AccountService {
     public LoginData queryInfo(String accountStr) {
 
         Account account = accountMapper.queryByTelephone(accountStr);
-        Preconditions.checkNotNull(account,"该手机号没有对应的用户信息");
+        Preconditions.checkNotNull(account, "该手机号没有对应的用户信息");
         List<IdentityInfo> identityList = identityInfoMapper.queryByAccountId(account.getId());
         List<Credentials> credentialsList = new ArrayList<>();
         for (IdentityInfo identityInfo : identityList) {
@@ -432,7 +429,7 @@ public class AccountService {
 
     public PageInfo<Account> queryAccountPage(String key, Integer startPage, Integer pageSize) {
 
-        PageHelper.startPage(startPage,pageSize).setOrderBy("id desc");
+        PageHelper.startPage(startPage, pageSize).setOrderBy("id desc");
         List<Account> list = accountMapper.queryCondition(key);
         for (Account account : list) {
             account.setPasswd(null);
