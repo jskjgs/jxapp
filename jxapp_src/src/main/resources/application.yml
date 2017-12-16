@@ -31,7 +31,7 @@ spring:
             username: root
             password: root
 redis:
-    host: 119.29.108.150
+    host: 120.78.217.180 #119.29.108.150
     port: 6379
 
 his:
@@ -104,6 +104,7 @@ spring:
 redis:
     host: 120.78.217.180
     port: 6379
+    password: Jskj1010
 
 #redis:
 #    host: 119.29.108.150
