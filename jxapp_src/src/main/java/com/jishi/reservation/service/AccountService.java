@@ -91,9 +91,10 @@ public class AccountService {
         log.info("发送手机动态验证码!" + prefix);
         String code = NewRandomUtil.getRandomNum(6);
         log.info("redis key:" + prefix + "_" + phone + ",value:" + code);
-        redisOperation.set(prefix + "_" + phone, code);
+        //todo zhoubinshan 使用redis的pool,并验证
+        DPreconditions.checkNotNull(redisOperation.usePool().set(prefix + "_" + phone, code),"写入redis错误!");
         //todo zhoubinshan 可采用@Value的方式进行处理
-        redisOperation.expire(prefix + "_" + phone, dynamicExpireTime);
+        redisOperation.usePool().expire(prefix + "_" + phone, dynamicExpireTime);
         dayuSupport.sendynamicCode(phone, code, templateCode);
         return code;
     }
