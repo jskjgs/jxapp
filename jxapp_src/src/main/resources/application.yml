@@ -97,7 +97,7 @@ redis:
 #redis:
 #    host: 120.78.217.180
 #    port: 6379
-#    password: Jskj1010
+#    password: Jskj1010g
 
 #redis:
 #    host: 119.29.108.150
@@ -105,8 +105,8 @@ redis:
 his:
     host: http://218.88.215.142
     port: 8081
-    token: 359894CB16E4B68531A11083F2046B0E
-    key: 929A715701492111
+    token: 9498A8CCB2AE9A169E6863DF3B7B8A27
+    key: A3543931B6ECFB3F
 pay-callback:
     host: jixinapp.hpx10.com
     port: 80
