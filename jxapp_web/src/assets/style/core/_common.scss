@@ -1,0 +1,102 @@
+/* 公共样式 */
+@import "../variables/size";
+@import "../variables/theme";
+
+// 页面标题
+.page-top {
+  margin-top: -$topBar_h;
+}
+.page-title {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+// input tip
+.el-form-item__content {
+  .input-tip {
+    position: absolute;
+    right: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color:#99a9bf;
+  }
+}
+
+//img {
+//  background: url('~@/assets/images/placeholder.png') center no-repeat;
+//  background-size: 40px 30px;
+//}
+
+.img-zoom-box {
+  width: auto;
+  max-width: 70vw;
+
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 60vh;
+  }
+}
+
+// 操作
+.operations {
+  .operate-item {
+    cursor: pointer;
+
+    & + .operate-item {
+      margin-left: 20px
+    }
+  }
+}
+
+.search-wrap {
+  .search-label {
+    color: $color3;
+
+    & + .el-input {
+      width: auto;
+    }
+  }
+  .table-tools & {
+    input {
+      border-radius: 18px;
+    }
+    .search-label {
+      & + .el-input {
+        width: 300px;
+      }
+    }
+  }
+}
+
+table {
+  .operate-item {
+    & + .operate-item {
+      margin-left: 20px;
+    }
+    &[class^="icon-"], &[class*=" icon-"], &[class^="el-icon-"], &[class*=" el-icon-"] {
+      color: $color4;
+      font-size: 18px;
+      cursor: pointer;
+    }
+  }
+}
+
+.edit-dialog {
+  .el-dialog {
+    min-width: 720px;
+  }
+  .text-length {
+    position: absolute;
+    right: 10px;
+    margin-top: -14px;
+    transform: translateY(-50%);
+    color: $color5;
+  }
+  textarea {
+    height: 100px;
+    resize: none;
+  }
+}
+
+

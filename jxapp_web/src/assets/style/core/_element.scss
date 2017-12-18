@@ -1,0 +1,88 @@
+/* element组件样式全局重置 */
+@import "../variables/theme";
+
+.el-form-item__content {
+  .el-select {
+    width: 100%;
+  }
+}
+.el-form--label-top .el-form-item__content {
+  margin-left: 0 !important;
+}
+
+// dialog 水平垂直居中
+.dialog--center {
+  text-align: center;
+
+  &:after {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+  }
+  .el-dialog {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    position: static;
+    transform: translate(0);
+    display: inline-block;
+    vertical-align: middle;
+    text-align: left;
+  }
+}
+
+/* input */
+.el-input__inner {
+  background: transparent;
+}
+/* input END */
+
+/* table */
+.el-table {
+  &, tr {
+    background: transparent;
+  }
+}
+/* table END */
+
+/* checkbox */
+.el-checkbox__inner {
+  background: transparent;
+}
+/* checkbox END */
+
+/* pagination */
+.el-pagination {
+  .el-pager li:not(.active), .btn-next, .btn-prev, button.disabled {
+    background: transparent;
+  }
+}
+/* pagination END */
+
+/* loading */
+.el-loading-mask {
+  background-color: rgba(236, 238, 243, .8);
+  z-index: 1000;
+  @at-root {
+    body > & {
+      background-color: rgba(0,0,0,.5);
+      z-index: 10000;
+    }
+  }
+}
+/* loading END */
+
+/* tab */
+.el-tabs__header {
+  margin: 0;
+}
+/* tab END */
+
+/* dropdown */
+.el-dropdown-menu__item {
+  &.active {
+    background: #20a0ff !important;
+    color: #fff !important;
+  }
+}
+/* dropdown END */

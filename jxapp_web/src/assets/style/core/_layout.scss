@@ -1,0 +1,100 @@
+/* 布局类 */
+
+/* flex */
+.flex {
+  display: flex;
+  align-items: flex-start;
+
+  @at-root {
+    // 水平居中
+    &--hcenter {
+      @extend .flex;
+      justify-content: center;
+    }
+    // 竖直居中
+    &--vcenter {
+      @extend .flex;
+      align-items: center;
+    }
+    // 水平垂直居中
+    &--center {
+      @extend .flex;
+      justify-content: center;
+      align-items: center;
+    }
+    // 竖直方向排列
+    &--col {
+      @extend .flex;
+      flex-direction: column;
+    }
+  }
+}
+
+// flex子元素
+.flex-item {
+  flex: 1;
+
+  @at-root {
+    // flex子元素尺寸固定
+    &--none {
+      flex: none;
+    }
+  }
+}
+
+/* flex END */
+
+/* 浮动 */
+.clr:before,
+.clr:after {
+  content: "";
+  display: table;
+}
+.clr:after {
+  clear: both;
+}
+.lt {
+  float: left;
+}
+.rt {
+  float: right;
+}
+/* 浮动 END */
+
+/* 滚动条 */
+.scrollbar-show {
+  &::-webkit-scrollbar{
+    display: block;
+  }
+}
+
+.scrollbar-hover {
+  &:hover::-webkit-scrollbar{
+    display: block;
+  }
+  &:hover {
+    margin-right: -2px;
+  }
+}
+/* 滚动条 END */
+
+
+.inline-block {
+  display: inline-block;
+}
+
+// inline元素垂直居中
+.inline-vcenter {
+  &:after {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    width: 0;
+    vertical-align: middle;
+  }
+}
+
+.text-center {
+  text-align: center;
+}
+

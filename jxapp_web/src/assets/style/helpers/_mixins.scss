@@ -1,0 +1,34 @@
+/* 过渡效果 */
+
+// 向左滑动
+@mixin slide-fade($dir: left, $duration: 0.1s) {
+  .slide-#{$dir}-enter-active {
+    transition: all $duration ease;
+  }
+  .slide-#{$dir}-leave-active {
+    transition: all $duration cubic-bezier(1.0, 0.5, 0.8, 1.0);
+    @if $dir == left {
+      transform: translateX(-10px);
+    } @else if $dir == right {
+      transform: translateX(10px);
+    } @else if $dir == top {
+      transform: translateY(-10px);
+    } @else {
+      transform: translateY(10px);
+    }
+    opacity: 0;
+  }
+  .slide-#{$dir}-enter {
+    @if $dir == left {
+      transform: translateX(10px);
+    } @else if $dir == right {
+      transform: translateX(-10px);
+    } @else if $dir == top {
+      transform: translateY(10px);
+    } @else {
+      transform: translateY(-10px);
+    }
+    opacity: 0;
+  }
+}
+/* 过渡效果 END */

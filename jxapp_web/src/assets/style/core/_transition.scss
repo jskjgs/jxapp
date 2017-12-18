@@ -1,0 +1,6 @@
+@import "../helpers/mixins";
+
+// .slide-left, .slide-right...
+@each $item in (left, right, top, bottom) {
+  @include slide-fade($item, .1s);
+}

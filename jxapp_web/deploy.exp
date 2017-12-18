@@ -1,0 +1,12 @@
+#!/usr/bin/expect -f
+set host root@39.108.117.235
+set psd Jskj1010
+
+spawn ssh $host
+expect "*password:"
+send "$psd\r"
+expect "\n"
+send "cd /code/hpx10/admin-web\r"
+expect "\n"
+send "./run.sh\r"
+interact

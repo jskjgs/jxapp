@@ -1,0 +1,12 @@
+{
+  "moudle1": [{
+    "url": '',
+    "desc": 'module1_api1',
+    "mock": true,
+    "res": {
+      "code": 200,
+      "message": "成功",
+      "result": []
+    }
+  }]
+}
