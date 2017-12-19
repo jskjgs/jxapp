@@ -332,16 +332,14 @@ public class RegisterService {
 
         //找到所有有效的病人
         List<String> patientIdList =  patientInfoMapper.queryValidPatientHisId(accountId);
-        if(patientIdList != null && patientIdList.size() != 0){
+        if(patientIdList!= null && patientIdList.size() != 0){
             return registerMapper.selectConditionByBridList(patientIdList, registerId, status, enable);
-
 
         }else{
             return null;
         }
 
 
-       // List<Register> list = registerMapper.selectCondition(accountId, registerId, status, enable);
     }
 
     /**
@@ -355,34 +353,27 @@ public class RegisterService {
      * @throws Exception
      */
     public PageInfo queryRegisterPageInfo(Long registerId,Long accountId ,Integer status,Integer enable,Paging paging) throws Exception {
-        if(!Helpers.isNullOrEmpty(paging)){
-            if(paging.getPageSize() == 0){
-                paging.setPageSize(queryRegister(registerId,accountId,status,enable).size());
+        if (!Helpers.isNullOrEmpty(paging)) {
+            if (paging.getPageSize() == 0) {
+                paging.setPageSize(queryRegister(registerId, accountId, status, enable).size());
             }
-            PageHelper.startPage(paging.getPageNum(),paging.getPageSize()).setOrderBy("id desc");
-            List<Register> list = queryRegister(registerId, accountId, status, enable);
-            log.info("~~"+JSONObject.toJSONString(list));
-            return new PageInfo<>(list);
+            List<String> patientIdList = patientInfoMapper.queryValidPatientHisId(accountId);
+            if (patientIdList != null && patientIdList.size() != 0) {
+                PageHelper.startPage(paging.getPageNum(), paging.getPageSize()).setOrderBy("id desc");
+                List<Register> list = registerMapper.selectConditionByBridList(patientIdList, registerId, status, enable);
 
+                log.info("~~" + JSONObject.toJSONString(list));
+                return new PageInfo<>(list);
 
+            } else {
 
+                return null;
+
+            }
         }
-        return null;
-    }
 
-    /**
-     * 查询全部预约
-     * @return
-     * @throws Exception
-     */
-    public List<Register> queryAllRegister(Integer enable, Paging paging) throws Exception {
-        Register queryRegister = new Register();
-        queryRegister.setEnable(enable);
-        if(!Helpers.isNullOrEmpty(paging))
-           PageHelper.startPage(paging.getPageSize(),paging.getPageNum(),paging.getOrderBy());
-        return registerMapper.select(queryRegister);
+            return null;
     }
-
 
     /**
      * 把就诊信息置为无效
