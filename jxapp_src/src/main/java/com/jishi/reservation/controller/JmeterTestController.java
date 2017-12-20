@@ -12,10 +12,7 @@ import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.bean.DepartmentList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -44,6 +41,21 @@ public class JmeterTestController extends MyBaseController {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateSrc = simpleDateFormat.format(date);
         log.info("----------jmeter-test-doGetDate: " + dateSrc);
+        return ResponseWrapper().addMessage("success").addData(dateSrc).ExeSuccess();
+    }
+
+     // sec: 睡眠时间（秒）
+    @RequestMapping(value = "doGetDateDelay", method = RequestMethod.GET)
+    @ResponseBody
+    public JSONObject fastestTestDelay(
+            @RequestParam(value = "sec", defaultValue = "10") Integer sec) throws InterruptedException {
+        Date dateBegin = new Date();
+        log.info("----------jmeter-test-doGetDate_delay: " + dateBegin);
+        Thread.sleep(sec * 1000);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date dateEnd = new Date();
+        String dateSrc = simpleDateFormat.format(dateEnd);
+        log.info("----------jmeter-test-doGetDate_delay: " + (dateEnd.getTime() - dateBegin.getTime())/1000 + "s");
         return ResponseWrapper().addMessage("success").addData(dateSrc).ExeSuccess();
     }
 
