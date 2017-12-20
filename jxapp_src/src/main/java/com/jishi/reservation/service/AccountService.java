@@ -376,16 +376,10 @@ public class AccountService {
         log.info("token：" + token);
         if (token == null || "".equals(token) || "null".equals(token)) {
             log.info("token為空...");
-            return -1L;
-
+            return Constant.NOT_LOGIN_ACCOUNT_ID;
         }
-//        String redis_token = redisOperation.get("30");
-//        String redis_id = redisOperation.get(redis_token);
-
-        String user_id = redisOperation.get(token);
-        return redisOperation.usePool().get(token) != null ?
-                Long.valueOf(redisOperation.usePool().get(token)) : Long.valueOf(-1);
-
+        String userId = redisOperation.usePool().get(token);
+        return userId != null ? Long.valueOf(userId) : Constant.NOT_LOGIN_ACCOUNT_ID;
 
     }
 

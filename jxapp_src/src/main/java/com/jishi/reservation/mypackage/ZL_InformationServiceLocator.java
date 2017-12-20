@@ -24,7 +24,6 @@ public class ZL_InformationServiceLocator extends org.apache.axis.client.Service
     }
 
     // Use to get a proxy class for ZL_InformationServiceSoap
-   // private String ZL_InformationServiceSoap_address = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx";
     private String ZL_InformationServiceSoap_address = Constant.BASE_URL;
 
 
@@ -71,7 +70,6 @@ public class ZL_InformationServiceLocator extends org.apache.axis.client.Service
 
 
     // Use to get a proxy class for ZL_InformationServiceSoap12
-   // private String ZL_InformationServiceSoap12_address = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx";
     private String ZL_InformationServiceSoap12_address = Constant.BASE_URL;
 
     public String getZL_InformationServiceSoap12Address() {
