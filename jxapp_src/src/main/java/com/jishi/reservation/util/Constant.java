@@ -81,8 +81,7 @@ public class Constant {
 
 
     /**  中联相关 */
-    //public final static String BASE_URL = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx/";
-    public final static String BASE_URL = "http://hisservice.hpx10.com:8081/ExternalServices/ZL_InformationService.asmx/";
+    public final static String BASE_URL = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx/";
     //测试连接的服务
     public final static String TEST_SERVICE = "Basic.MCTest.Query";
 
