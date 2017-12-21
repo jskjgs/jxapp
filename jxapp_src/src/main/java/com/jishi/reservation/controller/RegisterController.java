@@ -26,6 +26,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -161,7 +162,7 @@ public class RegisterController extends MyBaseController {
                                     @ApiParam(value = "是否是倒排序", required = false) @RequestParam(value = "desc", required = false) Boolean desc) throws Exception {
 
         List<RegisterVO> registerVOList = new ArrayList<>();
-        PageInfo pageInfo = null;
+        PageInfo pageInfo = new PageInfo<RegisterVO>();
 
         log.info("查询的状态："+status);
         if( status != null && status  == 2){
@@ -171,51 +172,63 @@ public class RegisterController extends MyBaseController {
             pageInfo =  registerService.queryRegisterPageInfo(registerId, accountId, status, null, Paging.create(pageNum, pageSize, "id", true));
 
         }
-        List<Register> registerList = pageInfo.getList();
 
-        List<Account> accountList = accountService.queryAccount(accountId, null, null);
+        if(pageInfo!= null && pageInfo.getList() != null && pageInfo.getList().size() != 0){
 
-        if(registerList != null && registerList.size() != 0){
-            for (Register register : registerList) {
-                RegisterVO registerVO = new RegisterVO();
-                //List<Doctor> doctors = doctorService.queryDoctor(null, String.valueOf(register.getDoctorId()),null, null,null, null);
+            List<Register> registerList = pageInfo.getList();
 
-                //OrderVO orderVO = orderInfoService.queryOrderInfoById(register.getOrderId());
-                OrderInfo orderInfo = orderInfoService.findOrderById(register.getOrderId());
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                register.setPayType(orderInfo.getPayType());
+            List<Account> accountList = accountService.queryAccount(accountId, null, null);
 
-                if(orderInfo.getPayTime()!=null) {
-                    register.setCompleteTime(orderInfo.getPayTime());
-                    register.setPayTime(orderInfo.getPayTime());
+            if(registerList != null && registerList.size() != 0){
+                for (Register register : registerList) {
+                    RegisterVO registerVO = new RegisterVO();
+                    //List<Doctor> doctors = doctorService.queryDoctor(null, String.valueOf(register.getDoctorId()),null, null,null, null);
+
+                    //OrderVO orderVO = orderInfoService.queryOrderInfoById(register.getOrderId());
+                    OrderInfo orderInfo = orderInfoService.findOrderById(register.getOrderId());
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                    register.setPayType(orderInfo.getPayType());
+
+                    if(orderInfo.getPayTime()!=null) {
+                        register.setCompleteTime(orderInfo.getPayTime());
+                        register.setPayTime(orderInfo.getPayTime());
+                    }
+                    register.setPrice(orderInfo.getPrice());
+                    register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
+                    register.setOrderCode(orderInfo.getOrderNumber());
+                    register.setDiscount(orderInfo.getDiscount());
+                    register.setLocation(Constant.HOSPITAL_LOCATION);
+                    Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
+                    registerVO.setRegister(register);
+                    registerVO.setDoctor(doctor);
+                    accountList.get(0).setPasswd(null);
+                    registerVO.setAccount(accountList.size() > 0 ? accountList.get(0) : null);
+                    Department department = new Department();
+                    department.setName(register.getDepartment());
+                    department.setId(Long.valueOf(register.getDepartmentId()));
+                    registerVO.setDepartment(department);
+                    PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(register.getBrId(),accountId);
+
+
+                    registerVO.setPatientInfo(patientInfo);
+                    registerVOList.add(registerVO);
                 }
-                register.setPrice(orderInfo.getPrice());
-                //register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
-                register.setOrderCode(orderInfo.getOrderNumber());
-                register.setDiscount(orderInfo.getDiscount());
-                register.setLocation(Constant.HOSPITAL_LOCATION);
-                Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
-                registerVO.setRegister(register);
-                registerVO.setDoctor(doctor);
-                accountList.get(0).setPasswd(null);
-                registerVO.setAccount(accountList.size() > 0 ? accountList.get(0) : null);
-                Department department = new Department();
-                department.setName(register.getDepartment());
-                department.setId(Long.valueOf(register.getDepartmentId()));
-                registerVO.setDepartment(department);
-                PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(register.getBrId(),accountId);
+                pageInfo.setList(registerVOList);
+                return ResponseWrapper().addData(pageInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
+            }else {
+                pageInfo = new PageInfo<>();
+                pageInfo.setList(new ArrayList<>());
+                return ResponseWrapper().addData(pageInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
-                registerVO.setPatientInfo(patientInfo);
-                registerVOList.add(registerVO);
             }
-            pageInfo.setList(registerVOList);
-            return ResponseWrapper().addData(pageInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-
         }else {
+            pageInfo = new PageInfo<>(new ArrayList<>());
+            pageInfo.setList(new ArrayList<>());
             return ResponseWrapper().addData(pageInfo).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
         }
+
 
 
     }

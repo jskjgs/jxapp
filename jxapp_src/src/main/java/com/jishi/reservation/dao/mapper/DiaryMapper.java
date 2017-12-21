@@ -43,6 +43,7 @@ public interface DiaryMapper extends MyMapper<Diary>{
             "<script>select  * from diary d LEFT JOIN diary_info i ON d.id=i.diary_id where enable = 0 " +
                     " <if test = \" isMy == 0 \"> AND account_id = #{accountId} </if>" +
                     "<if test = \"isMy == 1 \"> AND status  = 0 AND is_lock = 1 </if>" +
+                    " order by create_time desc " +
 
                     "</script>"
     })
