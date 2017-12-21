@@ -88,8 +88,10 @@ public class DiaryService {
         Diary diary = diaryMapper.queryById(id);
         Preconditions.checkNotNull(diary,"该id没有对应的日记信息");
         Integer maxSort =  diaryMapper.queryMaxSort();
-        diary.setSort(maxSort+1);
+
+        diary.setSort(diary.getSort() == 0?maxSort+1:0);
         diaryMapper.updateByPrimaryKeySelective(diary);
+
 
     }
 

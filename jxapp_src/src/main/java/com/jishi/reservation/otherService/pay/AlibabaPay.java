@@ -15,7 +15,9 @@ import com.google.common.base.Preconditions;
 import com.jishi.reservation.conf.PayConfiguration;
 import com.jishi.reservation.controller.protocol.OrderGenerateVO;
 import com.jishi.reservation.dao.mapper.OrderInfoMapper;
+import com.jishi.reservation.dao.mapper.RegisterMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
+import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
 import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
@@ -46,6 +48,9 @@ public class AlibabaPay {
 
     @Autowired
     private PayConfiguration payConfiguration;
+
+    @Autowired
+    private RegisterMapper registerMapper;
 
 
     /**
@@ -186,6 +191,15 @@ public class AlibabaPay {
                     orderInfo.setPayType(PayEnum.ALI.getCode());
                     orderInfo.setThirdOrderNumber(trade_no);
                     orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+
+                    if(orderInfo.getRegisterId() != null){
+
+                        //修改预约表的信息
+                        Register register = registerMapper.queryById(orderInfo.getRegisterId());
+                        register.setStatus(OrderStatusEnum.PAYED.getCode());
+                        registerMapper.updateByPrimaryKeySelective(register);
+                    }
+
                     log.info("订单状态修改为已支付。订单id:"+orderInfo.getId());
 
                 }
