@@ -1,6 +1,7 @@
 package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.doraemon.base.guava.DPreconditions;
 import com.doraemon.base.util.RandomUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -10,18 +11,13 @@ import com.google.gson.reflect.TypeToken;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.DiaryContentVO;
 import com.jishi.reservation.controller.protocol.ImageVO;
-import com.jishi.reservation.dao.mapper.AccountMapper;
-import com.jishi.reservation.dao.mapper.DiaryLikedMapper;
-import com.jishi.reservation.dao.mapper.DiaryMapper;
-import com.jishi.reservation.dao.mapper.DiaryScanMapper;
-import com.jishi.reservation.dao.models.Account;
-import com.jishi.reservation.dao.models.Diary;
-import com.jishi.reservation.dao.models.DiaryLiked;
-import com.jishi.reservation.dao.models.DiaryScan;
+import com.jishi.reservation.dao.mapper.*;
+import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -48,6 +44,10 @@ public class DiaryService {
 
     @Autowired
     DiaryLikedMapper diaryLikedMapper;
+
+    @Autowired
+    DiaryInfoMapper diaryInfoMapper;
+
 
     public PageInfo<Diary> queryDiaryPageInfo(String name,Integer status, Long startTime,Long endTime,Paging paging) {
         if(paging != null)
@@ -134,6 +134,7 @@ public class DiaryService {
     }
 
 
+    @Transactional
     public void publish(Long accountId,String title,String content,Integer lock) throws Exception {
 
         Gson gson = new Gson();
@@ -176,6 +177,11 @@ public class DiaryService {
         diary.setBrief(brief);
         diaryMapper.insertReturnId(diary);
 
+        DiaryInfo info = new DiaryInfo();
+        info.setDiaryId(diary.getId());
+        info.setLikedNum(0);
+        info.setScanNum(0);
+        diaryInfoMapper.insert(info);
     }
 
     public Diary queryById(Long id) {
@@ -195,8 +201,6 @@ public class DiaryService {
         Account account = accountMapper.queryById(diary.getAccountId());
         diary.setContentVOList(contentList);
         diary.setContent(null);
-        diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
-        diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
         diary.setAvatar(account.getHeadPortrait());
 
         diary.setNick(account.getNick());
@@ -219,11 +223,9 @@ public class DiaryService {
         if(list!=null && list.size() != 0){
             for (Diary diary : list) {
                 log.info("日记id:"+diary.getId());
-                //获取浏览数和点赞数
-                diary.setScanNum(diaryScanMapper.queryCountByDiaryId(diary.getId()));
-                diary.setLikedNum(diaryLikedMapper.queryCountByDiaryId(diary.getId()));
                 //查询用户头像
-                diary.setAvatar(accountMapper.queryById(diary.getAccountId()).getHeadPortrait());
+                Account account = accountMapper.queryById(diary.getAccountId());
+                diary.setAvatar(account.getHeadPortrait());
                 List<ImageVO> paramList = new ArrayList<>();
                 List<DiaryContentVO> contentList = gson.fromJson(diary.getContent(),
                         new TypeToken<List<DiaryContentVO>>() {
@@ -254,6 +256,7 @@ public class DiaryService {
         return  pageInfo;
     }
 
+    @Transactional
     public Integer likeDiary(Long diaryId, Long accountId) {
 
         DiaryLiked param = new DiaryLiked();
@@ -263,15 +266,20 @@ public class DiaryService {
         DiaryLiked liked = diaryLikedMapper.selectOne(param);
         if(liked == null){
             param.setCreateTime(new Date());
-            Preconditions.checkState(diaryLikedMapper.insert(param) == 1,"评论点赞失败");
+            int likedRslt = diaryLikedMapper.insert(param);
+            int infoRslt = diaryInfoMapper.addLikedNum(diaryId);
+            DPreconditions.checkState(likedRslt == 1 && infoRslt >= 0,"评论点赞失败");
             return 1;
-        }else {
-            Preconditions.checkState(diaryLikedMapper.delete(param) == 1,"取消点赞失败");
+        } else {
+            int likedRslt = diaryLikedMapper.delete(param);
+            int infoRslt = diaryInfoMapper.reduceLikedNum(diaryId);
+            DPreconditions.checkState(likedRslt == 1 && infoRslt >= 0,"取消点赞失败");
             return 0;
         }
 
     }
 
+    @Transactional
     public void addScanNum(Long diaryId, String ip, Long accountId) {
 
         DiaryScan scan = new DiaryScan();
@@ -285,6 +293,7 @@ public class DiaryService {
 //            diaryScanMapper.insert(scan);
 //        }
         diaryScanMapper.insert(scan);
+        diaryInfoMapper.addScanNum(diaryId);
     }
 
     public Integer delete(Long diaryId, Long accountId) {
@@ -311,8 +320,8 @@ public class DiaryService {
     }
 
     public Integer queryLikedNumber(Long diaryId) {
-
-        return diaryLikedMapper.queryCountByDiaryId(diaryId);
+        DiaryInfo info = diaryInfoMapper.queryByDiaryId(diaryId);
+        return info.getLikedNum();
     }
 
     public PageInfo<Diary> queryByAccountId(Long accountId, Integer startPage, Integer pageSize) {
