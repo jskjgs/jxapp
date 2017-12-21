@@ -16,23 +16,20 @@ public interface DiaryInfoMapper extends MyMapper<DiaryInfo> {
     DiaryInfo queryByDiaryId(Long diaryId);
 
     @Update({
-            "SET @update_num := -1; " +
-            "UPDATE diary_info SET liked_num = (SELECT @update_num := liked_num+1) WHERE diary_id=#{diaryId} LIMIT 1; " +
-            "SELECT @update_num; "})
+            "UPDATE diary_info SET liked_num = (liked_num+1) WHERE diary_id=#{diaryId} LIMIT 1"
+    })
     Integer addLikedNum(Long diaryId);
 
 
     @Update({
-            "SET @update_num := -1; " +
-            "UPDATE diary_info SET liked_num = (SELECT @update_num := liked_num-1) WHERE diary_id=#{diaryId} and liked_num>0 LIMIT 1; " +
-            "SELECT @update_num; "})
+            "UPDATE diary_info SET liked_num = (liked_num-1) WHERE diary_id=#{diaryId} and liked_num>0 LIMIT 1; "
+     })
     Integer reduceLikedNum(Long diaryId);
 
 
     @Update({
-            "SET @update_num := -1; " +
-            "UPDATE diary_info SET scan_num = (SELECT @update_num := scan_num+1) WHERE diary_id=#{diaryId} LIMIT 1; " +
-            "SELECT @update_num; "})
+            "UPDATE diary_info SET scan_num = (scan_num+1) WHERE diary_id=#{diaryId} LIMIT 1; "
+     })
     Integer addScanNum(Long diaryId);
 
 
