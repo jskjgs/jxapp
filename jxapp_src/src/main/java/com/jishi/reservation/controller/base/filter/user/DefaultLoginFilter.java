@@ -1,6 +1,7 @@
 package com.jishi.reservation.controller.base.filter.user;
 
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebInitParam;
 
 /**
  * Created by liangxiong on 2017/11/21.
@@ -17,6 +18,8 @@ import javax.servlet.annotation.WebFilter;
       "/reservation/outpatient/*",          // 门诊
       "/reservation/patientInfo/*",         // 病人
       "/reservation/pregnant/*",            // 孕妇信息
-      "/reservation/register/*"})           // 预约挂号
+      "/reservation/register/*"},
+        initParams = {@WebInitParam(name = VerifyLoginFilter.EXCLUDED_PAGES, value=".*/reservation/doctor_i/getDoctorFromHis")})
+
 public class DefaultLoginFilter extends VerifyLoginFilter {
 }

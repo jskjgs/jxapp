@@ -10,8 +10,8 @@ import java.util.List;
  * 	获取挂号号源
  * Created by zbs on 2017/10/6.
  */
-@XStreamAlias("ROOT")
 @Data
+@XStreamAlias("ROOT")
 public class RegisteredNumberInfo {
 
     @XStreamAlias("GROUP")
@@ -32,11 +32,11 @@ public class RegisteredNumberInfo {
 
         //科室ID
         @XStreamImplicit(itemFieldName="HB")
-        List<Hb> hbList;
+        List<HB> hbList;
     }
 
     @Data
-    public class Hb{
+    public class HB{
 
         //出诊记录ID，该节点可能没有，如没有时，处理为NUL
         @XStreamAlias("CZJLID")

@@ -10,8 +10,9 @@ import java.util.List;
  * 日费用清单
  * Created by zbs on 2017/10/5.
  */
-@Data
+
 @XStreamAlias("ROOT")
+@Data
 public class DepositBalanceDailyPayDetail {
 
     @XStreamImplicit(itemFieldName="ITEM")
