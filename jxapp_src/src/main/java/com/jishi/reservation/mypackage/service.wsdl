@@ -961,16 +961,16 @@
   </wsdl:binding>
   <wsdl:service name="ZL_InformationService">
     <wsdl:port name="ZL_InformationServiceSoap" binding="tns:ZL_InformationServiceSoap">
-      <soap:address location="http://hisservice.hpx10.com:8081/ExternalServices/ZL_InformationService.asmx/" />
+      <soap:address location="http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx/" />
     </wsdl:port>
     <wsdl:port name="ZL_InformationServiceSoap12" binding="tns:ZL_InformationServiceSoap12">
-      <soap12:address location="http://hisservice.hpx10.com:8081/ExternalServices/ZL_InformationService.asmx/" />
+      <soap12:address location="http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx/" />
     </wsdl:port>
     <wsdl:port name="ZL_InformationServiceHttpGet" binding="tns:ZL_InformationServiceHttpGet">
-      <http:address location="http://hisservice.hpx10.com:8081/ExternalServices/ZL_InformationService.asmx/" />
+      <http:address location="http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx/" />
     </wsdl:port>
     <wsdl:port name="ZL_InformationServiceHttpPost" binding="tns:ZL_InformationServiceHttpPost">
-      <http:address location="http://hisservice.hpx10.com:8081/ExternalServices/ZL_InformationService.asmx/" />
+      <http:address location="http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx/" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

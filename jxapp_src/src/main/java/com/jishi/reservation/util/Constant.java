@@ -75,14 +75,15 @@ public class Constant {
     public final static String DOMAIN = "dysmsapi.aliyuncs.com";//短信API产品域名（接口地址固定，无需修改）
     public final static String REGION_ID =  "cn-shenzhen";
 
-    public final static String DEFAULT_AVATAR = "http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/user/icon.png";
+
+    public final static String DEFAULT_AVATAR = "http://jishikeji-hospital.oss-cn-shenzhen.aliyuncs.com/image/user/unregistered_head.png";
     public final static String ADMIN_TOKEN = "admin_token";
 
 
 
+
     /**  中联相关 */
-    //public final static String BASE_URL = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx/";
-    public final static String BASE_URL = "http://hisservice.hpx10.com:8081/ExternalServices/ZL_InformationService.asmx/";
+    public final static String BASE_URL = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx/";
     //测试连接的服务
     public final static String TEST_SERVICE = "Basic.MCTest.Query";
 

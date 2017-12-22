@@ -29,9 +29,7 @@ public class RegisteredNumberInfo {
 
     @Data
     public class Hblist{
-        //出诊记录ID，该节点可能没有，如没有时，处理为NUL
-        @XStreamAlias("CZJLID")
-        String czjlid;
+
         //科室ID
         @XStreamImplicit(itemFieldName="HB")
         List<Hb> hbList;
@@ -39,6 +37,11 @@ public class RegisteredNumberInfo {
 
     @Data
     public class Hb{
+
+        //出诊记录ID，该节点可能没有，如没有时，处理为NUL
+        @XStreamAlias("CZJLID")
+        String czjlid;
+
         //项目ID
         @XStreamAlias("XMID")
         String xmid;

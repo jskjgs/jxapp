@@ -13,7 +13,7 @@ public interface DiaryMapper extends MyMapper<Diary>{
 
 
     @Select({
-            "<script>select  * from diary where 1 =1 and is_lock = 1 " +
+            "<script>select  * from diary d LEFT JOIN diary_info i ON d.id=i.diary_id where 1 =1 and is_lock = 1 " +
                     "<if test = \"name != null \"> AND (nick like CONCAT('%',#{name},'%') or title like CONCAT('%',#{name},'%') or account_id like CONCAT('%',#{name},'%')  )</if> " +
                     "<if test = \"status != null\"> AND status = #{status}</if>" +
                     "<if test =\"startTime!=null\">and create_time &gt;  #{startTime}  </if>" +
@@ -24,7 +24,7 @@ public interface DiaryMapper extends MyMapper<Diary>{
 
 
     @Select({
-            "select * from diary where id = #{id}"
+            "select * from diary d LEFT JOIN diary_info i ON d.id=i.diary_id where id = #{id}"
     })
     Diary queryById(@Param("id") Long id);
 
@@ -34,15 +34,16 @@ public interface DiaryMapper extends MyMapper<Diary>{
     Integer queryMaxSort();
 
     @Select({
-            "select * from diary order by sort desc limit 1"
+            "select * from diary d LEFT JOIN diary_info i ON d.id=i.diary_id order by sort desc limit 1"
     })
     Diary queryTopDiary();
 
 
     @Select({
-            "<script>select  * from diary where enable = 0 " +
+            "<script>select  * from diary d LEFT JOIN diary_info i ON d.id=i.diary_id where enable = 0 " +
                     " <if test = \" isMy == 0 \"> AND account_id = #{accountId} </if>" +
                     "<if test = \"isMy == 1 \"> AND status  = 0 AND is_lock = 1 </if>" +
+                    " order by create_time desc " +
 
                     "</script>"
     })
@@ -50,7 +51,7 @@ public interface DiaryMapper extends MyMapper<Diary>{
 
 
     @Select({
-            "select * from diary where account_id = #{accountId}"
+            "select * from diary d LEFT JOIN diary_info i ON d.id=i.diary_id where account_id = #{accountId}"
     })
     List<Diary> queryByAccountId(@Param("accountId") Long accountId);
 }
