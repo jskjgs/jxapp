@@ -1,12 +1,17 @@
 #!/usr/bin/expect -f
-set host root@39.108.117.235
+set host root@120.78.217.180
 set psd Jskj1010
+set path /code/jxapp/jxapp_web
 
 spawn ssh $host
 expect "*password:"
 send "$psd\r"
 expect "\n"
-send "cd /code/hpx10/admin-web\r"
+send "cd $path\r"
+expect "\n"
+send "git checkout dev\r"
+expect "\n"
+send "git pull origin\r"
 expect "\n"
 send "./run.sh\r"
 interact
