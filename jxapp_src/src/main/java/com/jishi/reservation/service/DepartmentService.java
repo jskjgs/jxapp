@@ -166,7 +166,10 @@ public class DepartmentService {
                 //修改
             }
 
-            departmentMapper.insertList(insertList);
+            if(insertList.size() != 0){
+                departmentMapper.insertList(insertList);
+
+            }
 
         }
 

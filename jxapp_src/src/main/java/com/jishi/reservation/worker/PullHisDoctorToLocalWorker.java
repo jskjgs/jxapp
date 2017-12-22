@@ -54,8 +54,8 @@ public class PullHisDoctorToLocalWorker {
      * 删除（软删除）
      *
      */
-    //@Scheduled(cron = "0 0 5 * * ? ")
-    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 0 5 * * ? ")
+    //@Scheduled(cron = "0 */5 * * * ?")
     @Transactional
     public void pullHisDepartmentInfoToLocal() throws Exception {
 
@@ -63,7 +63,6 @@ public class PullHisDoctorToLocalWorker {
 
         DepartmentList departmentList = hisOutpatient.selectDepartments("", "7", "");
         List<DepartmentList.DepartmentHis> list = departmentList.getKslist().getList();
-        List<Department> insertList  = new ArrayList<>();
 
         departmentService.getDepartmentFromHis(list);
         log.info("==============================结束HIS科室扫描入库任务==============================");
@@ -78,8 +77,8 @@ public class PullHisDoctorToLocalWorker {
      * 删除（软删除）
      *
      */
-   // @Scheduled(cron = "0 0 15 * * ? ")
-    @Scheduled(cron = "0 */5 * * * ?")
+    @Scheduled(cron = "0 0 6 * * ? ")
+   // @Scheduled(cron = "0 */5 * * * ?")
     @Transactional
     public void pullHisDoctorInfoToLocal() throws Exception {
 
