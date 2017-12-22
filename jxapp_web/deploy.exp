@@ -13,5 +13,7 @@ send "git checkout dev\r"
 expect "\n"
 send "git pull origin\r"
 expect "\n"
+send "chmod +x run.sh"
+expect "\n"
 send "./run.sh\r"
 interact

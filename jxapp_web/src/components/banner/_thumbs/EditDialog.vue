@@ -165,9 +165,8 @@ export default {
         <el-form-item
           label="跳转链接"
           prop="link"
-          required
           :rules="[
-            { required: true, message: '跳转链接不能为空'},
+            { required: false, message: '跳转链接不能为空'},
             { pattern: /^(https?:\/\/)?[\w\-]+(\.[\w\-]+)+([\w\-\.,@?^=%&:\/~\+#]*[\w\-\@?^=%&\/~\+#])?$/, message: '请输入正确的链接地址', trigger: 'blur'}
           ]">
           <el-input
