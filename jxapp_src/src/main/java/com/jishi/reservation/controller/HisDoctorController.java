@@ -77,7 +77,7 @@ public class HisDoctorController extends MyBaseController {
         if(selfDoctorList != null && selfDoctorList.size() != 0) {
             RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", ksid, ysid, name, "", "");
             if (info.getGroup().getHblist().get(0) != null) {
-                List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
+                List<RegisteredNumberInfo.HB> hbList = info.getGroup().getHblist().get(0).getHbList();
                 List<Doctor> doctorList = new ArrayList<>();
                 Integer startRow = (startPage - 1) * pageSize;
                 if (hbList != null) {
@@ -96,7 +96,7 @@ public class HisDoctorController extends MyBaseController {
                     //遍历从his取过来的医生信息，并与我们自己系统的医生信息做整合
                     for (int i = startRow; i < endRow; i++) {
                         Doctor doctor = new Doctor();
-                        RegisteredNumberInfo.Hb hb = hbList.get(i);
+                        RegisteredNumberInfo.HB hb = hbList.get(i);
                         if (selfDoctorList != null && selfDoctorList.size() != 0) {
                             for (Doctor self : selfDoctorList) {
                                 if (hb.getYsid().equals(self.getHId())) {

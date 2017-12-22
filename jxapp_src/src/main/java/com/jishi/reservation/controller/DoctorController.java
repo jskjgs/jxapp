@@ -150,7 +150,7 @@ public class DoctorController extends MyBaseController {
 
         RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", "", "", "", "", "");
         if(info.getGroup().getHblist().get(0)!=null) {
-            List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
+            List<RegisteredNumberInfo.HB> hbList = info.getGroup().getHblist().get(0).getHbList();
 
             doctorService.getDoctorFromHis(hbList);
         }

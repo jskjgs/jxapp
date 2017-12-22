@@ -1,14 +1,12 @@
 package com.jishi.reservation.worker;
 
-import com.jishi.reservation.dao.mapper.OrderInfoMapper;
-import com.jishi.reservation.dao.mapper.RegisterMapper;
-import com.jishi.reservation.dao.models.OrderInfo;
-import com.jishi.reservation.dao.models.Register;
+import com.alibaba.fastjson.JSONObject;
+import com.jishi.reservation.dao.mapper.DepartmentMapper;
+import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
-import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
-import com.jishi.reservation.service.enumPackage.StatusEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
+import com.jishi.reservation.service.his.bean.DepartmentList;
 import com.jishi.reservation.service.his.bean.RegisteredNumberInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,27 +37,69 @@ public class PullHisDoctorToLocalWorker {
     @Autowired
     DoctorService doctorService;
 
+    @Autowired
+    DepartmentMapper departmentMapper;
+
     private static final Long HALF_HOUR = 60*30*1000L;
+
+
     /**
-     * 每天清早六点钟来拉取
+     * 每天清早5点钟来拉取  先每五分钟
      * 新增
      * 更新
      * 删除（软删除）
      *
      */
-    @Scheduled(cron = "0 0 6 * * ? ")
-    //@Scheduled(cron = "0 */1 * * * ?")
+    //@Scheduled(cron = "0 0 5 * * ? ")
+    @Scheduled(cron = "0 */5 * * * ?")
+    @Transactional
+    public void pullHisDepartmentInfoToLocal() throws Exception {
+
+        log.info("==============================开始HIS科室扫描入库任务==============================");
+
+        DepartmentList departmentList = hisOutpatient.selectDepartments("", "7", "");
+        List<DepartmentList.DepartmentHis> list = departmentList.getKslist().getList();
+        List<Department> insertList  = new ArrayList<>();
+        for (DepartmentList.DepartmentHis departmentHis : list) {
+                Department department = new Department();
+                department.setName(departmentHis.getMc());
+                department.setHId(departmentHis.getId());
+                department.setEnable(EnableEnum.EFFECTIVE.getCode());
+
+                insertList.add(department);
+        }
+
+        departmentMapper.insertList(insertList);
+        log.info("==============================结束HIS科室扫描入库任务==============================");
+
+    }
+
+
+    /**
+     * 每天清早六点钟来拉取   先每5分钟扫一次
+     * 新增
+     * 更新
+     * 删除（软删除）
+     *
+     */
+   // @Scheduled(cron = "0 0 15 * * ? ")
+    @Scheduled(cron = "0 */5 * * * ?")
     @Transactional
     public void pullHisDoctorInfoToLocal() throws Exception {
 
 
+        log.info("==============================开始HIS医生扫描入库任务==============================");
+
         RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", "", "", "", "", "");
         if(info.getGroup().getHblist().get(0)!=null) {
-            List<RegisteredNumberInfo.Hb> hbList = info.getGroup().getHblist().get(0).getHbList();
+            List<RegisteredNumberInfo.HB> hbList = info.getGroup().getHblist().get(0).getHbList();
 
 
             doctorService.getDoctorFromHis(hbList);
         }
+
+        log.info("==============================结束HIS医生扫描入库任务==============================");
+
 
     }
 
