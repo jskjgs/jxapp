@@ -48,7 +48,7 @@ public class AdminHomeController extends MyBaseController {
     public JSONObject addBanner(
             @ApiParam(value = "banner 名称", required = true) @RequestParam(value = "name", required = true) String name,
             @ApiParam(value = "banner 图片"  )@RequestParam(value = "file")MultipartFile file,
-            @ApiParam(value = "跳转的url", required = true) @RequestParam(value = "jumpUrl", required = true) String jumpUrl,
+            @ApiParam(value = "跳转的url", required = false) @RequestParam(value = "jumpUrl", required = false) String jumpUrl,
             @ApiParam(value = "序号", required = true) @RequestParam(value = "orderNumber", required = true) Integer orderNumber
     ) throws Exception {
         Preconditions.checkNotNull(name,"请传入必须的参数：name");
@@ -70,7 +70,7 @@ public class AdminHomeController extends MyBaseController {
     public JSONObject modifyBanner(
             @ApiParam(value = "banner的ID", required = true) @RequestParam(value = "bannerId", required = true) Long bannerId,
             @ApiParam(value = "banner 名称", required = true) @RequestParam(value = "name", required = true) String name,
-            @ApiParam(value = "跳转的url", required = true) @RequestParam(value = "jumpUrl", required = true) String jumpUrl,
+            @ApiParam(value = "跳转的url", required = false) @RequestParam(value = "jumpUrl", required = false) String jumpUrl,
             @ApiParam(value = "banner 图片"  )@RequestParam(value = "file",required = false)MultipartFile file,
             @ApiParam(value = "序号", required = false) @RequestParam(value = "orderNumber", required = false) Integer orderNumber) throws Exception {
 
