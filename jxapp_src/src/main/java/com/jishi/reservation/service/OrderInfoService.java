@@ -10,6 +10,7 @@ import com.jishi.reservation.controller.protocol.PrePaymentRecordVO;
 import com.jishi.reservation.dao.mapper.OrderInfoMapper;
 import com.jishi.reservation.dao.mapper.PrePaymentMapper;
 import com.jishi.reservation.dao.mapper.RegisterMapper;
+import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.PrePayment;
 import com.jishi.reservation.dao.models.Register;
@@ -17,7 +18,10 @@ import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.*;
 import com.jishi.reservation.service.his.bean.ConfirmOrder;
 import com.jishi.reservation.service.his.bean.ConfirmRegister;
+import com.jishi.reservation.service.support.JpushSupport;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
+import com.jishi.reservation.worker.model.PushData;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +51,13 @@ public class OrderInfoService {
 
     @Autowired
     PrePaymentMapper prePaymentMapper;
+
+    @Autowired
+    JpushSupport jpushSupport;
+
+    @Autowired
+    AccountService accountService;
+
 
     public OrderVO queryOrderVoById(Long orderId,String orderNumber) throws ParseException {
 
@@ -148,6 +159,10 @@ public class OrderInfoService {
         registerMapper.updateByPrimaryKeySelective(register);
 
         log.info("his订单信息已同步到系统中..预约信息已更新");
+        Account account = accountService.queryAccountById(register.getAccountId());
+        if (account != null) {
+            jpushSupport.sendNotification(account.getPushId(), Constant.REGISTER_SUCCESS_MGS, PushData.PushDataMsgTypeDef.PUSH_DATA_TYPE_REGISTER_SUCCESS);
+        }
         return ReturnCodeEnum.SUCCESS.getCode();
     }
 

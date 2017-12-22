@@ -1,15 +1,20 @@
 package com.jishi.reservation.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.controller.base.MyBaseController;
+import com.jishi.reservation.service.HisMessageService;
+import com.jishi.reservation.service.his.HisTool;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 /**
  * Created by liangxiong on 2017/12/21.
@@ -19,6 +24,16 @@ import java.io.InputStreamReader;
 @Slf4j
 @Api(description = "his消息通知接口")
 public class HisMessageController extends MyBaseController {
+
+    @Autowired
+    private HisMessageService hisMessageService;
+
+    @Autowired
+    private HisTool hisTool;
+
+    private static final String HIS_MSG_PARAM_SERVICE_NAME = "SERVICE";
+    private static final String HIS_MSG_PARAM_DATA = "DATAPARAM";
+
 
     @ApiOperation(value = "his消息通知接口")
     @RequestMapping(value = "/call", method = RequestMethod.POST)
@@ -35,12 +50,29 @@ public class HisMessageController extends MyBaseController {
         }
         in.close();
         inputStream.close();
-        log.info(sb.toString());
-        return hisMessageRetrunDataSuccess();
-    }
+        Map paramMap = request.getParameterMap();
+        String paramStr = sb.toString();
+        log.info(">>>>>>>>>>>>his消息通知数据-body：" + paramStr);
+        log.info(">>>>>>>>>>>>his消息通知数据-param：" + JSONObject.toJSONString(paramMap));
+        if (paramStr == null || paramStr.isEmpty()) {
+            paramStr = (String) paramMap.get("CALLDATA");
+        }
+        boolean rslt = true;
+        String message = null;
+        if (paramStr != null && !paramStr.isEmpty()) {
+            String serviceName = hisTool.getXmlAttribute(paramStr, HIS_MSG_PARAM_SERVICE_NAME);
+            String serviceData = hisTool.getXmlAttribute(paramStr, HIS_MSG_PARAM_DATA);
+            try {
+                hisMessageService.executeMessage(serviceName, serviceData);
+            } catch (Exception e) {
+                rslt = false;
+                message = e.getMessage();
+                log.info(">>>>>>>>>>>>his消息处理异常");
+                e.printStackTrace();
+            }
+        }
 
-    private  String hisMessageRetrunDataSuccess() {
-        return hisMessageRetrunData(true, null);
+        return hisMessageRetrunData(rslt, message);
     }
 
     private  String hisMessageRetrunData(boolean success, String message) {

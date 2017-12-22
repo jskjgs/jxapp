@@ -8,6 +8,6 @@ import javax.servlet.annotation.WebInitParam;
  */
 @WebFilter(filterName = "AccountLoginFilter", urlPatterns = {"/reservation/account/*"},
   //添加不进行登录验证的url，可以为实际路径或正则表达式，以','分隔
-  initParams = {@WebInitParam(name = VerifyLoginFilter.EXCLUDED_PAGES, value=".*/account/sendDynamicCode,.*/account/loginOrRegisterThroughPhone")})
+        initParams = {@WebInitParam(name = VerifyLoginFilter.EXCLUDED_PAGES, value=".*/account/sendDynamicCode,.*/account/loginOrRegisterThroughPhone")})
 public class AccountLoginFilter extends VerifyLoginFilter {
 }

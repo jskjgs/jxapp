@@ -218,10 +218,10 @@ public class OutpatientQueueService {
     // 生成测试数据
     public List<OutpatientQueueDetailVO> generateTestData(int length) throws Exception {
         //测试的账号
-        List<Long> accIds = Arrays.asList(24L, 21L, 30L);
+        List<Long> accIds = Arrays.asList(24L, 21L, 30L, 26L);
         List<Register> registerList = new ArrayList<>();
         for (Long accId : accIds) {
-            List<Register> data = registerService.queryRegister(null, accId, 2, 0);
+            List<Register> data = registerService.queryRegister(null, accId, 0, 0);
             if (data != null && !data.isEmpty()) {
                 registerList.addAll(data);
             }

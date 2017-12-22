@@ -5,11 +5,15 @@ import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.protocol.OrderVO;
 import com.jishi.reservation.dao.mapper.PrePaymentMapper;
+import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.PrePayment;
 import com.jishi.reservation.service.enumPackage.*;
 import com.jishi.reservation.service.his.HisHospitalization;
 import com.jishi.reservation.service.his.bean.*;
+import com.jishi.reservation.service.support.JpushSupport;
+import com.jishi.reservation.util.Constant;
+import com.jishi.reservation.worker.model.PushData;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -37,6 +41,12 @@ public class HospitalizationService {
 
     @Autowired
     PrePaymentMapper prePaymentMapper;
+
+    @Autowired
+    JpushSupport jpushSupport;
+
+    @Autowired
+    AccountService accountService;
 
     /**
      * 获取用户历史的住院详情信息
@@ -202,6 +212,10 @@ public class HospitalizationService {
             }
             prePaymentMapper.updateByPrimaryKeySelective(prePayment);
             log.info("更新预交单号...");
+            Account account = accountService.queryAccountById(accountId);
+            if (account != null) {
+                jpushSupport.sendNotification(account.getPushId(), Constant.MSG_HOS_PRE_PAY_SUCCESS, PushData.PushDataMsgTypeDef.PUSH_DATA_TYPE_HOS_PRE_PAY_COMPLETE);
+            }
 
             vo.setOrderNumber(orderNumber);
             vo.setPayTime(orderInfo.getPayTime());

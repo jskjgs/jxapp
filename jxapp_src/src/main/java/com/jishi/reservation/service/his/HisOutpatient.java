@@ -1,5 +1,6 @@
 package com.jishi.reservation.service.his;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.mypackage.*;
 import com.jishi.reservation.service.his.bean.*;
 import com.jishi.reservation.conf.HisConfiguration;
@@ -56,6 +57,10 @@ public class HisOutpatient {
         for (MessageElement me : result.get_any()) {
             String xml = hisTool.getHisDataparam(me,"Register.SignalSource.Query");
             return (RegisteredNumberInfo) hisTool.toBean(RegisteredNumberInfo.class, xml);
+//            System.out.println(JSONObject.toJSON(o));
+//            RegisteredNumberInfo info = (RegisteredNumberInfo) hisTool.toBean(RegisteredNumberInfo.class, xml);
+
+
         }
         return null;
     }
@@ -608,6 +613,7 @@ public class HisOutpatient {
         ZL_InformationServiceSoap_PortType service = locator.getZL_InformationServiceSoap();
         return service.outPatient(reData);
     }
+
 
 
 

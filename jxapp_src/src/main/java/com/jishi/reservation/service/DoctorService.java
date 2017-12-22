@@ -165,10 +165,10 @@ public class DoctorService {
 
     }
 
-    public void getDoctorFromHis(List<RegisteredNumberInfo.Hb> hbList) {
+    public void getDoctorFromHis(List<RegisteredNumberInfo.HB> hbList) {
 
         List<Doctor> list = new ArrayList<>();
-        for (RegisteredNumberInfo.Hb hb : hbList) {
+        for (RegisteredNumberInfo.HB hb : hbList) {
             Doctor doctor = new Doctor();
             doctor.setName(hb.getYs());
             doctor.setHId(hb.getYsid());
@@ -204,7 +204,7 @@ public class DoctorService {
         List<Doctor> doctorList =  doctorMapper.queryAllValidDoctor();
         for (Doctor doctor : doctorList) {
             Boolean flag = false;
-            for (RegisteredNumberInfo.Hb hb : hbList) {
+            for (RegisteredNumberInfo.HB hb : hbList) {
                 if(doctor.getHId().equals(hb.getYsid())){
                     //有的话不管，没有的话，改变flag
                     log.info(doctor.getHId()+"his 医生id存在于本地库中");

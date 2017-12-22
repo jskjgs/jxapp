@@ -24,4 +24,10 @@ public interface DepartmentMapper extends MyMapper<Department> {
             "select * from department where enable = 0"
     })
     List<Department> queryAllEnable();
+
+
+    @Select({
+            "select * from department where h_id = #{id}"
+    })
+    Object queryByHid(@Param("id") String id);
 }
