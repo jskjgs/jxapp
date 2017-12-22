@@ -3,6 +3,7 @@ package com.jishi.reservation.service;
 import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.controller.protocol.*;
 import com.jishi.reservation.dao.mapper.OutpatientPaymentMapper;
+import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.OutpatientPayment;
 import com.jishi.reservation.dao.models.PatientInfo;
@@ -13,7 +14,10 @@ import com.jishi.reservation.service.his.bean.OutpatientPaymentInfo;
 import com.jishi.reservation.service.his.bean.OutpatientVisitPrescription;
 import com.jishi.reservation.service.his.bean.OutpatientVisitReceipt;
 import com.jishi.reservation.service.his.bean.OutpatientVisitRecord;
+import com.jishi.reservation.service.support.JpushSupport;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
+import com.jishi.reservation.worker.model.PushData;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,7 +46,12 @@ public class OutpatientService {
     @Autowired
     private OutpatientPaymentMapper outpatientPaymentMapper;
 
-    private static final int OUTPATIENT_PAYMENT_INFO_QUERY_DAY = 30;
+    @Autowired
+    JpushSupport jpushSupport;
+
+    @Autowired
+    AccountService accountService;
+
 
       /**Y
        * 获取用户门诊缴费列表
@@ -62,7 +71,7 @@ public class OutpatientService {
         List<OutpatientPaymentInfoVO> paymentInfoList = new ArrayList<OutpatientPaymentInfoVO>();
         for (PatientInfo info : patientInfoList) {
             // TODO 结算卡类别和站点暂时传null
-            OutpatientPaymentInfo data = hisOutpatient.queryPayReceipt(info.getBrId(), "", String.valueOf(OUTPATIENT_PAYMENT_INFO_QUERY_DAY), "");
+            OutpatientPaymentInfo data = hisOutpatient.queryPayReceipt(info.getBrId(), "", String.valueOf(Constant.OUTPATIENT_PAYMENT_INFO_QUERY_DAY), "");
             if (data == null) {
                 continue;
             }
@@ -287,6 +296,11 @@ public class OutpatientService {
         payment.setStatus(3);
         payment.setPayTime(order.getPayTime());
         outpatientPaymentMapper.updateByPrimaryKeySelective(payment);
+        log.info("his订单信息已同步到系统中..门诊缴费已更新");
+        Account account = accountService.queryAccountById(payment.getAccountId());
+        if (account != null) {
+            jpushSupport.sendNotification(account.getPushId(), Constant.MSG_OUT_PAY_SUCCESS, PushData.PushDataMsgTypeDef.PUSH_DATA_TYPE_OUT_PAY_COMPLETE);
+        }
         return toOrderVO(order);
     }
 

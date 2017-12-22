@@ -16,7 +16,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -54,7 +53,6 @@ public class OutpatientQueueWorker {
             if (queueDetailList == null || queueDetailList.isEmpty()) {
                 continue;
             }
-            List<PushPayload> pushPayloadList = new ArrayList<PushPayload>();
             for (OutpatientQueueDetailVO detail : queueDetailList) {
                 PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(detail.getBrId(),detail.getAccountId());
                 if (patientInfo == null) {
@@ -66,38 +64,30 @@ public class OutpatientQueueWorker {
                     log.warn("当前病人账号为空, brid: " + detail.getBrId());
                     continue;
                 }
-                String pushMessage = PushData.create().msgType(PushData.PushDataMsgTypeDef.PUSH_DATA_OUTPATIENT_QUEUE).content(detail).toJSON();
-                log.info("accountId: " + account.getId() + " msg: " + pushMessage);
-                pushPayloadList.add(JpushSupport.buildPushObjMessage(account.getPushId(), pushMessage));
+                jpushSupport.sendMessage(account.getPushId(), PushData.PushDataMsgTypeDef.PUSH_DATA_TYPE_OUT_QUEUE_INFO, detail);
             }
-            // 批量异步推送
-            jpushSupport.sendPush(pushPayloadList);
         }
         log.info("EndTime: " + new Date());
         log.info("********************* OutpatientQueueWorker End *********************");
     }
 
     //  测试推送接口
-    //@Scheduled(cron = "0 0/2 8-22 * * ? ")
+    @Scheduled(cron = "0 0/2 8-22 * * ? ")
     public void doWorkTest() throws Exception {
-        List<OutpatientQueueDetailVO> queueDetailList = outpatientQueueService.generateTestData(2);
+        List<OutpatientQueueDetailVO> queueDetailList = outpatientQueueService.generateTestData(8);
         if (queueDetailList == null || queueDetailList.isEmpty()) {
           return;
         }
         log.info("=================OutpatientQueueWorker begin=====================");
         log.info("BeginTime: " + new Date() + " queueDetailList: " + queueDetailList.size());
 
-        Account account = accountMapper.queryById(30L);//26
+        Account account = accountMapper.queryById(26L);//26
         //Account account1 = accountMapper.queryById(24L);//24
         List<PushPayload> pushPayloadList = new ArrayList<PushPayload>();
 
         for (OutpatientQueueDetailVO detail : queueDetailList) {
-            String pushMessage = PushData.create().msgType(PushData.PushDataMsgTypeDef.PUSH_DATA_OUTPATIENT_QUEUE).content(detail).toJSON();
-            log.info("accountId: " + account.getId() + " msg: " + pushMessage);
-            pushPayloadList.add(JpushSupport.buildPushObjMessage(account.getPushId(), pushMessage));
-            //pushPayloadList.add(JpushSupport.buildPushObjMessage(account1.getPushId(), pushMessage));
+            jpushSupport.sendMessage(account.getPushId(), PushData.PushDataMsgTypeDef.PUSH_DATA_TYPE_OUT_QUEUE_INFO, detail);
         }
-        jpushSupport.sendPush(pushPayloadList);
         log.info("EndTime: " + new Date());
         log.info("=================OutpatientQueueWorker End=====================");
     }

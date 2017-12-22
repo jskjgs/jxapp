@@ -16,6 +16,7 @@ import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.support.JpushSupport;
 import com.jishi.reservation.util.Constant;
+import com.jishi.reservation.worker.model.PushData;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -146,7 +147,8 @@ public class RegisterController extends MyBaseController {
 
         }
 
-        jpushSupport.sendPush(accountService.queryAccountById(accountId).getPushId(), Constant.REGISTER_SUCCESS_MGS);
+        // TODO 缴费成功以后再提醒
+        //jpushSupport.sendNotification(accountService.queryAccountById(accountId).getPushId(), Constant.REGISTER_SUCCESS_MGS, PushData.PushDataMsgTypeDef.PUSH_DATA_TYPE_REGISTER_SUCCESS);
         return ResponseWrapper().addData(completeVO).addMessage("ok").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 
@@ -177,40 +179,9 @@ public class RegisterController extends MyBaseController {
 
             List<Register> registerList = pageInfo.getList();
 
-            List<Account> accountList = accountService.queryAccount(accountId, null, null);
-
             if(registerList != null && registerList.size() != 0){
                 for (Register register : registerList) {
-                    RegisterVO registerVO = new RegisterVO();
-                    //List<Doctor> doctors = doctorService.queryDoctor(null, String.valueOf(register.getDoctorId()),null, null,null, null);
-
-                    //OrderVO orderVO = orderInfoService.queryOrderInfoById(register.getOrderId());
-                    OrderInfo orderInfo = orderInfoService.findOrderById(register.getOrderId());
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                    register.setPayType(orderInfo.getPayType());
-
-                    if(orderInfo.getPayTime()!=null) {
-                        register.setCompleteTime(orderInfo.getPayTime());
-                        register.setPayTime(orderInfo.getPayTime());
-                    }
-                    register.setPrice(orderInfo.getPrice());
-                    register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
-                    register.setOrderCode(orderInfo.getOrderNumber());
-                    register.setDiscount(orderInfo.getDiscount());
-                    register.setLocation(Constant.HOSPITAL_LOCATION);
-                    Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
-                    registerVO.setRegister(register);
-                    registerVO.setDoctor(doctor);
-                    accountList.get(0).setPasswd(null);
-                    registerVO.setAccount(accountList.size() > 0 ? accountList.get(0) : null);
-                    Department department = new Department();
-                    department.setName(register.getDepartment());
-                    department.setId(Long.valueOf(register.getDepartmentId()));
-                    registerVO.setDepartment(department);
-                    PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(register.getBrId(),accountId);
-
-
-                    registerVO.setPatientInfo(patientInfo);
+                    RegisterVO registerVO = registerService.generateRegisterVO(register);
                     registerVOList.add(registerVO);
                 }
                 pageInfo.setList(registerVOList);

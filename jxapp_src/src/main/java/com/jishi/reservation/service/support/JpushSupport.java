@@ -18,6 +18,7 @@ import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
 import com.jishi.reservation.service.support.jpush.CustomPushClient;
 import com.jishi.reservation.util.Constant;
+import com.jishi.reservation.worker.model.PushData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.stereotype.Service;
@@ -36,9 +37,11 @@ import java.util.Map;
 @Service
 public class JpushSupport {
 
+    private static final String NOTIFICATION_PARAAM_EXTRA_NAME = "data";
+
     private CustomPushClient pushClient = null;
 
-    public static PushPayload buildPushObjMessage(String pushId,String message) {
+    private static PushPayload buildPushObjMessage(String pushId,String message) {
         return PushPayload.newBuilder()
                 .setPlatform(Platform.all())
                 .setAudience(Audience.alias(pushId))
@@ -53,9 +56,9 @@ public class JpushSupport {
 
     }
 
-    public static PushPayload buildPushObjNotifycation(String pushId, String alert, String extra) {
+    private static PushPayload buildPushObjNotifycation(String pushId, String alert, String extra) {
         Map<String, String> map = new HashMap<String, String>();
-        map.put("data", extra);
+        map.put(NOTIFICATION_PARAAM_EXTRA_NAME, extra);
         return PushPayload.newBuilder()
                   .setPlatform(Platform.all())
                   .setAudience(Audience.alias(pushId))
@@ -74,20 +77,37 @@ public class JpushSupport {
      * @description 异步推送通知
      * @param pushId 推送id
      * @param message 消息内容
-     * @param extra 消息内容JSON
+     * @param type 消息类型
+     * @param data 消息附加数据
      **/
-    public void sendNotification(String pushId, String message, String extra){
+    public void sendNotification(String pushId, String message, PushData.PushDataMsgTypeDef type, Object data){
+        PushData pushData = PushData.create().msgType(type).content(data);
+        String extra = pushData != null ? pushData.toJSON() : "";
+        log.info("发送通知=> message: "+ message);
+        log.info("extra: "+ extra);
         PushPayload payload = buildPushObjNotifycation(pushId, message, extra);
         sendPushAsyn(payload);
     }
 
     /**
-     * @description 异步推送消息
+     * @description 异步推送通知
      * @param pushId 推送id
      * @param message 消息内容
+     * @param type 消息类型
      **/
-    public void sendPush(String pushId,String message){
-        PushPayload payload = buildPushObjMessage(pushId,message);
+    public void sendNotification(String pushId, String message, PushData.PushDataMsgTypeDef type){
+        sendNotification(pushId, message, type, null);
+    }
+
+    /**
+     * @description 异步推送消息
+     * @param pushId 推送id
+     * @param data 消息内容
+     **/
+    public void sendMessage(String pushId, PushData.PushDataMsgTypeDef def, Object data){
+        String pushMessage = PushData.create().msgType(def).content(data).toJSON();
+        log.info("pushId: " + pushId + " msg: " + pushMessage);
+        PushPayload payload = buildPushObjMessage(pushId, pushMessage);
         sendPushAsyn(payload);
     }
 
@@ -95,6 +115,7 @@ public class JpushSupport {
      * @description 异步批量推送
      * @param pushPayloadList 推送数据列表
      **/
+    @Deprecated
     public void sendPush(List<PushPayload> pushPayloadList) {
         if (pushPayloadList == null || pushPayloadList.isEmpty()) {
             return;
@@ -130,6 +151,7 @@ public class JpushSupport {
         }
     }
 
+    // TODO 应用停止以后清理netty
     private void checkPushClient() {
         if (pushClient == null) {
             synchronized (this) {

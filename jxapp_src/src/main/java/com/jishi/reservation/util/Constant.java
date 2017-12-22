@@ -91,10 +91,19 @@ public class Constant {
     public final static String JPush_Appkey  = "96d474cb464f0d12aaaa8ba6";
     public final static String JPush_MASTER_SECRET = "157a2bdc6710b16d3d2b8703";
 
-
+    /** 通知消息设置 **/
     public final static String REGISTER_SUCCESS_MGS = "您已成功预约医生,记得按时就诊哦~";
     public final static String REGISTER_TOMORROW_MSG = "明天预约了医生看诊,记得按时就诊哦~";
     public final static String REGISTER_TODAY_MSG = "今天预约了医生看诊,记得按时就诊哦~";
+    public final static String MSG_OUT_UNPAID_DOC = "您有待支付的门诊缴费单，可在app内直接支付";
+    public final static String MSG_OUT_PAY_SUCCESS = "门诊缴费单已完成支付";
+    public final static String MSG_HOS_UNPAID_DOC = "您有待结算的住院缴费单，可在app内直接支付";
+    public final static String MSG_HOS_PRE_PAY = "您的住院预存金额已不足%d元，建议尽快充值";
+    public final static String MSG_HOS_PAY_SUCCESS = "住院缴费单已完成支付";
+    public final static String MSG_HOS_PRE_PAY_SUCCESS = "住院预交款已完成支付";
+
+    public static final int OUTPATIENT_PAYMENT_INFO_QUERY_DAY = 30;
+
     /**
      * 一天的毫秒值
      */

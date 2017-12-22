@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.RegisterAdminVO;
 import com.jishi.reservation.controller.protocol.RegisterCompleteVO;
+import com.jishi.reservation.controller.protocol.RegisterVO;
 import com.jishi.reservation.dao.mapper.*;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
@@ -14,6 +15,7 @@ import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.service.his.bean.LastPrice;
 import com.jishi.reservation.service.his.bean.LockRegister;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import com.jishi.reservation.util.NewRandomUtil;
 import lombok.extern.log4j.Log4j;
@@ -56,6 +58,8 @@ public class RegisterService {
     ScheduledService scheduledService;
     @Autowired
     OrderInfoMapper orderInfoMapper;
+    @Autowired
+    OrderInfoService orderInfoService;
 
     @Autowired
     HisUserManager hisUserManager;
@@ -481,5 +485,40 @@ public class RegisterService {
         OrderInfo orderInfo = orderInfoMapper.queryById(registerMapper.queryById(registerId).getOrderId());
 
         return orderInfo.getType()==OrderTypeEnum.REGISTER.getCode() && orderInfo.getStatus() == OrderStatusEnum.PAYED.getCode();
+    }
+
+    public RegisterVO generateRegisterVO(Register register) {
+        List<Account> accountList = accountService.queryAccount(register.getAccountId(), null, null);
+        RegisterVO registerVO = new RegisterVO();
+        //List<Doctor> doctors = doctorService.queryDoctor(null, String.valueOf(register.getDoctorId()),null, null,null, null);
+
+        //OrderVO orderVO = orderInfoService.queryOrderInfoById(register.getOrderId());
+        OrderInfo orderInfo = orderInfoService.findOrderById(register.getOrderId());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        register.setPayType(orderInfo.getPayType());
+
+        if(orderInfo.getPayTime()!=null) {
+            register.setCompleteTime(orderInfo.getPayTime());
+            register.setPayTime(orderInfo.getPayTime());
+        }
+        register.setPrice(orderInfo.getPrice());
+        register.setCountDownTime(register.getCreateTime().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
+        register.setOrderCode(orderInfo.getOrderNumber());
+        register.setDiscount(orderInfo.getDiscount());
+        register.setLocation(Constant.HOSPITAL_LOCATION);
+        Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
+        registerVO.setRegister(register);
+        registerVO.setDoctor(doctor);
+        accountList.get(0).setPasswd(null);
+        registerVO.setAccount(accountList.size() > 0 ? accountList.get(0) : null);
+        Department department = new Department();
+        department.setName(register.getDepartment());
+        department.setId(Long.valueOf(register.getDepartmentId()));
+        registerVO.setDepartment(department);
+        PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(register.getBrId(), register.getAccountId());
+
+
+        registerVO.setPatientInfo(patientInfo);
+        return registerVO;
     }
 }
