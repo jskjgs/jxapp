@@ -3,6 +3,7 @@ package com.jishi.reservation.worker;
 import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.dao.mapper.DepartmentMapper;
 import com.jishi.reservation.dao.models.Department;
+import com.jishi.reservation.service.DepartmentService;
 import com.jishi.reservation.service.DoctorService;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
@@ -38,6 +39,9 @@ public class PullHisDoctorToLocalWorker {
     DoctorService doctorService;
 
     @Autowired
+    DepartmentService departmentService;
+
+    @Autowired
     DepartmentMapper departmentMapper;
 
     private static final Long HALF_HOUR = 60*30*1000L;
@@ -60,16 +64,8 @@ public class PullHisDoctorToLocalWorker {
         DepartmentList departmentList = hisOutpatient.selectDepartments("", "7", "");
         List<DepartmentList.DepartmentHis> list = departmentList.getKslist().getList();
         List<Department> insertList  = new ArrayList<>();
-        for (DepartmentList.DepartmentHis departmentHis : list) {
-                Department department = new Department();
-                department.setName(departmentHis.getMc());
-                department.setHId(departmentHis.getId());
-                department.setEnable(EnableEnum.EFFECTIVE.getCode());
 
-                insertList.add(department);
-        }
-
-        departmentMapper.insertList(insertList);
+        departmentService.getDepartmentFromHis(list);
         log.info("==============================结束HIS科室扫描入库任务==============================");
 
     }

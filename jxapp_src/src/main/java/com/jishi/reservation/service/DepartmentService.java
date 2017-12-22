@@ -147,4 +147,33 @@ public class DepartmentService {
         departmentMapper.insertList(departmentList1);
 
     }
+
+    public void getDepartmentFromHis(List<DepartmentList.DepartmentHis> list) {
+
+        List<Department> insertList = new ArrayList<>();
+
+        for (DepartmentList.DepartmentHis departmentHis : list) {
+            Department department = new Department();
+            department.setName(departmentHis.getMc());
+            department.setHId(departmentHis.getId());
+            department.setEnable(EnableEnum.EFFECTIVE.getCode());
+
+            //如果不存在，就添加进去...
+            if(!isExist(departmentHis.getId())){
+                insertList.add(department);
+
+            }else {
+                //修改
+            }
+
+            departmentMapper.insertList(insertList);
+
+        }
+
+    }
+
+    private boolean isExist(String id) {
+
+        return departmentMapper.queryByHid(id) != null;
+    }
 }
