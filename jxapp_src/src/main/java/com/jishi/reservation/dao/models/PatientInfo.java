@@ -33,6 +33,9 @@ public class PatientInfo {
     @ApiModelProperty("门诊号")
     private String mzh;
 
+    @ApiModelProperty("就诊卡号")
+    private String jzkh;
+
 
 
     @Transient

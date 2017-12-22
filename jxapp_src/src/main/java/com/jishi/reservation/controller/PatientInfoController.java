@@ -42,11 +42,13 @@ public class PatientInfoController extends MyBaseController
     @ApiOperation(value = "增加就诊人信息  8月30号提出 一个账号最多有5个")
     @RequestMapping(value = "addPatientInfo", method = RequestMethod.PUT)
     @ResponseBody
-    public JSONObject addPatientInfo(@ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId,
-                                    @ApiParam(value = "就诊人名称", required = true) @RequestParam(value = "name", required = true) String name,
-                                      @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
-                                    @ApiParam(value = "病人身份证", required = true) @RequestParam(value = "idCard", required = true) String idCard,
-                                     @ApiParam(value = "证件类型") @RequestParam(value = "idCardType") String idCardTpye
+    public JSONObject addPatientInfo(
+                    @ApiIgnore() @RequestAttribute(value= Constant.ATTR_LOGIN_ACCOUNT_ID) Long accountId,
+                    @ApiParam(value = "就诊人姓名", required = true) @RequestParam(value = "name", required = true) String name,
+                    @ApiParam(value = "病人电话", required = true) @RequestParam(value = "phone", required = true) String phone,
+                    @ApiParam(value = "身份证号", required = true) @RequestParam(value = "idCard", required = true) String idCard,
+                    @ApiParam(value = "就诊卡号", required = true) @RequestParam(value = "medicalCard", required = true) String medicalCard,
+                    @ApiParam(value = "证件类型", required = false) @RequestParam(value = "idCardType", required = false) String idCardType
                                      ) throws Exception {
 
         Preconditions.checkNotNull(name,"请传入必须的参数：name");
@@ -56,7 +58,7 @@ public class PatientInfoController extends MyBaseController
         if("".equals(name) || "".equals(phone)){
            return ResponseWrapper().addMessage("姓名或手机不能为空").ExeFaild(ReturnCodeEnum.FAILED.getCode());
         }
-       Long id =  patientInfoService.addPatientInfo(accountId, name, phone, idCard,idCardTpye);
+       Long id =  patientInfoService.addPatientInfo(accountId, name, phone, idCard, medicalCard, idCardType);
         return ResponseWrapper().addData(id).addMessage("添加成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
     }
 

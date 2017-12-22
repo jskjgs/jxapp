@@ -12,8 +12,11 @@ import com.jishi.reservation.dao.mapper.PregnantMapper;
 import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.dao.models.Pregnant;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
+import com.jishi.reservation.service.exception.BussinessException;
 import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.service.his.bean.Credentials;
+import com.jishi.reservation.service.his.util.HisMedicalCardType;
 import com.jishi.reservation.util.CheckIdCard;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
@@ -53,7 +56,7 @@ public class PatientInfoService {
      */
 
     @Transactional
-    public Long addPatientInfo(Long accountId, String name, String phone, String idCard,String idCardType) throws Exception {
+    public Long addPatientInfo(Long accountId, String name, String phone, String idCard, String medicalCard, String idCardType) throws Exception {
         if (Helpers.isNullOrEmpty(accountId))
             throw new Exception("账号ID为空");
         String errorInfo = CheckIdCard.IDCardValidate(idCard);
@@ -69,8 +72,15 @@ public class PatientInfoService {
         // 判断身份证不能重复 11-29 单独根据身份证来判断
         Preconditions.checkState(isExistPatientByIdcard(idCard),"此身份证已存在,添加失败");
 
+        // 12-22 现在不能主动向his添加病人了，只能通过就诊卡号绑定
+        Credentials credentials = hisUserManager.getUserInfoByRegNO(idCard, HisMedicalCardType.ID_CARD.getCardType(), name,
+                medicalCard, HisMedicalCardType.MEDICAL_CARD.getCardType());
+        if (credentials == null) {
+            throw new BussinessException(ReturnCodeEnum.PATIENT_GET_HIS_PATIENT_FAILD);
+        }
+
         //添加到his系统
-        Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
+        //Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
         log.info("his系统返回的病人信息：\n"+ JSONObject.toJSONString(credentials));
 
 
@@ -82,6 +92,7 @@ public class PatientInfoService {
         newPatientInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
         newPatientInfo.setBrId(credentials.getBRID());
         newPatientInfo.setMzh(credentials.getMZH());
+        newPatientInfo.setJzkh(medicalCard);
         patientInfoMapper.insertReturnId(newPatientInfo);
 
 
@@ -100,6 +111,7 @@ public class PatientInfoService {
 
 
     //单独根据身份证判断是不是有这个病人  11/29
+    // TODO    是否需要增加就诊卡号的判断 12-22
     private boolean isExistPatientByIdcard(String idCard) {
         PatientInfo patientInfo =  patientInfoMapper.queryForExistByIdcard(idCard);
         return patientInfo == null;

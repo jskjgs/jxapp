@@ -32,6 +32,9 @@ public enum ReturnCodeEnum {
     WEICHART_PAY_ERR_UNIFIEDORDER_FAILED(1251, "微信支付生成订单失败"),
     WEICHART_PAY_ERR_NOTIFY_RETURN_ERR(1252, "微信支付向通知接口返回失败"),
 
+    /**  病人账号相关  **/
+    PATIENT_GET_HIS_PATIENT_FAILD(5110, "添加失败，请检查信息是否输入正确"),
+
     /** IM相关 5130-5139 **/
     IM_ERR_GET_ACCOUNT_FAILED(5130, "生成IM账号失败"),
     IM_ERR_CREATE_ACCOUNT_FAILED(5131, "生成IM账号失败"),
