@@ -67,9 +67,9 @@ export default {
       let isImg = true
       let valid = true
       let message = []
-      if (file.size / 1024 > 1024 * 5) {
+      if (file.size / 1024 > 1024) {
         valid = false
-        message.push('尺寸不应大于5M')
+        message.push('尺寸不应大于1M')
       }
       if (!(file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/png')) {
         isImg = false
@@ -81,10 +81,10 @@ export default {
           let img = new Image()
           img.src = blobURl
           img.onload = function () {
-            if (this.width < 800 || this.height < 600) {
-              valid = false
-              message.push('图片尺寸不小于800*600')
-            }
+            // if (this.width < 1280 || this.height < 740) {
+            //   valid = false
+            //   message.push('图片尺寸不小于1280*740')
+            // }
             if (valid) {
               vm.missFile = false
               resolve(blobURl)
@@ -122,7 +122,7 @@ export default {
       </div>
       <ul class="upload-notices" style="margin-left: 40px">
         <li class="upload-notice">1、图片大小不能超过1MB</li>
-        <li class="upload-notice">2、图片必须为长方形，且图片尺寸必须大于或等于800*600</li>
+        <!-- <li class="upload-notice">2、图片必须为长方形，且图片尺寸必须大于或等于1280*740</li> -->
         <li class="upload-notice">3、仅支持jpg／png两种格式</li>
         <li class="upload-notice">3、仅支持jpg／png两种格式</li>
       </ul>
