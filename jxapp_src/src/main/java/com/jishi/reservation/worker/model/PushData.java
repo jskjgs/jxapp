@@ -53,7 +53,7 @@ public class PushData {
         PUSH_DATA_TYPE_HOS_UNPAID_DOC(5),       // 住院有待结算缴费单
         PUSH_DATA_TYPE_HOS_PAY_COMPLETE(6),     // 住院缴费单完成结算
         PUSH_DATA_TYPE_HOS_PRE_PAY(7),          // 住院预交金额不足
-        PUSH_DATA_TYPE_HOS_PRE_PAY_COMPLETE(8), // 住院预交金额不足
+        PUSH_DATA_TYPE_HOS_PRE_PAY_COMPLETE(8), // 住院预交金额完成
         PUSH_DATA_TYPE_APPOINTMENT_NOTICE(9),   // 复诊提醒
         PUSH_DATA_TYPE_UNKNOW(-1);
 
