@@ -59,8 +59,8 @@ public class HomeService {
         if (!Helpers.isNull(oldBanner)) {
             Banner newBanner = new Banner();
             newBanner.setId(bannerId);
-            newBanner.setName(Helpers.isNullOrEmpty(name)?oldBanner.getName():name);
-            newBanner.setJumpUrl(Helpers.isNullOrEmpty(jumpUrl)?oldBanner.getJumpUrl():jumpUrl);
+            newBanner.setName(name);
+            newBanner.setJumpUrl(jumpUrl);
             newBanner.setOrderNumber(Helpers.isNullOrEmpty(orderNumber) ? oldBanner.getOrderNumber() : orderNumber);
             newBanner.setBannerUrl(Helpers.isNullOrEmpty(bannerUrl) ? oldBanner.getBannerUrl() : bannerUrl);
             Preconditions.checkState(bannerMapper.updateByPrimaryKeySelective(newBanner) ==1,"更新失败");

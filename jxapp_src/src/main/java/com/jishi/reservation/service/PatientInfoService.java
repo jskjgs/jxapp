@@ -80,7 +80,7 @@ public class PatientInfoService {
         }
 
         //添加到his系统
-        //Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
+       // Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
         log.info("his系统返回的病人信息：\n"+ JSONObject.toJSONString(credentials));
 
 
