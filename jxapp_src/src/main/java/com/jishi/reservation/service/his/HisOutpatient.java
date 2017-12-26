@@ -221,6 +221,7 @@ public class HisOutpatient {
         sb.append("<CZ>").append("1").append("</CZ>");
         sb.append("<HZDW>").append(hzdw).append("</HZDW>");
         sb.append("<JQM>").append(jqm).append("</JQM>");
+        log.info("lockRegister传入数据："+sb.toString());
 
         String reData = hisTool.toXMLString("Register.Lock.Modify", sb.toString());
 
