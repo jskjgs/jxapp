@@ -151,6 +151,7 @@ public class DepartmentService {
     public void getDepartmentFromHis(List<DepartmentList.DepartmentHis> list) {
 
         List<Department> insertList = new ArrayList<>();
+        log.info("查询到的his科室列表："+JSONObject.toJSONString(list));
 
         for (DepartmentList.DepartmentHis departmentHis : list) {
             Department department = new Department();
@@ -166,7 +167,10 @@ public class DepartmentService {
                 //修改
             }
 
-            departmentMapper.insertList(insertList);
+            if(insertList.size() != 0){
+                departmentMapper.insertList(insertList);
+
+            }
 
         }
 

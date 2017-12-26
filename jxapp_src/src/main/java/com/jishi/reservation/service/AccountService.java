@@ -107,19 +107,29 @@ public class AccountService {
     public LoginData loginOrRegisterThroughPhone(String phone, String prefix, String dynamicCode) throws Exception {
         //todo zhoubinsahn 如果是错误直接报出去,如果需要显示在页面上,采用ShowException
         //todo zhoubinshan redisOperation 尽量使用pool,避免redis的开销
-        String code = redisOperation.usePool().get(prefix + "_" + phone);
-        if (!dynamicCode.equals(code))
-            throw new ShowException(TextVersion.verification_code_error);
-        List<Account> account = queryAccount(null, phone, null);
-        //todo zhoubinshan 采用二元表达式,对代码进行精简整洁度提升
-        Account accountLogin =  account == null || account.size() == 0 ?
-                addAccount(phone, phone, Constant.DEFAULT_AVATAR, phone, phone, null) :
-                account.get(0);
-        //todo zhoubinshan redisOperation 尽量使用pool,避免redis的开销
-        //删除已核对的验证码
-        redisOperation.usePool().del(prefix + "_" + phone);
-        log.info("删除已核对的验证码：" + prefix + "_" + phone);
+
+        Account accountLogin = null;
+        if(!Constant.TEST_PHONE.contains(phone)){
+            String code = redisOperation.usePool().get(prefix + "_" + phone);
+            if (!dynamicCode.equals(code))
+                throw new ShowException(TextVersion.verification_code_error);
+            List<Account> account = queryAccount(null, phone, null);
+            //todo zhoubinshan 采用二元表达式,对代码进行精简整洁度提升
+            accountLogin  =  account == null || account.size() == 0 ?
+                    addAccount(phone, phone, Constant.DEFAULT_AVATAR, phone, phone, null) :
+                    account.get(0);
+            //todo zhoubinshan redisOperation 尽量使用pool,避免redis的开销
+            //删除已核对的验证码
+            redisOperation.usePool().del(prefix + "_" + phone);
+            log.info("删除已核对的验证码：" + prefix + "_" + phone);
+
+        }else {
+            accountLogin = accountMapper.queryByTelephone(phone);
+
+        }
+
         String token = login(phone);
+
         LoginData loginData = new LoginData();
         loginData.setToken(token);
         loginData.setHeadPortrait(accountLogin.getHeadPortrait());
@@ -127,6 +137,7 @@ public class AccountService {
         loginData.setTelephone(accountLogin.getPhone());
         loginData.setPushId(accountLogin.getPushId());
         loginData.setAccountId(accountLogin.getId());
+
         return loginData;
     }
 

@@ -193,10 +193,14 @@ public class DoctorService {
                 existDoctor.setName(hb.getYs());
                 existDoctor.setDepartmentId(hb.getKsid());
 
-               // doctorMapper.updateByPrimaryKeySelective(existDoctor);
+                doctorMapper.updateByPrimaryKeySelective(existDoctor);
 
             }
 
+        }
+
+        if(list.size() != 0){
+            doctorMapper.insertList(list);
         }
 
         //如果库里有，但是his拉去过来的没有，那就软删除
@@ -219,7 +223,7 @@ public class DoctorService {
             if(!flag){
                 log.info("his 医生id是"+doctor.getHId()+"的医生在his里面拉去不到了，做软删除操作.");
                 doctor.setEnable(1);  //软删除...
-              //  doctorMapper.updateByPrimaryKeySelective(doctor);
+                doctorMapper.updateByPrimaryKeySelective(doctor);
             }
         }
     }
