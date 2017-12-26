@@ -98,6 +98,19 @@ public class RegisterController extends MyBaseController {
             @ApiParam(value = "预约时间", required = false) @RequestParam(value = "agreedTime", required = false) Long agreedTime
             ) throws Exception {
 
+        log.info("订单号："+orderNmuer);
+        log.info("价格："+price);
+        log.info("病人名称："+brName);
+        log.info("病人id："+brid);
+        log.info("科室id："+departmentId);
+        log.info("号码："+hm);
+        log.info("项目id:"+xmid);
+        log.info("医生id:"+doctorId);
+        log.info("预约的时间:"+agreedTime);
+
+
+
+
 
 
         //验证br_id 是否存在..
