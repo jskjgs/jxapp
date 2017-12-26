@@ -117,7 +117,8 @@ public class RegisterService {
 
             //挂号检查
             log.info("去his检查是否能挂号");
-            if(!hisOutpatient.checkIsRegisterLimit(brid,hm,sdf.format(agreeDate),departmentId)){
+            Doctor doctor = doctorMapper.queryByHid(doctorId);
+            if(!hisOutpatient.checkIsRegisterLimit(brid,hm,sdf.format(agreeDate),departmentId,doctor.getCzjlid())){
 
                 log.info("挂号检查失败，不能挂号.");
 

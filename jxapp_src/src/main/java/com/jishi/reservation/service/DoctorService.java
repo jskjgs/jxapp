@@ -180,6 +180,7 @@ public class DoctorService {
             doctor.setType("0");
             doctor.setDj(hb.getDj());
             doctor.setHm(hb.getHm());
+            doctor.setCzjlid(hb.getCzjlid());
             //如果不存在，就添加进去...
             if(!isExist(hb.getYsid())){
                 log.info(hb.getYs()+"不存在"+hb.getYsid());

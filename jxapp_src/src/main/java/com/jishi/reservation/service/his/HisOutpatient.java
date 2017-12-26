@@ -178,14 +178,14 @@ public class HisOutpatient {
 
 
 
-    public Boolean checkIsRegisterLimit(String brid, String hm, String registerTime, String departmentId) throws Exception {
+    public Boolean checkIsRegisterLimit(String brid, String hm, String registerTime, String departmentId,String czjlid) throws Exception {
 
 
         log.info("检查是否有资格挂号");
         StringBuffer sb = new StringBuffer();
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<HM>").append(hm).append("</HM>");
-
+        sb.append("<CZJLID>").append(czjlid).append("</CZJLID>");
         sb.append("<GHSJ>").append(registerTime).append("</GHSJ>");
         sb.append("<KSID>").append(departmentId).append("</KSID>");
         log.info("请求数据:"+sb.toString());
