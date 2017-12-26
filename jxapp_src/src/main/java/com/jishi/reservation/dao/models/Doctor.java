@@ -41,6 +41,9 @@ public class Doctor {
     @ApiModelProperty("排序")
     private Integer orderNumber;
 
+    @ApiModelProperty("出诊记录id")
+    private String czjlid;
+
 
     @ApiModelProperty("科室名称")
     private String ksmc;

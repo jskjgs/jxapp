@@ -180,6 +180,7 @@ public class DoctorService {
             doctor.setType("0");
             doctor.setDj(hb.getDj());
             doctor.setHm(hb.getHm());
+            doctor.setCzjlid(hb.getCzjlid());
             //如果不存在，就添加进去...
             if(!isExist(hb.getYsid())){
                 log.info(hb.getYs()+"不存在"+hb.getYsid());
@@ -192,11 +193,18 @@ public class DoctorService {
                 existDoctor.setKsmc(hb.getKsmc());
                 existDoctor.setName(hb.getYs());
                 existDoctor.setDepartmentId(hb.getKsid());
+                existDoctor.setCzjlid(hb.getCzjlid());
 
-               // doctorMapper.updateByPrimaryKeySelective(existDoctor);
+                doctorMapper.updateByPrimaryKeySelective(existDoctor);
 
             }
 
+        }
+
+        if(list.size() != 0){
+
+            log.info("将要入库的数据："+JSONObject.toJSONString(list));
+            doctorMapper.insertList(list);
         }
 
         //如果库里有，但是his拉去过来的没有，那就软删除
@@ -219,7 +227,7 @@ public class DoctorService {
             if(!flag){
                 log.info("his 医生id是"+doctor.getHId()+"的医生在his里面拉去不到了，做软删除操作.");
                 doctor.setEnable(1);  //软删除...
-              //  doctorMapper.updateByPrimaryKeySelective(doctor);
+                doctorMapper.updateByPrimaryKeySelective(doctor);
             }
         }
     }

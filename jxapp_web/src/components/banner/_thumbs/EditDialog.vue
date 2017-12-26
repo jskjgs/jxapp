@@ -110,9 +110,10 @@ export default {
     },
     // 下一步
     toNext () {
-      this.validForm().then(() => {
-        this.activePanelIndex = 1
-      })
+      // this.validForm().then(() => {
+      //   this.activePanelIndex = 1
+      // })
+      this.activePanelIndex = 1
     }
   }
 }
@@ -126,7 +127,7 @@ export default {
       :visible.sync="visible"
       @close="handleClose">
       <el-form
-        v-show="activePanelIndex === 0"
+        v-show="activePanelIndex === 1"
         ref="ruleForm"
         :model="form"
         label-position="top">
@@ -183,7 +184,7 @@ export default {
             @file-change="handleFileChange"></img-uploader>
         </el-form-item>
       </el-form>
-      <div v-show="activePanelIndex === 1">
+      <div v-show="activePanelIndex === 0">
         <h4 style="margin-top: 0;">banner内容</h4>
         <div class="flex--hcenter">
           <rich-text 

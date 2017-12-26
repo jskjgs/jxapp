@@ -54,8 +54,8 @@ public class PullHisDoctorToLocalWorker {
      * 删除（软删除）
      *
      */
-    @Scheduled(cron = "0 0 5 * * ? ")
-    //@Scheduled(cron = "0 */5 * * * ?")
+    //@Scheduled(cron = "0 0 5 * * ? ")
+    @Scheduled(cron = "0 0/5 * * * ?")
     @Transactional
     public void pullHisDepartmentInfoToLocal() throws Exception {
 
@@ -77,8 +77,8 @@ public class PullHisDoctorToLocalWorker {
      * 删除（软删除）
      *
      */
-    @Scheduled(cron = "0 0 6 * * ? ")
-   // @Scheduled(cron = "0 */5 * * * ?")
+    //@Scheduled(cron = "0 0 6 * * ? ")
+    @Scheduled(cron = "0 0/5 * * * ?")
     @Transactional
     public void pullHisDoctorInfoToLocal() throws Exception {
 

@@ -41,11 +41,14 @@
       :default-active="$route.path.match(/\/\w+((?=\/)|$)/)[0]"
       @select="handleSelect"
       router>
-      <el-menu-item
+      <!-- <el-menu-item
         class="menu-index"
         index="user">
         <span style="font-size: 18px;">后台管理系统</span>
-      </el-menu-item>
+      </el-menu-item> -->
+      <div class="menu-index flex--vcenter" style="color: #c0ccda;padding-left: 20px;">
+        <span style="font-size: 18px;">后台管理系统</span>
+      </div>
       <template v-for="nav in NAVS">
         <el-submenu
           v-if="nav.children && nav.children.find(subNav => myAuth.indexOf(subNav.permissionId) !== -1)"

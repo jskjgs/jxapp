@@ -36,4 +36,22 @@ public class VersionService {
         return androidVersion;
 
     }
+
+    public AndroidVersion checkUpdateForIOS() {
+
+
+        AndroidVersion androidVersion = androidVersionMapper.checkUpdateForAndroid();
+        Gson gson = new Gson();
+
+        List<String> list = gson.fromJson(androidVersion.getUpdateContent(),
+                new TypeToken<List<String>>() {
+                }.getType());
+        androidVersion.setContentList(list);
+        androidVersion.setUpdateContent(null);
+
+        androidVersion.setIsNeedUpdate(false);
+
+
+        return androidVersion;
+    }
 }

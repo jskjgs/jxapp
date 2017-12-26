@@ -65,6 +65,14 @@ public class HisOutpatient {
         return null;
     }
 
+//    public static void main(String[] args) {
+//        String s = "<ROOT><GROUP><RQ>2017-12-24</RQ><HBLIST><HB><CZJLID>64</CZJLID><HM>4</HM><YSID>61</YSID><YS>张开志</YS><KSID>92</KSID><KSMC>产科门诊</KSMC><ZC>主治医师</ZC><XMID>5289</XMID><HYMC>挂号费[普通]</HYMC><YGHS>0</YGHS><SYHS>50</SYHS><DJ>4</DJ><HL>普通</HL><FSD>0</FSD><KGSJ>08:00-07:59</KGSJ><FWMC>全日</FWMC></HB><HB><CZJLID>75</CZJLID><HM>5</HM><YSID>202</YSID><YS>胡容</YS><KSID>92</KSID><KSMC>产科门诊</KSMC><ZC>副主任医师</ZC><XMID>5333</XMID><HYMC>挂号费[副高]</HYMC><YGHS>0</YGHS><SYHS>50</SYHS><DJ>5</DJ><HL>普通</HL><FSD>0</FSD><KGSJ>08:00-07:59</KGSJ><FWMC>全日</FWMC></HB><HB><CZJLID>86</CZJLID><HM>6</HM><YSID>201</YSID><YS>颜贞淑</YS><KSID>92</KSID><KSMC>产科门诊</KSMC><ZC>副主任医师</ZC><XMID>5333</XMID><HYMC>挂号费[副高]</HYMC><YGHS>0</YGHS><SYHS>50</SYHS><DJ>5</DJ><HL>普通</HL><FSD>0</FSD><KGSJ>08:00-07:59</KGSJ><FWMC>全日</FWMC></HB><HB><CZJLID>97</CZJLID><HM>7</HM><YSID>62</YSID><YS>张祖芳</YS><KSID>151</KSID><KSMC>妇科门诊</KSMC><ZC>主治医师</ZC><XMID>5289</XMID><HYMC>挂号费[普通]</HYMC><YGHS>0</YGHS><SYHS>50</SYHS><DJ>4</DJ><HL>普通</HL><FSD>0</FSD><KGSJ>08:00-07:59</KGSJ><FWMC>全日</FWMC></HB><HB><CZJLID>108</CZJLID><HM>8</HM><YSID>204</YSID><YS>石雪梅</YS><KSID>151</KSID><KSMC>妇科门诊</KSMC><ZC>副主任医师</ZC><XMID>5333</XMID><HYMC>挂号费[副高]</HYMC><YGHS>0</YGHS><SYHS>50</SYHS><DJ>5</DJ><HL>普通</HL><FSD>0</FSD><KGSJ>08:00-07:59</KGSJ><FWMC>全日</FWMC></HB><HB><CZJLID>119</CZJLID><HM>9</HM><YSID>63</YSID><YS>杨新玲</YS><KSID>151</KSID><KSMC>妇科门诊</KSMC><ZC>副主任医师</ZC><XMID>5333</XMID><HYMC>挂号费[副高]</HYMC><YGHS>0</YGHS><SYHS>50</SYHS><DJ>5</DJ><HL>普通</HL><FSD>0</FSD><KGSJ>08:00-07:59</KGSJ><FWMC>全日</FWMC></HB><HB><CZJLID>130</CZJLID><HM>10</HM><YSID>77</YSID><YS>张胜雯</YS><KSID>97</KSID><KSMC>急诊科</KSMC><ZC /><XMID>5288</XMID><HYMC>挂号费[急诊]</HYMC><YGHS>0</YGHS><SYHS>200</SYHS><DJ>6</DJ><HL>普通</HL><FSD>0</FSD><KGSJ>08:00-07:59</KGSJ><FWMC>全日</FWMC></HB><HB><CZJLID>147</CZJLID><HM>11</HM><YSID>60</YSID><YS>张青</YS><KSID>152</KSID><KSMC>计划生育门诊</KSMC><ZC /><XMID>5333</XMID><HYMC>挂号费[副高]</HYMC><YGHS>0</YGHS><SYHS>50</SYHS><DJ>5</DJ><HL>普通</HL><FSD>0</FSD><KGSJ>08:00-07:59</KGSJ><FWMC>全日</FWMC></HB><HB><CZJLID>152</CZJLID><HM>12</HM><YSID>78</YSID><YS>丁德华</YS><KSID>151</KSID><KSMC>妇科门诊</KSMC><ZC>副主任医师</ZC><XMID>5333</XMID><HYMC>挂号费[副高]</HYMC><YGHS>0</YGHS><SYHS>200</SYHS><DJ>5</DJ><HL>普通</HL><FSD>0</FSD><KGSJ>08:00-07:59</KGSJ><FWMC>全日</FWMC></HB><HB><CZJLID>163</CZJLID><HM>13</HM><YSID>79</YSID><YS>袁媛</YS><KSID>151</KSID><KSMC>妇科门诊</KSMC><ZC>主治医师</ZC><XMID>5289</XMID><HYMC>挂号费[普通]</HYMC><YGHS>0</YGHS><SYHS>200</SYHS><DJ>4</DJ><HL>普通</HL><FSD>0</FSD><KGSJ>08:00-07:59</KGSJ><FWMC>全日</FWMC></HB></HBLIST></GROUP></ROOT>";
+//
+//        (RegisteredNumberInfo) hisTool.toBean(RegisteredNumberInfo.class, xml);
+//
+//
+//    }
+
 
     /**
      * 	获取挂号项目最后得金额
@@ -170,14 +178,14 @@ public class HisOutpatient {
 
 
 
-    public Boolean checkIsRegisterLimit(String brid, String hm, String registerTime, String departmentId) throws Exception {
+    public Boolean checkIsRegisterLimit(String brid, String hm, String registerTime, String departmentId,String czjlid) throws Exception {
 
 
         log.info("检查是否有资格挂号");
         StringBuffer sb = new StringBuffer();
         sb.append("<BRID>").append(brid).append("</BRID>");
         sb.append("<HM>").append(hm).append("</HM>");
-
+        sb.append("<CZJLID>").append(czjlid).append("</CZJLID>");
         sb.append("<GHSJ>").append(registerTime).append("</GHSJ>");
         sb.append("<KSID>").append(departmentId).append("</KSID>");
         log.info("请求数据:"+sb.toString());
@@ -203,11 +211,12 @@ public class HisOutpatient {
      * @throws Exception
      */
     public LockRegister lockRegister(
-            String hm,String yysj,String hzdw,String jqm
+            String hm,String yysj,String hzdw,String jqm,String czjlid
     ) throws Exception {
 
         StringBuffer sb = new StringBuffer();
         sb.append("<HM>").append(hm).append("</HM>");
+        sb.append("<CZJLID>").append(czjlid).append("</CZJLID>");
         sb.append("<YYSJ>").append(yysj).append("</YYSJ>");
         sb.append("<CZ>").append("1").append("</CZ>");
         sb.append("<HZDW>").append(hzdw).append("</HZDW>");
