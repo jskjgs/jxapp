@@ -120,7 +120,7 @@
           <span class="search-label">搜索关键字：</span>
           <el-input
             class="inline-block search-input"
-            placeholder="请输入客户姓名／卡号..."
+            placeholder="请输入手机号和用户ID..."
             v-model="searchKeyword"
             @keyup.enter.native="handleSearch">
           </el-input>
