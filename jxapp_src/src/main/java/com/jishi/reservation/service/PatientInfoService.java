@@ -75,7 +75,7 @@ public class PatientInfoService {
         }
 
         // 判断身份证不能重复 11-29 单独根据身份证来判断
-        Preconditions.checkState(isExistPatient(idCard, medicalCard),"此病人已存在,添加失败");
+        Preconditions.checkState(!isExistPatient(idCard, medicalCard),"此病人已存在,添加失败");
 
         // 12-22 现在不能主动向his添加病人了，只能通过就诊卡号绑定
         Credentials credentials = hisUserManager.getUserInfoByRegNO(idCard, HisMedicalCardType.ID_CARD.getCardType(), name,
