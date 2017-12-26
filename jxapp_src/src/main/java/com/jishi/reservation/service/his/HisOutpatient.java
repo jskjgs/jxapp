@@ -211,11 +211,12 @@ public class HisOutpatient {
      * @throws Exception
      */
     public LockRegister lockRegister(
-            String hm,String yysj,String hzdw,String jqm
+            String hm,String yysj,String hzdw,String jqm,String czjlid
     ) throws Exception {
 
         StringBuffer sb = new StringBuffer();
         sb.append("<HM>").append(hm).append("</HM>");
+        sb.append("<CZJLID>").append(czjlid).append("</CZJLID>");
         sb.append("<YYSJ>").append(yysj).append("</YYSJ>");
         sb.append("<CZ>").append("1").append("</CZ>");
         sb.append("<HZDW>").append(hzdw).append("</HZDW>");

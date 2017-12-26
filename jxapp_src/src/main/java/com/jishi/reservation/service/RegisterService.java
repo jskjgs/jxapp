@@ -130,7 +130,7 @@ public class RegisterService {
 
 
             //his 锁定号源,返回hx 号序
-        String hx = this.lockRegister(hm, agreeDate);
+        String hx = this.lockRegister(hm, agreeDate,doctor.getCzjlid());
         if(hx.equals("invalid hx")){
             completeVO.setState(RegisterErrCodeEnum.DOCTOR_FULL.getCode());
             return completeVO;
@@ -313,11 +313,11 @@ public class RegisterService {
     }
 
 
-    private String lockRegister(String hm, Date agreedTime) throws Exception {
+    private String lockRegister(String hm, Date agreedTime,String czjlid) throws Exception {
         log.info("开始锁定号源");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
         String timeStr = sdf.format(agreedTime);
-        LockRegister lockRegister = hisOutpatient.lockRegister(hm, timeStr, "", "jxyy+zczh");
+        LockRegister lockRegister = hisOutpatient.lockRegister(hm, timeStr, "", "jxyy+zczh",czjlid);
         if(lockRegister !=null)
             return lockRegister.getHx();
         return "invalid hx";

@@ -193,6 +193,7 @@ public class DoctorService {
                 existDoctor.setKsmc(hb.getKsmc());
                 existDoctor.setName(hb.getYs());
                 existDoctor.setDepartmentId(hb.getKsid());
+                existDoctor.setCzjlid(hb.getCzjlid());
 
                 doctorMapper.updateByPrimaryKeySelective(existDoctor);
 
@@ -201,6 +202,8 @@ public class DoctorService {
         }
 
         if(list.size() != 0){
+
+            log.info("将要入库的数据："+JSONObject.toJSONString(list));
             doctorMapper.insertList(list);
         }
 
