@@ -315,7 +315,7 @@ public class RegisterService {
 
     private String lockRegister(String hm, Date agreedTime,String czjlid) throws Exception {
         log.info("开始锁定号源");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timeStr = sdf.format(agreedTime);
         LockRegister lockRegister = hisOutpatient.lockRegister(hm, timeStr, "", "jxyy+zczh",czjlid);
         if(lockRegister !=null)
