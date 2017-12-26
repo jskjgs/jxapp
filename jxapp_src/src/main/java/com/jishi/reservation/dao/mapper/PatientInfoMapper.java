@@ -60,6 +60,11 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
     })
     PatientInfo queryForExistByIdcard(@Param("idCard") String idCard);
 
+    @Select({
+            "select * from patientInfo where (id_card=#{idCard} or jzkh=#{medicalCard}) and enable=0"
+    })
+    List<PatientInfo> queryByIdCardOrMedicalCard(@Param("idCard") String idCard, @Param("medicalCard") String medicalCard);
+
     @Update({
             "update patientInfo set enable = 1 where id = #{patientInfoId}"
     })
