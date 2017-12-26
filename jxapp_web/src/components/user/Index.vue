@@ -25,15 +25,15 @@
       }
       this.columnData = [{
         attrs: {
-          'prop': 'userName',
-          'label': '用户名',
+          // 'prop': 'userName',
+          'label': '手机号',
           'min-width': '140'
         },
         scopedSlots: {
           default: (scope) => {
             return (
               <router-link to={{name: PERSONAL_PAGE.name, params: { accountId: scope.row.id }}}>
-                {scope.row.userName}
+                {scope.row.tel}
               </router-link>
             )
           }
@@ -44,13 +44,13 @@
           'label': '用户ID',
           'min-width': '140'
         }
-      }, {
+      }, /* {
         attrs: {
           'prop': 'tel',
           'label': '手机号',
           'min-width': '100'
         }
-      }, {
+      }, */ {
         attrs: {
           'label': '操作',
           'min-width': '80'
