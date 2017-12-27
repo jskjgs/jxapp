@@ -112,21 +112,23 @@ public class HisDoctorController extends MyBaseController {
                                     doctor.setAbout(self.getAbout());
                                     doctor.setHeadPortrait(self.getHeadPortrait());
 
+                                    doctor.setName(hb.getYs());
+                                    doctor.setXmid(hb.getXmid());
+                                    doctor.setHymc(hb.getHymc());
+                                    doctor.setDj(hb.getDj());
+                                    doctor.setYsid(hb.getYsid());
+                                    doctor.setKsmc(hb.getKsmc());
+                                    doctor.setHm(hb.getHm());
+                                    doctor.setDepartmentId(hb.getKsid());
+                                    doctor.setHId(hb.getYsid());
+                                    doctor.setTitle(hb.getZc());
+                                    doctorList.add(doctor);
+
                                 }
                             }
                         }
 
-                        doctor.setName(hb.getYs());
-                        doctor.setXmid(hb.getXmid());
-                        doctor.setHymc(hb.getHymc());
-                        doctor.setDj(hb.getDj());
-                        doctor.setYsid(hb.getYsid());
-                        doctor.setKsmc(hb.getKsmc());
-                        doctor.setHm(hb.getHm());
-                        doctor.setDepartmentId(hb.getKsid());
-                        doctor.setHId(hb.getYsid());
-                        doctor.setTitle(hb.getZc());
-                        doctorList.add(doctor);
+
                     }
 
 
