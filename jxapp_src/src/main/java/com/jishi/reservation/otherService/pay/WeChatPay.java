@@ -14,10 +14,12 @@ import com.doraemon.base.util.xml.XMLParser;
 import com.jishi.reservation.dao.mapper.OrderInfoMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.otherService.pay.protocol.WXUnifiedOrderPayReqData;
+import com.jishi.reservation.service.OrderInfoService;
 import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
 import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.exception.BussinessException;
+import com.jishi.reservation.service.exception.ShowException;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,9 @@ public class WeChatPay {
 
     @Autowired
     private OrderInfoMapper orderInfoMapper;
+
+    @Autowired
+    private OrderInfoService orderInfoService;
 
     public boolean notify(String notifyStr) throws ParserConfigurationException, NoSuchAlgorithmException, SAXException, IOException, BussinessException, ParseException {
         log.info("微信支付回调数据：" + notifyStr);
@@ -89,6 +94,10 @@ public class WeChatPay {
     }
 
     public Map generateOrder(String notifyUrl, String orderNumber, String subject, BigDecimal price, String spbillCreateIp) throws Exception {
+        boolean isWaitingPay = orderInfoService.isWaitingPay(orderNumber);
+        if (!isWaitingPay) {
+            throw new ShowException("不是待支付订单，不能进行支付");
+        }
         //拼接回调接口
         //String notifyUrl = notifyUrl;
         WXUnifiedOrderPayReqData wxUnifiedOrderPayReqData = generateProductWithOpenId(orderNumber, subject, notifyUrl, price, spbillCreateIp);
@@ -123,6 +132,9 @@ public class WeChatPay {
         String return_msg = (String) resp.get("return_msg");
         String result_code = (String) resp.get("result_code");
         String return_code = (String) resp.get("return_code");
+        if (!orderInfoService.setPaying(orderNumber)) {
+            throw new ShowException("订单状态异常");
+        }
 
         Map data =  generateWxSign(prepay_id);
         log.info("微信调起支付参数：" + data);

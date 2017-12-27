@@ -11,6 +11,7 @@ import com.jishi.reservation.dao.mapper.*;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.*;
+import com.jishi.reservation.service.exception.ShowException;
 import com.jishi.reservation.service.his.bean.ConfirmOrder;
 import com.jishi.reservation.service.his.bean.ConfirmRegister;
 import com.jishi.reservation.service.support.JpushSupport;
@@ -281,4 +282,28 @@ public class OrderInfoService {
 
         return resultPage;
     }
+
+    public boolean isWaitingPay(String orderNumber) {
+        OrderInfo info = queryOrderByOrderNumber(orderNumber);
+        if (info == null) {
+            throw new ShowException("订单不存在");
+        }
+        return OrderStatusEnum.WAIT_PAYED.equals(info.getPayType());
+    }
+
+    public boolean setPaying(String orderNumber) {
+        OrderInfo info = queryOrderByOrderNumber(orderNumber);
+        if (info == null) {
+            throw new ShowException("订单不存在");
+        }
+        if (OrderStatusEnum.WAIT_PAYED.equals(info.getPayType())) {
+            OrderInfo infoNew = new OrderInfo();
+            infoNew.setId(info.getId());
+            infoNew.setStatus(OrderStatusEnum.PAYING.getCode());
+            orderInfoMapper.updateByPrimaryKeySelective(infoNew);
+            return true;
+        }
+        return false;
+    }
+
 }

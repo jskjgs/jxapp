@@ -41,7 +41,7 @@ public class OrderInfo {
     private Integer type;
     @ApiModelProperty("支付方式  1 支付宝；2 微信")
     private Integer payType;
-    @ApiModelProperty("订单状态 0：已完成(已付款)； 1：待付款 ；2：已取消")
+    @ApiModelProperty("订单状态 0：已完成(已付款)； 1：待付款 ；2：已取消；3：支付中；4：已退费；5：已完结")
     private Integer status;
     @ApiModelProperty("是否有效的标志 0：有效 ；1：无效")
     private Integer enable;

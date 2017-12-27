@@ -5,6 +5,7 @@ import com.jishi.reservation.dao.mapper.RegisterMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
 import com.jishi.reservation.service.enumPackage.StatusEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.worker.configurator.WorkerDispatcher;
@@ -66,7 +67,7 @@ public class RegisterOverdueWorker {
             //如果下单30分钟之后
             if(now.getTime() - HALF_HOUR > orderInfo.getCreateTime().getTime()){
                 log.info("订单id是"+orderInfo.getId()+"的订单超过半小时为支付，设置为过期订单");
-                orderInfo.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
+                orderInfo.setStatus(OrderStatusEnum.CANCELED.getCode());
                 orderInfo.setEnable(EnableEnum.INVALID.getCode());
                 Register register = registerMapper.queryByOrderId(orderInfo.getId());
                 register.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
