@@ -93,6 +93,56 @@ public class WeChatPay {
         return true;
     }
 
+    public boolean refund(String orderNumber) throws Exception {
+        OrderInfo orderInfo =  orderInfoMapper.queryByNumber(orderNumber);
+        Map param = generateRefundParam(orderNumber, orderInfo.getPrice());
+
+        String xmlStr = XMLParser.toXMLString(param);
+        log.info("微信支付统一下单请求数据：" + xmlStr);
+        String response = HttpAgent.create().sendPost(Constant.REFUND_API, xmlStr);
+        log.info("微信支付统一下单返回数据：" + response);
+        //对返回结果进行解析
+        Map<String,Object> resp = XMLParser.getMapFromXML(response);
+        //校验签名
+        if (!WXSignature.checkIsSignValidFromResponseString(response)) {
+            throw new BussinessException(ReturnCodeEnum.WEICHART_PAY_ERR_SIGN_CHECK_FAILED);
+        }
+        //判断微信标识是否为成功
+        if(resp.get("return_code") == null || resp.get("result_code") == null
+                || resp.get("prepay_id") == null
+                || !"SUCCESS".equals(resp.get("return_code"))
+                || !"SUCCESS".equals(resp.get("result_code"))) {
+            log.info(String.valueOf("微信错误提示return_msg：" + resp.get("return_msg")));
+            return false;
+        }
+
+        return true;
+    }
+
+    public Map generateRefundParam(String out_trade_no, BigDecimal price) throws NoSuchAlgorithmException {
+
+        int total_fee = price.multiply(new BigDecimal(100)).intValue();
+
+        Map<String,Object> map = new HashMap<>();
+        map.put("appid", Constant.WECHAT_PAY_APPID);
+        map.put("mch_id", Constant.WECHAT_PAY_MCHID);
+        map.put("noncestr", RandomUtil.getRandomStringByLength(32).toUpperCase());
+        map.put("timestamp", String.valueOf(System.currentTimeMillis()).substring(0,10));
+        map.put("package", "Sign=WXPay");
+
+        map.put("out_trade_no", out_trade_no);
+        map.put("out_refund_no", out_trade_no);
+        map.put("total_fee", total_fee);
+        map.put("refund_fee", total_fee);
+        map.put("refund_fee_type", "CNY");
+        map.put("refund_desc", "APP正常退款");
+
+        String sign = WXSignature.getSign(map);
+        map.put("sign",sign);
+
+        return map;
+    }
+
     public Map generateOrder(String notifyUrl, String orderNumber, String subject, BigDecimal price, String spbillCreateIp) throws Exception {
         boolean isWaitingPay = orderInfoService.isWaitingPay(orderNumber);
         if (!isWaitingPay) {

@@ -11,6 +11,7 @@ import com.jishi.reservation.controller.protocol.RegisterVO;
 import com.jishi.reservation.dao.mapper.*;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
+import com.jishi.reservation.otherService.pay.WeChatPay;
 import com.jishi.reservation.service.enumPackage.*;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.HisUserManager;
@@ -73,6 +74,9 @@ public class RegisterService {
 
     @Autowired
     AlibabaPay alibabaPay;
+
+    @Autowired
+    WeChatPay weChatPay;
 
 
     /**
@@ -427,13 +431,24 @@ public class RegisterService {
             log.info("向支付宝发起退款请求");
             //todo 现在只有支付宝 11.30
 
-            if(alibabaPay.refund(orderInfo.getOrderNumber()) == 0){
+            boolean refundRslt = false;
+            try {
+                if (orderInfo.getPayType().intValue() == PayEnum.ALI.getCode()) {
+                    refundRslt = alibabaPay.refund(orderInfo.getOrderNumber()) == 0;
+                } else {
+                    refundRslt = weChatPay.refund(orderInfo.getOrderNumber());
+                }
+            } catch (Exception e) {
+                log.info("请求退款异常: " + e);
+                e.printStackTrace();
+            }
+
+            if (refundRslt) {
                 registerMapper.updateByPrimaryKeySelective(register);
                 orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
-
                 return 0;
-            }else {
-                log.info("退款失败..订单号："+orderInfo.getOrderNumber());
+            } else {
+                log.info("退款失败..订单号：" + orderInfo.getOrderNumber());
                 return 1;
             }
 
