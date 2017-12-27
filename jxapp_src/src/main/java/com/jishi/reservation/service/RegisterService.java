@@ -242,25 +242,29 @@ public class RegisterService {
             log.info("传入了订单号，更新新的订单号，带到支付宝");
             log.info("检查订单状态,,");
             //生成新的订单号，带去支付宝，不然支付宝会找到重复订单，支付失败
-            String newOrderNumber = AlibabaPay.generateUniqueOrderNumber();
+            //String newOrderNumber = AlibabaPay.generateUniqueOrderNumber();
             OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(null, orderNumber);
             if(orderInfo == null){
+                log.info("检查订单状态：" + RegisterErrCodeEnum.ORDER_NOT_EXIST.getCode());
                 completeVO.setState(RegisterErrCodeEnum.ORDER_NOT_EXIST.getCode());
                 return completeVO;
             }
 
 
             if(!orderInfo.getStatus().equals(OrderStatusEnum.WAIT_PAYED.getCode()) || !orderInfo.getType().equals(OrderTypeEnum.REGISTER.getCode())){
+                log.info("检查订单状态：" + RegisterErrCodeEnum.ORDER_STATE_NOT_MATCH.getCode());
                 completeVO.setState(RegisterErrCodeEnum.ORDER_STATE_NOT_MATCH.getCode());
                 return completeVO;
             }
             //订单的用户id要和当前操作者的用户id相匹配
             if(!orderInfo.getAccountId().equals(accountId)){
+                log.info("检查订单状态：" + RegisterErrCodeEnum.ORDER_NUMBER_NOT_MATCH_ACCOUNT.getCode());
                 completeVO.setState(RegisterErrCodeEnum.ORDER_NUMBER_NOT_MATCH_ACCOUNT.getCode());
                 return completeVO;
             }
 
-            orderInfo.setOrderNumber(newOrderNumber);
+            // 不重新生成订单号 12/27
+            //orderInfo.setOrderNumber(newOrderNumber);
 
 
             orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
@@ -285,7 +289,7 @@ public class RegisterService {
             completeVO.setPrice(orderInfo.getPrice());
             //completeVO.setPrice(BigDecimal.valueOf(0.01));
             completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
-            completeVO.setOrderCode(newOrderNumber);
+            completeVO.setOrderCode(orderInfo.getOrderNumber());
             completeVO.setSerialNumber(register.getSerialNumber());
             completeVO.setSubject(subject);
             completeVO.setDes(subject);

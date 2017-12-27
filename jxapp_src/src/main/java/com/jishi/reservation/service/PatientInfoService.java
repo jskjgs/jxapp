@@ -290,10 +290,20 @@ public class PatientInfoService {
         return patientInfoMapper.queryByById(brId,accountId);
     }
 
+    public List<PatientInfo> queryByBrId(String brId) {
+
+        return patientInfoMapper.queryByBrId(brId);
+    }
+
     public boolean isAccountIdMatchBrid(Long accountId, String brId) {
 
         //传入brid是否和account_id对应
-        return patientInfoMapper.queryAccountIdByBrId(brId).equals(accountId);
+        //return patientInfoMapper.queryAccountIdByBrId(brId).equals(accountId);
+        List<PatientInfo> patientInfoList = patientInfoMapper.queryByBrId(brId);
+        if (patientInfoList == null || patientInfoList.isEmpty()) {
+            return false;
+        }
+        return patientInfoList.get(0).getAccountId().equals(accountId);
 
     }
 }
