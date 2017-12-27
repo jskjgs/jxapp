@@ -7,6 +7,8 @@ import com.jishi.reservation.service.RegisterService;
 import com.jishi.reservation.service.support.JpushSupport;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.DateTool;
+import com.jishi.reservation.worker.configurator.WorkerDispatcher;
+import com.jishi.reservation.worker.configurator.WorkerTypeEnum;
 import com.jishi.reservation.worker.model.PushData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +38,15 @@ public class JpushWorker {
     @Autowired
     public RegisterService registerService;
 
+    @Autowired
+    private WorkerDispatcher workerDispatcher;
+
 
     @Scheduled(cron = "0 0 9 * * ? ")
-    public void SendCommandPush() {
-
+    public void SendCommandPush() throws Exception {
+        if (!workerDispatcher.hasPermission(WorkerTypeEnum.WORKER_REGISTER_NOTICE)) {
+            return;
+        }
         //查找所有还没有预约的挂号信息，预约时间，与当前时间比较，
         List<Register> list = registerMapper.queryEnableRegister();
         for (Register register : list) {
@@ -63,7 +70,10 @@ public class JpushWorker {
     }
 
     //@Scheduled(cron = "0 0/2 * * * ? ")
-    public void SendCommandPushTest() {
+    public void SendCommandPushTest() throws Exception {
+        if (!workerDispatcher.hasPermission(WorkerTypeEnum.WORKER_REGISTER_NOTICE)) {
+            return;
+        }
 
         //查找所有还没有预约的挂号信息，预约时间，与当前时间比较，
         Register register = registerMapper.queryById(1363L);

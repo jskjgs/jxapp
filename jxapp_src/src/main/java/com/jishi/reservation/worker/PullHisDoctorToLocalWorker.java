@@ -9,6 +9,8 @@ import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.bean.DepartmentList;
 import com.jishi.reservation.service.his.bean.RegisteredNumberInfo;
+import com.jishi.reservation.worker.configurator.WorkerDispatcher;
+import com.jishi.reservation.worker.configurator.WorkerTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -47,6 +49,9 @@ public class PullHisDoctorToLocalWorker {
     @Autowired
     DepartmentMapper departmentMapper;
 
+    @Autowired
+    private WorkerDispatcher workerDispatcher;
+
     private static final Long HALF_HOUR = 60*30*1000L;
 
 
@@ -61,6 +66,9 @@ public class PullHisDoctorToLocalWorker {
     @Scheduled(cron = "0 0/5 * * * ?")
     @Transactional
     public void pullHisDepartmentInfoToLocal() throws Exception {
+        if (!workerDispatcher.hasPermission(WorkerTypeEnum.WORKER_PULL_HIS_DEPARTMENT)) {
+            return;
+        }
 
         log.info("==============================开始HIS科室扫描入库任务==============================");
 
@@ -84,6 +92,9 @@ public class PullHisDoctorToLocalWorker {
     @Scheduled(cron = "0 0/5 * * * ?")
     @Transactional
     public void pullHisDoctorInfoToLocal() throws Exception {
+        if (!workerDispatcher.hasPermission(WorkerTypeEnum.WORKER_PULL_HIS_DOCTOR)) {
+            return;
+        }
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());

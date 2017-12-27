@@ -613,7 +613,89 @@ public class HisOutpatient {
         return null;
     }
 
+    //Guide.AdviceReceipt.Query 获取病人某次就诊的医嘱、费用及相关状态
+    public String testGuideAdviceReceiptQuery(String jsklb, String ghdh) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<JSKLB>").append(jsklb).append("</JSKLB>");
+        sb.append("<GHDH>").append(ghdh).append("</GHDH>");
+        String reData = hisTool.toXMLString("Guide.AdviceReceipt.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = hisTool.getHisDataparam(me,"Guide.AdviceReceipt.Query");
+            return xml;
+        }
+        return null;
+    }
 
+    //Guide.DrugAdvice.Query 可以查询药品医嘱，以达到处方的作用
+    public String testGuideDrugAdviceQuery(String yzid) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<YZID>").append(yzid).append("</YZID>");
+        String reData = hisTool.toXMLString("Guide.DrugAdvice.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = hisTool.getHisDataparam(me,"Guide.DrugAdvice.Query");
+            return xml;
+        }
+        return null;
+    }
+
+    //Report.Record.Query 获取病人检查/检验报告记录
+    public String testReportRecordQuery(String brid) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<BRID>").append(brid).append("</BRID>");
+        sb.append("<TYPE>").append(0).append("</TYPE>");
+        sb.append("<RNOM>").append("").append("</RNOM>");
+        sb.append("<DQYS>").append(1).append("</DQYS>");
+        sb.append("<JLTS>").append(10).append("</JLTS>");
+        String reData = hisTool.toXMLString("Report.Record.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = hisTool.getHisDataparam(me,"Report.Record.Query");
+            return xml;
+        }
+        return null;
+    }
+
+    //Report.XMLDetail.Query 获取病人检查/检验报告内容，通过XML格式返回，图片需要单独下载
+    public String testReportXMLDetailQuery(String blid, String yzid) throws Exception {
+        if (blid == null && yzid == null) {
+            return null;
+        }
+        String lx = "";
+        String xz = "";
+        if (blid != null && !blid.isEmpty()) {
+            yzid = "";
+            lx = "检查";
+        } else {
+            blid = "";
+            lx = "检验";
+            xz = "2";
+        }
+        StringBuffer sb = new StringBuffer();
+        sb.append("<BLID>").append(blid).append("</BLID>");
+        sb.append("<YZID>").append(yzid).append("</YZID>");
+        sb.append("<LX>").append(lx).append("</LX>");
+        sb.append("<XZ>").append(xz).append("</XZ>");
+        String reData = hisTool.toXMLString("Report.XMLDetail.Query", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = hisTool.getHisDataparam(me,"Report.XMLDetail.Query");
+            return xml;
+        }
+        return null;
+    }
+
+    //Basic.UsableService.Query 获取当前已购买的可用的模块及服务列表
+    public String basicUsableServiceQuery() throws Exception {
+        String reData = hisTool.toXMLString("Basic.UsableService.Query", "");
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = hisTool.getHisDataparam(me,"Basic.UsableService.Query");
+            return xml;
+        }
+        return null;
+    }
 
 
     private OutPatientResponseOutPatientResult execute(String reData) throws RemoteException, ServiceException {
