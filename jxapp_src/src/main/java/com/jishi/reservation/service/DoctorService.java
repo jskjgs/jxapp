@@ -261,6 +261,7 @@ public class DoctorService {
         //如果库里有，但是his拉去过来的没有，那就软删除
 
         List<Doctor> doctorList =  doctorMapper.queryAllValidDoctor();
+        /* 12/28   删除
         for (Doctor doctor : doctorList) {
             Boolean flag = false;
             for (RegisteredNumberInfo.HB hb : hbList) {
@@ -280,7 +281,7 @@ public class DoctorService {
                 doctor.setEnable(1);  //软删除...
                 doctorMapper.updateByPrimaryKeySelective(doctor);
             }
-        }
+        }*/
     }
 
     private boolean isExist(String hId) {

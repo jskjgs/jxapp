@@ -221,6 +221,9 @@ public class IMAccountService {
     public IMChatInfo chatToDocter(Long accountId, Long doctorId) throws Exception {
         IMAccount imUserAccount = getUserIMAccount(accountId);
         IMAccount imDoctorAccount = getDoctorIMAccount(doctorId);
+        if (imUserAccount == null || imDoctorAccount == null) {
+            throw new BussinessException(ReturnCodeEnum.IM_ERR_GET_ACCOUNT_FAILED);
+        }
         IMChatInfo info = new IMChatInfo();
         info.setImSourceId(imUserAccount.getImAccId());
         info.setImDestId(imDoctorAccount.getImAccId());
