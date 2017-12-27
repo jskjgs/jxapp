@@ -13,6 +13,7 @@ import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.otherService.pay.WeChatPay;
 import com.jishi.reservation.service.enumPackage.*;
+import com.jishi.reservation.service.exception.ShowException;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.service.his.bean.LastPrice;
@@ -432,15 +433,11 @@ public class RegisterService {
             //todo 现在只有支付宝 11.30
 
             boolean refundRslt = false;
-            try {
-                if (orderInfo.getPayType().intValue() == PayEnum.ALI.getCode()) {
-                    refundRslt = alibabaPay.refund(orderInfo.getOrderNumber()) == 0;
-                } else {
-                    refundRslt = weChatPay.refund(orderInfo.getOrderNumber());
-                }
-            } catch (Exception e) {
-                log.info("请求退款异常: " + e);
-                e.printStackTrace();
+            if (orderInfo.getPayType().intValue() == PayEnum.ALI.getCode()) {
+                refundRslt = alibabaPay.refund(orderInfo.getOrderNumber()) == 0;
+            } else {
+                throw new ShowException("微信支付的订单暂不支持退款操作");
+                //refundRslt = weChatPay.refund(orderInfo.getOrderNumber());
             }
 
             if (refundRslt) {
