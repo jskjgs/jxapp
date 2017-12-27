@@ -104,26 +104,43 @@ public class PullHisDoctorToLocalWorker {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date today = calendar.getTime();
+        //一天的毫秒值
         Long dayMM = 1000 * 60 *60*24L;
+        //当天的时间戳
         Long tdL = today.getTime();
+        //第二天的时间戳
         Long tmrL = today.getTime() + dayMM;
-        String format = sdf.format(new Date(tmrL));
+        //第三天的时间戳
+        Long thirdL = today.getTime() + dayMM * 2;
+
+        //第四天的时间戳
+        Long fourthL = today.getTime() + dayMM * 3;
+
+        //第五天的时间戳
+        Long fifth = today.getTime() + dayMM * 4;
+
+
+
+
+        String secondDay = sdf.format(new Date(tmrL));
+        String thirdDay = sdf.format(new Date(thirdL));
+        String fourthDay = sdf.format(new Date(fourthL));
+        String fifthDay = sdf.format(new Date(fifth));
 
         log.info("==============================开始HIS医生扫描入库任务=扫描最近七天的=============================");
 
+        //拉去今天的
         this.pullDoctor("",tdL);
-        this.pullDoctor(format,tmrL);
+        //拉去明天的
+        this.pullDoctor(secondDay,tmrL);
+        //拉去后天的
+        this.pullDoctor(thirdDay,thirdL);
+        //拉去第四天
+        this.pullDoctor(fourthDay,fourthL);
+        //拉去第五天
+        this.pullDoctor(fifthDay,fourthL);
 
 
-
-
-//        //第二天的
-//        RegisteredNumberInfo info2 = hisOutpatient.queryRegisteredNumber("", format, "", "", "", "", "", "");
-//        if(info.getGroup().getHblist().get(0)!=null) {
-//            List<RegisteredNumberInfo.HB> hbList = info2.getGroup().getHblist().get(0).getHbList();
-//
-//
-//            doctorService.getDoctorFromHis(hbList,tmrL);
 //        }
 
 
