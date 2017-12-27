@@ -7,10 +7,7 @@ import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.OrderVO;
 import com.jishi.reservation.controller.protocol.PrePaymentRecordVO;
-import com.jishi.reservation.dao.mapper.DoctorMapper;
-import com.jishi.reservation.dao.mapper.OrderInfoMapper;
-import com.jishi.reservation.dao.mapper.PrePaymentMapper;
-import com.jishi.reservation.dao.mapper.RegisterMapper;
+import com.jishi.reservation.dao.mapper.*;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.*;
@@ -60,6 +57,9 @@ public class OrderInfoService {
     DoctorMapper doctorMapper;
 
 
+    @Autowired
+    DoctorWorkMapper workMapper;
+
     public OrderVO queryOrderVoById(Long orderId,String orderNumber) throws ParseException {
 
         OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(orderId,orderNumber);
@@ -105,7 +105,7 @@ public class OrderInfoService {
         Doctor doctor = doctorMapper.queryByHid(register.getDoctorId());
         log.info("处理前："+String.valueOf(orderInfo.getPrice()));
         log.info("处理后："+String.valueOf(orderInfo.getPrice().stripTrailingZeros()));
-        confirmRegister.setCzjlid(doctor.getCzjlid());
+        confirmRegister.setCzjlid(register.getCzjlid());
         log.info("出诊记录id:"+confirmRegister.getCzjlid());
         confirmRegister.setHm(register.getHm());
 

@@ -1,5 +1,6 @@
 package com.jishi.reservation.dao.models;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.Table;
@@ -17,4 +18,7 @@ public class DoctorWork {
     private String hDoctorId;
     private Date workingTime;
     private Integer enable;
+    private String czjlid;
+
+
 }

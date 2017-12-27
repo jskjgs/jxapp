@@ -210,6 +210,7 @@ public class DoctorService {
             doctorWork.setEnable(EnableEnum.EFFECTIVE.getCode());
             doctorWork.setHDoctorId(hb.getYsid());
             doctorWork.setWorkingTime(workDate);
+            doctorWork.setCzjlid(hb.getCzjlid());
             log.info("查询条件：医生 id:"+hb.getYsid()+"，时间："+sdf2.format(date));
             if(!doctorWorkService.isExit(hb.getYsid(),sdf2.format(date))){
                 log.info("该医生排班表不存在,医生id:"+hb.getYsid()+",预约时间："+workDate.toLocaleString());
@@ -226,7 +227,7 @@ public class DoctorService {
             doctor.setType("0");
             doctor.setDj(hb.getDj());
             doctor.setHm(hb.getHm());
-            doctor.setCzjlid(hb.getCzjlid());
+           // doctor.setCzjlid(hb.getCzjlid());
             //如果不存在，就添加进去...
             if(!isExist(hb.getYsid())){
                 log.info(hb.getYs()+"不存在"+hb.getYsid());
@@ -239,7 +240,6 @@ public class DoctorService {
                 existDoctor.setKsmc(hb.getKsmc());
                 existDoctor.setName(hb.getYs());
                 existDoctor.setDepartmentId(hb.getKsid());
-                existDoctor.setCzjlid(hb.getCzjlid());
 
                 doctorMapper.updateByPrimaryKeySelective(existDoctor);
 

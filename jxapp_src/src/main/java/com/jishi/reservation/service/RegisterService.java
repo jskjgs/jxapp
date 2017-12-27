@@ -63,7 +63,7 @@ public class RegisterService {
     OrderInfoService orderInfoService;
 
     @Autowired
-    HisUserManager hisUserManager;
+    DoctorWorkMapper doctorWorkMapper;
 
     @Autowired
     HisOutpatient hisOutpatient;
@@ -119,7 +119,10 @@ public class RegisterService {
             //挂号检查
             log.info("去his检查是否能挂号");
             Doctor doctor = doctorMapper.queryByHid(doctorId);
-            if(!hisOutpatient.checkIsRegisterLimit(brid,hm,sdf.format(agreeDate),departmentId,doctor.getCzjlid())){
+            String timeStr = sdf.format(agreeDate);
+
+            DoctorWork doctorWork = doctorWorkMapper.queryByHIdAndDate(doctorId, timeStr);
+            if(!hisOutpatient.checkIsRegisterLimit(brid,hm,sdf.format(agreeDate),departmentId,doctorWork.getCzjlid())){
 
                 log.info("挂号检查失败，不能挂号.");
 
@@ -132,7 +135,7 @@ public class RegisterService {
 
             //his 锁定号源,返回hx 号序   传入机器码
            // String jqm = this.generateJQM(brid);
-        String hx = this.lockRegister(hm, agreeDate,doctor.getCzjlid(),brid);
+        String hx = this.lockRegister(hm, agreeDate,doctorWork.getCzjlid(),brid);
         if(hx.equals("invalid hx")){
             completeVO.setState(RegisterErrCodeEnum.DOCTOR_FULL.getCode());
             return completeVO;
@@ -187,6 +190,7 @@ public class RegisterService {
             register.setBrId(brid);
             //每个病人的机器码不一样，就用brid
             register.setJqm(brid);
+            register.setCzjlid(doctorWork.getCzjlid());
             register.setDepartment(department);
             register.setPatientName(brName);
             register.setDoctorName(doctorName);
