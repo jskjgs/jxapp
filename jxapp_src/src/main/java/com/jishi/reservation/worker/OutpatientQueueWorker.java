@@ -45,42 +45,19 @@ public class OutpatientQueueWorker {
 
 
     // 根据查询的已修改的医生门诊号序进行推送
-    //@Scheduled(cron = "0 0/1 8-22 * * ? ")
+    @Scheduled(cron = "0 0/10 7-23 * * ? ")
     public void doWork() throws Exception {
         if (!workerDispatcher.hasPermission(WorkerTypeEnum.WORKER_OUTPATIENT_QUEUE)) {
             return;
         }
-        List<QueueCurrentNumber> queueCurrentNumberList = outpatientQueueService.queryModifiedVisitCurrentNum();
-        if (queueCurrentNumberList == null || queueCurrentNumberList.isEmpty()) {
-            return;
-        }
         log.info("********************* OutpatientQueueWorker begin *********************");
-        log.info("BeginTime: " + new Date() + "QueueCurrentNumber size: " + queueCurrentNumberList.size());
-        for (QueueCurrentNumber currentNumber : queueCurrentNumberList) {
-            List<OutpatientQueueDetailVO> queueDetailList = outpatientQueueService.queryQueueByDoctorHisId(currentNumber.getDoctorHisId());
-            if (queueDetailList == null || queueDetailList.isEmpty()) {
-                continue;
-            }
-            for (OutpatientQueueDetailVO detail : queueDetailList) {
-                PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(detail.getBrId(),detail.getAccountId());
-                if (patientInfo == null) {
-                    log.info("当前病人未添加, brid: " + detail.getBrId());
-                    continue;
-                }
-                Account account = accountMapper.queryById(patientInfo.getAccountId());
-                if (account == null) {
-                    log.warn("当前病人账号为空, brid: " + detail.getBrId());
-                    continue;
-                }
-                jpushSupport.sendMessage(account.getPushId(), PushData.PushDataMsgTypeDef.PUSH_DATA_TYPE_OUT_QUEUE_INFO, detail);
-            }
-        }
+        outpatientQueueService.doNoticeRegisterQueue();
         log.info("EndTime: " + new Date());
         log.info("********************* OutpatientQueueWorker End *********************");
     }
 
     //  测试推送接口
-    @Scheduled(cron = "0 0/2 8-22 * * ? ")
+    //@Scheduled(cron = "0 0/2 8-22 * * ? ")
     public void doWorkTest() throws Exception {
         if (!workerDispatcher.hasPermission(WorkerTypeEnum.WORKER_OUTPATIENT_QUEUE)) {
             return;

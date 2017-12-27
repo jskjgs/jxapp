@@ -137,4 +137,10 @@ public class Constant {
     public final static String HEADER_TEST_ACCOUNT_ID = "x-access-accountId";
     public static final List<Long> TEST_ACCOUNT_ID_LIST = Arrays.asList(30L, 24L, 26L, 27L, 41L, 28L,20L,34L);
 
+
+    // 排队叫号相关
+    public final static String QUEUE_TOKEN = "53dc47dd79354f9686188aab0653a312";  //分诊叫号端使用的token
+    public final static String QUEUE_TOKEN_HEADER = "token";  //token的header
+    public final static String QUEUE_URL = "10.0.1.111:8080/HTriage/base/android!doNotNeedSessionAndSecurity_selectQueueAll.sy";  //排队缓存队列请求地址
+    public final static int QUEUE_EXPIRE_TIME_CACHE = 24 * 60 * 60;  //排队缓存队列失效时间1天
 }

@@ -7,7 +7,10 @@ public enum OrderStatusEnum {
 
     PAYED(0, "已支付"),
     WAIT_PAYED(1, "等待支付"),
-    CANCELED(2, "订单取消");
+    CANCELED(2, "订单取消"),
+    PAYING(3, "支付中"),
+    REFUND(4, "已退费"),
+    COMPLETE(5, "已完结");
 
     private int code;
     private String desc;
