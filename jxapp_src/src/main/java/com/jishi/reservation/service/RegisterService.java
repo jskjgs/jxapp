@@ -419,6 +419,9 @@ public class RegisterService {
         OrderInfo orderInfo = orderInfoMapper.queryById(register.getOrderId());
         orderInfo.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
 
+        if (orderInfo.getPayType().intValue() == PayEnum.WEIXIN.getCode()) {
+            throw new ShowException("微信支付的订单暂不支持退款操作");
+        }
 
         // 检查是否有资格退号
         if(!hisOutpatient.checkCancelRegister(orderInfo.getGhdh())){
@@ -436,8 +439,7 @@ public class RegisterService {
             if (orderInfo.getPayType().intValue() == PayEnum.ALI.getCode()) {
                 refundRslt = alibabaPay.refund(orderInfo.getOrderNumber()) == 0;
             } else {
-                throw new ShowException("微信支付的订单暂不支持退款操作");
-                //refundRslt = weChatPay.refund(orderInfo.getOrderNumber());
+                refundRslt = weChatPay.refund(orderInfo.getOrderNumber());
             }
 
             if (refundRslt) {
