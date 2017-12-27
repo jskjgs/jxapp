@@ -108,5 +108,5 @@ his:
     token: 9498A8CCB2AE9A169E6863DF3B7B8A27
     key: A3543931B6ECFB3F
 pay-callback:
-    host: jixinapp.hpx10.com
+    host: http://jinxinapp.hpx10.com
     port: 80
