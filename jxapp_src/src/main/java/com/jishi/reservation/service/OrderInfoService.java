@@ -148,8 +148,10 @@ public class OrderInfoService {
 
         OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(orderId,orderNumber);
         //Preconditions.checkState(orderInfo.getStatus()==OrderStatusEnum.PAYED.getCode(),"该订单未支付，不能确认");
-        if(orderInfo.getStatus() != OrderStatusEnum.PAYED.getCode())
-            return ReturnCodeEnum.FAILED.getCode();
+//        if(orderInfo.getStatus() != OrderStatusEnum.PAYED.getCode())
+//            return ReturnCodeEnum.FAILED.getCode();
+
+        log.info("开始更新数据......orderId:"+orderId);
         orderInfo.setGhdh(confirmOrder.getGhdh());
         orderInfo.setCzsj(confirmOrder.getCzsj());
         orderInfo.setJsid(confirmOrder.getJzid());
