@@ -288,6 +288,7 @@ public class OrderInfoService {
         if (info == null) {
             throw new ShowException("订单不存在");
         }
+        log.info("订单号" + orderNumber + "的状态为" + info.getStatus());
         return OrderStatusEnum.WAIT_PAYED.equals(info.getStatus());
     }
 
@@ -296,6 +297,7 @@ public class OrderInfoService {
         if (info == null) {
             throw new ShowException("订单不存在");
         }
+        log.info("订单号" + orderNumber + "的状态为" + info.getStatus());
         if (OrderStatusEnum.WAIT_PAYED.equals(info.getStatus())) {
             OrderInfo infoNew = new OrderInfo();
             infoNew.setId(info.getId());
