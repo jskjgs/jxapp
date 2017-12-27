@@ -17,7 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -58,11 +60,17 @@ public class HisDoctorController extends MyBaseController {
     @RequestMapping(value = "queryRegister", method = RequestMethod.GET)
     @ResponseBody
     public JSONObject queryRegister(
+
+            @ApiParam(value = "预约时间") @RequestParam(value = "agreeTime") Long agreeTime,
             @ApiParam(value = "科室id") @RequestParam(value = "ksid",defaultValue = "") String ksid,
             @ApiParam(value = "医生id") @RequestParam(value = "ysid",defaultValue = "") String ysid,
             @ApiParam(value = "医生姓名") @RequestParam(value = "name",defaultValue = "") String name,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) throws Exception {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timeStr = sdf.format(new Date(agreeTime));
+
 
         PageInfo<Doctor> pageInfo = new PageInfo<>();
         List<Doctor> list = new ArrayList<>();
@@ -70,26 +78,26 @@ public class HisDoctorController extends MyBaseController {
         if(startPage <0)
             startPage = 1;
         //要与我们自己系统的医生信息结合。
+        //12-27Z再结合doctor_work排班表
         List<Doctor> selfDoctorList = doctorService.queryDoctor(null, ysid.equals("")?null:ysid, name.equals("")?null:name,
-                ksid.equals("")?null:ksid, String.valueOf(0), 0);
+                ksid.equals("")?null:ksid, String.valueOf(0),agreeTime, 0);
 
         //如果我们库里面无信息，就直接返回空。
         if(selfDoctorList != null && selfDoctorList.size() != 0) {
-            RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", ksid, ysid, name, "", "");
+            RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", timeStr, "", ksid, ysid, name, "", "");
+            log.info("查询日期："+timeStr);
+            log.info("查询的时候，去his拉取的医生数据:"+JSONObject.toJSONString(info));
             if (info.getGroup().getHblist().get(0) != null) {
                 List<RegisteredNumberInfo.HB> hbList = info.getGroup().getHblist().get(0).getHbList();
                 List<Doctor> doctorList = new ArrayList<>();
                 Integer startRow = (startPage - 1) * pageSize;
                 if (hbList != null) {
                     int endRow = hbList.size() < startPage * pageSize - 1 ? hbList.size() : startPage * pageSize - 1;
-                    log.info(hbList.size() + "~~" + (startPage * pageSize - 1));
                     if (startPage == endRow)
                         endRow += pageSize;
                     if (endRow == 0)
                         endRow += pageSize;
-                    log.info("start:" + startRow);
-                    log.info("end:" + endRow);
-                    log.info("list:" + hbList.size());
+
                     if (hbList.size() < endRow) {
                         endRow = hbList.size();
                     }

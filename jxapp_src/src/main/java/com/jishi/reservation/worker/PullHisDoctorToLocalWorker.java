@@ -15,7 +15,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -82,20 +85,53 @@ public class PullHisDoctorToLocalWorker {
     @Transactional
     public void pullHisDoctorInfoToLocal() throws Exception {
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.set(Calendar.HOUR_OF_DAY,6);
+        calendar.set(Calendar.MINUTE,0);
+        calendar.set(Calendar.SECOND,0);
 
-        log.info("==============================开始HIS医生扫描入库任务==============================");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date today = calendar.getTime();
+        Long dayMM = 1000 * 60 *60*24L;
+        Long tdL = today.getTime();
+        Long tmrL = today.getTime() + dayMM;
+        String format = sdf.format(new Date(tmrL));
 
-        RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", "", "", "", "", "");
-        if(info.getGroup().getHblist().get(0)!=null) {
-            List<RegisteredNumberInfo.HB> hbList = info.getGroup().getHblist().get(0).getHbList();
+        log.info("==============================开始HIS医生扫描入库任务=扫描最近七天的=============================");
+
+        this.pullDoctor("",tdL);
+        this.pullDoctor(format,tmrL);
 
 
-            doctorService.getDoctorFromHis(hbList);
-        }
+
+
+//        //第二天的
+//        RegisteredNumberInfo info2 = hisOutpatient.queryRegisteredNumber("", format, "", "", "", "", "", "");
+//        if(info.getGroup().getHblist().get(0)!=null) {
+//            List<RegisteredNumberInfo.HB> hbList = info2.getGroup().getHblist().get(0).getHbList();
+//
+//
+//            doctorService.getDoctorFromHis(hbList,tmrL);
+//        }
+
+
 
         log.info("==============================结束HIS医生扫描入库任务==============================");
 
 
+    }
+
+    private void pullDoctor(String format,Long time) throws Exception {
+
+        //当天的
+        RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", format, "", "", "", "", "", "");
+        if(info.getGroup().getHblist().get(0)!=null) {
+            List<RegisteredNumberInfo.HB> hbList = info.getGroup().getHblist().get(0).getHbList();
+
+
+            doctorService.getDoctorFromHis(hbList,time);
+        }
     }
 
 }
