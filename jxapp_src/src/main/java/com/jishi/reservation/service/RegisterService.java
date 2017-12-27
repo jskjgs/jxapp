@@ -524,6 +524,10 @@ public class RegisterService {
         register.setOrderCode(orderInfo.getOrderNumber());
         register.setDiscount(orderInfo.getDiscount());
         register.setLocation(Constant.HOSPITAL_LOCATION);
+
+        // todo 预约挂号'未支付'状态包括了订单'支付中'状态，把订单状态放到这里可让前端展示，待修改
+        register.setStatus(orderInfo.getStatus());
+
         Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
         registerVO.setRegister(register);
         registerVO.setDoctor(doctor);
