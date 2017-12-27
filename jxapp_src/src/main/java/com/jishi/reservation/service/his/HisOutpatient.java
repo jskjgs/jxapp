@@ -206,12 +206,12 @@ public class HisOutpatient {
      * @param hm 号码
      * @param yysj
      * @param hzdw
-     * @param jqm
+     * @param
      * @return
      * @throws Exception
      */
     public LockRegister lockRegister(
-            String hm,String yysj,String hzdw,String jqm,String czjlid
+            String hm,String yysj,String hzdw,String brid,String czjlid
     ) throws Exception {
 
         StringBuffer sb = new StringBuffer();
@@ -220,7 +220,7 @@ public class HisOutpatient {
         sb.append("<YYSJ>").append(yysj).append("</YYSJ>");
         sb.append("<CZ>").append("1").append("</CZ>");
         sb.append("<HZDW>").append(hzdw).append("</HZDW>");
-        sb.append("<JQM>").append("jinxin_"+jqm).append("</JQM>");
+        sb.append("<JQM>").append(brid).append("</JQM>");
         log.info("lockRegister传入数据："+sb.toString());
 
         String reData = hisTool.toXMLString("Register.Lock.Modify", sb.toString());

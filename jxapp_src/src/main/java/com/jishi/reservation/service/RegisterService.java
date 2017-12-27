@@ -1,6 +1,7 @@
 package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.doraemon.base.util.RandomUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.Paging;
@@ -129,7 +130,8 @@ public class RegisterService {
 
 
 
-            //his 锁定号源,返回hx 号序
+            //his 锁定号源,返回hx 号序   传入机器码
+           // String jqm = this.generateJQM(brid);
         String hx = this.lockRegister(hm, agreeDate,doctor.getCzjlid(),brid);
         if(hx.equals("invalid hx")){
             completeVO.setState(RegisterErrCodeEnum.DOCTOR_FULL.getCode());
@@ -183,6 +185,8 @@ public class RegisterService {
             register.setDepartmentId(departmentId);
             register.setDoctorId(doctorId);
             register.setBrId(brid);
+            //每个病人的机器码不一样，就用brid
+            register.setJqm(brid);
             register.setDepartment(department);
             register.setPatientName(brName);
             register.setDoctorName(doctorName);
@@ -292,6 +296,11 @@ public class RegisterService {
 
         }
 
+
+    }
+
+    private String generateJQM(String brid) throws Exception {
+        return RandomUtil.getRandomLetterAndNum(3) + brid;
 
     }
 

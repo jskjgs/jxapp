@@ -213,7 +213,7 @@ public class AlibabaPay {
 
     public static String generateUniqueOrderNumber() throws Exception {
 
-       String prefix = "jxt_";
+       String prefix = "jxt";
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String format = sdf.format(date);

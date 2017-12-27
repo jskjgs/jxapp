@@ -115,7 +115,7 @@ public class OrderInfoService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         confirmRegister.setYysj(sdf.format(register.getAgreedTime()));
         confirmRegister.setSm(""); //说明，固定传入第三方名称
-        confirmRegister.setJqm("jxyy+zczh");
+        confirmRegister.setJqm(register.getBrId());
         confirmRegister.setJsklb("");//结算卡类别，固定传入第三方名称
         confirmRegister.setJsfs("");//结算方式，传空
         //confirmRegister.setJsje(String.valueOf(orderInfo.getPrice()));
