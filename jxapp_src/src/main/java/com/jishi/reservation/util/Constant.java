@@ -84,8 +84,9 @@ public class Constant {
 
     /**  中联相关 */
     public final static String BASE_URL = "http://hpx10ddns.xicp.io/ExternalServices/ZL_InformationService.asmx/";
-    //测试连接的服务
-    public final static String TEST_SERVICE = "Basic.MCTest.Query";
+
+    public final static String TEST_SERVICE = "Basic.MCTest.Query";//测试连接的服务
+    public final static boolean HIS_IDCARD_TO_ONE_MEDICALCARD = true;//一个身份证号是否只关联一个就诊卡号
 
     /** 极光相关 */
     public final static String JPush_Appkey  = "96d474cb464f0d12aaaa8ba6";

@@ -78,6 +78,9 @@ public class HisTool {
      */
     public String getXmlAttribute(String xml, String attributeName) throws Exception {
         //如果不是以<ROOT>开头的就先加上<ROOT>节点
+        if (xml == null || xml.isEmpty()) {
+            return null;
+        }
         xml = !xml.startsWith("<ROOT") ? "<ROOT>" + xml + "</ROOT>" : xml;
         Document document = DocumentHelper.parseText(xml);
         Element root = document.getRootElement();

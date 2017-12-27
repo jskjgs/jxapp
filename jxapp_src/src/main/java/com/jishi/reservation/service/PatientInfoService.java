@@ -18,6 +18,7 @@ import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.service.his.bean.Credentials;
 import com.jishi.reservation.service.his.util.HisMedicalCardType;
 import com.jishi.reservation.util.CheckIdCard;
+import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,13 +65,17 @@ public class PatientInfoService {
             log.error(errorInfo);
             throw new Exception("无效的身份证信息");
         }
+
+        if (idCard == null && medicalCard == null ) {
+            throw new BussinessException(ReturnCodeEnum.PATIENT_GET_HIS_PATIENT_FAILD);
+        }
         //判断一个账号最大病号数是否超过5个
         if(!this.checkMaxPatientNum(accountId)){
             throw new Exception("该账号最大病号数已达最大5个");
         }
 
         // 判断身份证不能重复 11-29 单独根据身份证来判断
-        Preconditions.checkState(isExistPatientByIdcard(idCard),"此身份证已存在,添加失败");
+        Preconditions.checkState(!isExistPatient(idCard, medicalCard),"此病人已存在,添加失败");
 
         // 12-22 现在不能主动向his添加病人了，只能通过就诊卡号绑定
         Credentials credentials = hisUserManager.getUserInfoByRegNO(idCard, HisMedicalCardType.ID_CARD.getCardType(), name,
@@ -111,10 +116,23 @@ public class PatientInfoService {
 
 
     //单独根据身份证判断是不是有这个病人  11/29
-    // TODO    是否需要增加就诊卡号的判断 12-22
-    private boolean isExistPatientByIdcard(String idCard) {
-        PatientInfo patientInfo =  patientInfoMapper.queryForExistByIdcard(idCard);
-        return patientInfo == null;
+    //增加就诊卡号的判断 12-22
+    private boolean isExistPatient(String idCard, String medicalCard) {
+        List<PatientInfo> patientInfoList =  patientInfoMapper.queryByIdCardOrMedicalCard(idCard, medicalCard);
+        if (patientInfoList != null && !patientInfoList.isEmpty()) {
+            for (PatientInfo patientInfo : patientInfoList) {
+                if (!patientInfo.getEnable().equals(EnableEnum.EFFECTIVE.getCode())) {
+                    continue;
+                }
+                if (medicalCard.equals(patientInfo.getJzkh())) {
+                    return true;
+                }
+                if (Constant.HIS_IDCARD_TO_ONE_MEDICALCARD && idCard.equals(patientInfo.getIdCard())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private boolean isExistPatient(Long accountId, String name, String idCard) {
