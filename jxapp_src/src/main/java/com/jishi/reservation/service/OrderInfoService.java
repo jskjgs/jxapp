@@ -288,7 +288,7 @@ public class OrderInfoService {
         if (info == null) {
             throw new ShowException("订单不存在");
         }
-        return OrderStatusEnum.WAIT_PAYED.equals(info.getPayType());
+        return OrderStatusEnum.WAIT_PAYED.equals(info.getStatus());
     }
 
     public boolean setPaying(String orderNumber) {
@@ -296,7 +296,7 @@ public class OrderInfoService {
         if (info == null) {
             throw new ShowException("订单不存在");
         }
-        if (OrderStatusEnum.WAIT_PAYED.equals(info.getPayType())) {
+        if (OrderStatusEnum.WAIT_PAYED.equals(info.getStatus())) {
             OrderInfo infoNew = new OrderInfo();
             infoNew.setId(info.getId());
             infoNew.setStatus(OrderStatusEnum.PAYING.getCode());
