@@ -21,29 +21,30 @@ public class WorkerDispatcher {
 
     public boolean hasPermission(WorkerTypeEnum type) throws Exception {
         final String name = type.name();
-        final String ip = NetUtil.getLocalIP();
+        final String hostName = NetUtil.getHostName();
         final String keyIp = name + "_ip";
 
-        log.info(type.name() + " 申请获取执行权限，本机ip：" + ip + " 超时时间：" + type.getExpireTime());
+        log.info(type.name() + " 申请获取执行权限，hostName：" + hostName + " 超时时间：" + type.getExpireTime());
+        log.info("ip:" + NetUtil.getLocalIP());
 
         boolean canRun = false;
         String valueIp = redisOperation.usePool().get(keyIp);
         if (valueIp == null || valueIp.isEmpty()) {
-            log.info(type.name() + "任务已超时，" + ip + " 准备获取权限");
-            canRun = doGetPermission(keyIp, ip, type);
+            log.info(type.name() + "任务已超时，" + hostName + " 准备获取权限");
+            canRun = doGetPermission(keyIp, hostName, type);
         } else {
-            canRun = valueIp.equals(ip);
+            canRun = valueIp.equals(hostName);
         }
-        log.info(type.name() + " 执行权限：" + ip + "    " + canRun);
+        log.info(type.name() + " 执行权限：" + hostName + "    " + canRun);
         return canRun;
     }
 
 
-    private boolean doGetPermission(String keyIp, String ip, WorkerTypeEnum type) throws Exception {
+    private boolean doGetPermission(String keyIp, String hostName, WorkerTypeEnum type) throws Exception {
         boolean permission = false;
         List<String> keys = new ArrayList<String>();
         keys.add(keyIp);
-        keys.add(ip);
+        keys.add(hostName);
         try {
             String ADD_KEY_IP_NX = " return redis.call('set',KEYS[1],KEYS[2],'ex'," + type.getExpireTime() + " ,'nx'); ";
             Object obj = redisOperation.usePool().eval(ADD_KEY_IP_NX, keys, new ArrayList<String>());
