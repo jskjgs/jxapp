@@ -1,21 +1,16 @@
 package com.jishi.reservation.service.his;
 
-import com.jishi.reservation.Main;
-import org.junit.runner.RunWith;
+import com.jishi.reservation.TestApplication;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.testng.annotations.Test;
 
 /**
  * Created by liangxiong on 2017/12/26.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(classes = Main.class)
-public class HisHospitalizationTest {
+public class HisHospitalizationTest extends TestApplication {
 
     @Autowired
-    private HisHospitalization hisHospitalization;
+     HisHospitalization hisHospitalization;
 
     private String brid = "15467";
     private String zycs = "1";

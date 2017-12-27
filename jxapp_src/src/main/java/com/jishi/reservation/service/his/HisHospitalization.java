@@ -196,6 +196,20 @@ public class HisHospitalization {
         return null;
     }
 
+    //Information.Detail.Query
+    public String testInformationDetailQuery(String brid, String zycs) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<BRID>").append(brid).append("</BRID>");
+        sb.append("<ZYCS>").append(zycs).append("</ZYCS>");
+        String reData = hisTool.toXMLString("Information.Detail.Query", sb.toString());
+        HospitalizationResponseHospitalizationResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            String xml = hisTool.getHisDataparam(me,"Information.Detail.Query");
+            return xml;
+        }
+        return null;
+    }
+
 
     private HospitalizationResponseHospitalizationResult execute(String reData) throws RemoteException, ServiceException {
         ZL_InformationServiceLocator locator = new ZL_InformationServiceLocator();
