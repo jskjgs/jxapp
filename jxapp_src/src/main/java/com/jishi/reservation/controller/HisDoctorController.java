@@ -81,7 +81,8 @@ public class HisDoctorController extends MyBaseController {
             @ApiParam(value = "医生姓名") @RequestParam(value = "name", defaultValue = "") String name,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) throws Exception {
-
+        if(agreeTime != null && String.valueOf(agreeTime).length()==10)
+            agreeTime = agreeTime*100;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timeStr = sdf.format(new Date(agreeTime));
 
