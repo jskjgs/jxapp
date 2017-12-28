@@ -12,8 +12,10 @@ import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.dao.models.Doctor;
 import com.jishi.reservation.dao.models.DoctorWork;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.bean.RegisteredNumberInfo;
 import com.jishi.reservation.util.Constant;
+import com.jishi.reservation.util.DateTool;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,10 @@ public class DoctorService {
 
     @Autowired
     private IMAccountService imAccountService;
+
+
+    @Autowired
+    private HisOutpatient hisOutpatient;
 
     @Autowired
     private DoctorWorkMapper doctorWorkMapper;
@@ -98,26 +104,46 @@ public class DoctorService {
         List<Doctor> list = doctorMapper.select(queryDoctor);
         log.info("查询长度："+list.size());
         if(agreeTime == null){
-
-
             return list;
         }else {
-
-            log.info("查询的日期不为空");
-            List<Doctor> resultList = new ArrayList<>();
-            Date date = new Date(agreeTime);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            //结合排班表去查找
-            for (Doctor doctor : list) {
-                DoctorWork doctorWork = doctorWorkMapper.queryByHIdAndDate(doctor.getHId(), sdf.format(date));
-                if(doctorWork != null)
-                    resultList.add(doctor);
-            }
-
-            return resultList;
+            log.info("查询的日期不为空的科室排班表");
+//            List<Doctor> resultList = new ArrayList<>();
+//            Date date = new Date(agreeTime);
+//            //结合排班表去查找
+//            for (Doctor doctor : list) {
+//                resultList.add(doctor);
+//            }
+            return getSchedulingHB(agreeTime,list);
 
         }
 
+    }
+
+    /**
+     * 通过医生ID,返回医生排班信息
+     * @param agreeTime
+     * @param doctorList
+     * @return
+     * @throws Exception
+     */
+    private List<Doctor>  getSchedulingHB(Long agreeTime,List<Doctor> doctorList) throws Exception {
+        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = simp.format(new Date(agreeTime));
+        RegisteredNumberInfo registeredNumberInfo = hisOutpatient.queryRegisteredNumber("",simp.format(new Date(agreeTime)),"","","","","","");
+        List<Doctor> list = new ArrayList<>();
+        if(registeredNumberInfo != null && registeredNumberInfo.getGroup() !=null
+                && registeredNumberInfo.getGroup().getHblist()!=null && registeredNumberInfo.getGroup().getHblist().get(0)!=null){
+            for(RegisteredNumberInfo.Hblist hblist : registeredNumberInfo.getGroup().getHblist()){
+                for(RegisteredNumberInfo.HB hb : hblist.getHbList()){
+                    for(Doctor doctor : doctorList) {
+                        if (doctor.getHId().equals(hb.getYsid()))
+                            list.add(doctor);
+                    }
+                }
+
+            }
+        }
+        return list;
     }
 
     /**
