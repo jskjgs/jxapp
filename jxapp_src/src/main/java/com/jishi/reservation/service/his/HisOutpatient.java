@@ -385,29 +385,29 @@ public class HisOutpatient {
      * 对取消挂号或超过付款限的号源进行解锁
 
      */
-//    public String unlockRegister(String hm,String rq,String hx) throws Exception {
-//        StringBuffer sb = new StringBuffer();
-//        sb.append("<HM>").append(hm).append("</HM>");
-//        sb.append("<RQ>").append(rq).append("</RQ>");
-//        sb.append("<CZ>").append("0").append("</CZ>");
-//        sb.append("<HX>").append(hx).append("</HX>");
-//        sb.append("<HZDW>").append("").append("</HZDW>");
-//        sb.append("<JQM>").append("JQM"+hm).append("</JQM>");
-//        log.info("取消挂号请求数据：\n"+sb.toString());
-//        String reData = hisTool.toXMLString("Register.UnLock.Modify", sb.toString());
-//        OutPatientResponseOutPatientResult result = execute(reData);
-//        for (MessageElement me : result.get_any()) {
-//            log.info(me.getAsString());
-//            String xml = hisTool.getHisDataparam(me,"Register.UnLock.Modify");
-//            if(xml != null && !"".equals(xml)){
-//                return hisTool.getXmlAttribute(xml,"GHDH");
-//
-//            }else {
-//                return null;
-//            }
-//        }
-//        return null;
-//    }
+    public String unlockRegister(String brid, String hm, String rq, String hx, String czjlid, String hzdw) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<HM>").append(hm).append("</HM>");
+        sb.append("<CZJLID>").append(czjlid).append("</CZJLID>");
+        sb.append("<RQ>").append(rq).append("</RQ>");
+        sb.append("<CZ>").append("0").append("</CZ>");
+        sb.append("<HX>").append(hx).append("</HX>");
+        sb.append("<HZDW>").append(hzdw).append("</HZDW>");
+        sb.append("<JQM>").append("JQM"+brid).append("</JQM>");
+        log.info("取消挂号请求数据：\n"+sb.toString());
+        String reData = hisTool.toXMLString("Register.UnLock.Modify", sb.toString());
+        OutPatientResponseOutPatientResult result = execute(reData);
+        for (MessageElement me : result.get_any()) {
+            log.info(me.getAsString());
+            String xml = hisTool.getHisDataparam(me,"Register.UnLock.Modify");
+            if(xml != null && !"".equals(xml)){
+                return hisTool.getXmlAttribute(xml,"HX");
+            } else {
+                return null;
+            }
+        }
+        return null;
+    }
 
 
 

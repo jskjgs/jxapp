@@ -213,8 +213,16 @@ public class RegisterController extends MyBaseController {
 
         }
 
+    }
 
-
+    @ApiOperation(value = "取消预约  针对未付款的预约挂号订单")
+    @RequestMapping(value = "unlockRegister", method = RequestMethod.DELETE)
+    @ResponseBody
+    public JSONObject unlockRegister(
+            @ApiParam(value = "预约ID", required = true) @RequestParam(value = "registerId", required = true) Long registerId
+    ) throws Exception {
+        registerService.unlockRegister(registerId);
+        return ResponseWrapper().addMessage("success").ExeSuccess();
     }
 
 
