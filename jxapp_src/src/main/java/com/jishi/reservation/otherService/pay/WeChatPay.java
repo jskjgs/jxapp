@@ -1,8 +1,6 @@
 package com.jishi.reservation.otherService.pay;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -32,8 +30,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.security.KeyStore;
 
 import javax.net.ssl.SSLContext;
@@ -264,7 +260,8 @@ public class WeChatPay {
     private String doWechatRefund(Map param) throws Exception {
         KeyStore keyStore  = KeyStore.getInstance("PKCS12");
         ClassPathResource resource = new ClassPathResource(Constant.WECHAT_CERTIFICATE_P12_NAME);
-        FileInputStream instream = new FileInputStream(resource.getFile());
+        //FileInputStream instream = new FileInputStream(resource.getFile());
+        InputStream instream = resource.getInputStream();
         try {
             keyStore.load(instream, Constant.WECHAT_PAY_MCHID.toCharArray());
         } finally {
