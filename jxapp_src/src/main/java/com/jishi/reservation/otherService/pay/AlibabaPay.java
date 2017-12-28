@@ -64,7 +64,7 @@ public class AlibabaPay {
      * @return
      * @throws Exception
      */
-    public Integer refund(String orderNumber) throws Exception {
+    public int refund(String orderNumber) throws Exception {
 
 
          OrderInfo orderInfo =  orderInfoMapper.queryByNumber(orderNumber);

@@ -446,10 +446,6 @@ public class RegisterService {
         Register register = registerMapper.queryById(registerId);
         OrderInfo orderInfo = orderInfoMapper.queryById(register.getOrderId());
 
-        if (orderInfo.getPayType().intValue() == PayEnum.WEIXIN.getCode()) {
-            throw new ShowException("微信支付的订单暂不支持退款操作");
-        }
-
         // 检查是否有资格退号
         if(!hisOutpatient.checkCancelRegister(orderInfo.getGhdh())){
             log.info("订单id:"+orderInfo.getId()+",该订单没有退号资格。");
@@ -551,8 +547,14 @@ public class RegisterService {
      * @return
      */
     public boolean checkIsPayedRegister(Long registerId) {
-
-        OrderInfo orderInfo = orderInfoMapper.queryById(registerMapper.queryById(registerId).getOrderId());
+        Register register = registerMapper.queryById(registerId);
+        if (register == null) {
+            return false;
+        }
+        OrderInfo orderInfo = orderInfoMapper.queryById(register.getOrderId());
+        if (orderInfo == null) {
+            return false;
+        }
 
         return orderInfo.getType()==OrderTypeEnum.REGISTER.getCode() && orderInfo.getStatus() == OrderStatusEnum.PAYED.getCode();
     }
