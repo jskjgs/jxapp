@@ -25,6 +25,7 @@ import com.jishi.reservation.util.Helpers;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -139,6 +140,7 @@ public class WeChatPay {
         Map<String,Object> map = new HashMap<>();
         map.put("appid", Constant.WECHAT_PAY_APPID);
         map.put("mch_id", Constant.WECHAT_PAY_MCHID);
+        map.put("nonce_str", RandomUtil.getRandomStringByLength(32).toUpperCase());
         map.put("out_trade_no", out_trade_no);
         map.put("out_refund_no", out_trade_no);
         map.put("total_fee", total_fee);
