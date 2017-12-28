@@ -26,7 +26,7 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
 
 
     @Select({
-            "select br_id from patientInfo where account_id = #{accountId}"
+            "select br_id from patientInfo where account_id = #{accountId} and enable=0"
     })
     List<String> queryBrIdByAccountId(@Param("accountId") Long accountId);
 
@@ -43,25 +43,25 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
 
 
     @Select({
-            "select * from patientInfo where account_id = #{accountId} and name = #{name} and id_card = #{idCard}"
+            "select * from patientInfo where account_id = #{accountId} and name = #{name} and id_card = #{idCard} and enable=0 limit 1"
     })
     PatientInfo queryForExist(@Param("accountId") Long accountId,@Param("name") String name,@Param("idCard") String idCard);
 
 
 
     @Select({
-            "select account_id from patientInfo where br_id = #{brId} "
+            "select account_id from patientInfo where br_id = #{brId} and enable=0 limit 1"
     })
     Long queryAccountIdByBrId(@Param("brId") String brId);
 
 
     @Select({
-            "select * from patientInfo where account_id = #{accountId}"
+            "select * from patientInfo where account_id = #{accountId} and enable=0"
     })
     List<PatientInfo> queryByAccountId(Long accountId);
 
     @Select({
-            "select * from patientInfo where id_card = #{idCard}"
+            "select * from patientInfo where id_card = #{idCard} and enable=0 limit 1"
     })
     PatientInfo queryForExistByIdcard(@Param("idCard") String idCard);
 

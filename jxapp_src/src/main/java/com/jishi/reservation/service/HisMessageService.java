@@ -3,6 +3,7 @@ package com.jishi.reservation.service;
 import com.jishi.reservation.controller.protocol.OutpatientPaymentInfoVO;
 import com.jishi.reservation.dao.mapper.PatientInfoMapper;
 import com.jishi.reservation.dao.models.Account;
+import com.jishi.reservation.dao.models.PatientInfo;
 import com.jishi.reservation.service.his.HisHospitalization;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.HisTool;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * Created by liangxiong on 2017/12/21.
@@ -126,8 +128,11 @@ public class HisMessageService {
         if (brid == null || brid.isEmpty()) {
             return null;
         }
-        Long accountId = patientInfoMapper.queryAccountIdByBrId(brid);
-        Account account = accountService.queryAccountById(accountId);
+        List<PatientInfo> patientInfoList = patientInfoMapper.queryByBrId(brid);
+        if (patientInfoList == null || patientInfoList.isEmpty()) {
+            return null;
+        }
+        Account account = accountService.queryAccountById(patientInfoList.get(0).getAccountId());
         return account != null ? account.getPushId() : null;
     }
 
