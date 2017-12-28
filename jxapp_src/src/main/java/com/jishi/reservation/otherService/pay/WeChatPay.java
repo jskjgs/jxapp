@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
@@ -262,8 +263,8 @@ public class WeChatPay {
 
     private String doWechatRefund(Map param) throws Exception {
         KeyStore keyStore  = KeyStore.getInstance("PKCS12");
-        //ClassPathResource resource = new ClassPathResource(Constant.WECHAT_CERTIFICATE_P12_NAME);
-        FileInputStream instream = new FileInputStream(new File(Constant.WECHAT_CERTIFICATE_P12_NAME));
+        ClassPathResource resource = new ClassPathResource(Constant.WECHAT_CERTIFICATE_P12_NAME);
+        FileInputStream instream = new FileInputStream(resource.getFile());
         try {
             keyStore.load(instream, Constant.WECHAT_PAY_MCHID.toCharArray());
         } finally {
