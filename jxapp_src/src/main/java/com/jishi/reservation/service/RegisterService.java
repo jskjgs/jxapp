@@ -402,6 +402,34 @@ public class RegisterService {
             return null;
     }
 
+    @Transactional
+    public void unlockRegister(Long registerId) throws Exception {
+        Register register = registerMapper.queryById(registerId);
+        if (register == null) {
+            throw new ShowException("不存在的挂号单");
+        }
+        OrderInfo orderInfo = orderInfoMapper.queryById(register.getOrderId());
+        if (orderInfo.getType() != OrderTypeEnum.REGISTER.getCode()
+                || orderInfo.getStatus() != OrderStatusEnum.WAIT_PAYED.getCode()) {
+            throw new ShowException("订单不是待支付");
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timeStr = sdf.format(register.getAgreedTime());
+        String rslt = hisOutpatient.unlockRegister(register.getBrId(), register.getHm(), timeStr,
+                register.getHx(), register.getCzjlid(), "");
+        if (rslt == null || rslt.isEmpty()) {
+            throw new ShowException("挂号单取消失败");
+        }
+        Register registerModify = new Register();
+        registerModify.setId(register.getId());
+        registerModify.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
+        OrderInfo orderInfoModify = new OrderInfo();
+        orderInfoModify.setId(register.getId());
+        orderInfoModify.setStatus(OrderStatusEnum.CANCELED.getCode());
+        registerMapper.updateByPrimaryKeySelective(register);
+        orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+    }
+
     /**
      * 把就诊信息置为无效
      * @param registerId
