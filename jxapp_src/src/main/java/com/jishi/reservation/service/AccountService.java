@@ -165,6 +165,7 @@ public class AccountService {
             Account account = accountMapper.queryByTelephone(originalPhone);
             account.setPhone(newPhone);
             account.setAccount(newPhone);
+            account.setEnable(EnableEnum.EFFECTIVE.getCode());
             return accountMapper.updateByPrimaryKeySelective(account) == 1;
         }
     }
