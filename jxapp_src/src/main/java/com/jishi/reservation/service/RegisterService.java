@@ -485,7 +485,8 @@ public class RegisterService {
             vo.setRegisterTime(register.getAgreedTime());
             vo.setId(register.getId());
             Account account = accountMapper.queryById(register.getAccountId());
-            PatientInfo patientInfo = patientInfoMapper.queryByById(register.getBrId(),orderInfo.getAccountId());
+            List<PatientInfo> patientInfoList = patientInfoMapper.queryByById(register.getBrId(),orderInfo.getAccountId());
+            PatientInfo patientInfo = patientInfoList == null || patientInfoList.isEmpty() ? null : patientInfoList.get(0);
             vo.setPhone(account.getPhone());
             //todo  状态..
             vo.setStatus(String.valueOf(orderInfo.getStatus()));

@@ -32,9 +32,9 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
 
 
     @Select({
-            "select * from patientInfo where br_id = #{brId} and account_id = #{accountId}"
+            "select * from patientInfo where br_id = #{brId} and account_id = #{accountId} and enable=0"
     })
-    PatientInfo queryByById(@Param("brId") String brId,@Param("accountId") Long accountId);
+    List<PatientInfo> queryByById(@Param("brId") String brId,@Param("accountId") Long accountId);
 
     @Select({
             "select * from patientInfo where br_id = #{brId} and enable=0"
