@@ -428,6 +428,7 @@ public class RegisterService {
         orderInfoModify.setStatus(OrderStatusEnum.CANCELED.getCode());
         registerMapper.updateByPrimaryKeySelective(register);
         orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+        throw new ShowException("挂号单取消成功，registerId：" + registerId);
     }
 
     /**
@@ -443,9 +444,7 @@ public class RegisterService {
 
 
         Register register = registerMapper.queryById(registerId);
-        register.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
         OrderInfo orderInfo = orderInfoMapper.queryById(register.getOrderId());
-        orderInfo.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
 
         if (orderInfo.getPayType().intValue() == PayEnum.WEIXIN.getCode()) {
             throw new ShowException("微信支付的订单暂不支持退款操作");
@@ -471,8 +470,18 @@ public class RegisterService {
             }
 
             if (refundRslt) {
-                registerMapper.updateByPrimaryKeySelective(register);
-                orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+                log.info("预约挂号退款成功，修改数据库，registerId：" + registerId);
+
+                Register registerModify = new Register();
+                registerModify.setId(register.getId());
+                registerModify.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
+                registerMapper.updateByPrimaryKeySelective(registerModify);
+
+                OrderInfo orderInfoModify = new OrderInfo();
+                orderInfoModify.setId(orderInfo.getId());
+                orderInfoModify.setStatus(OrderStatusEnum.CANCELED.getCode());
+                orderInfoMapper.updateByPrimaryKeySelective(orderInfoModify);
+                log.info("预约挂号退款成功，修改数据库，预约状态：" + StatusEnum.REGISTER_STATUS_CANCEL.getDesc());
                 return 0;
             } else {
                 log.info("退款失败..订单号：" + orderInfo.getOrderNumber());
