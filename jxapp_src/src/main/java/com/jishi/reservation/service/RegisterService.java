@@ -428,7 +428,7 @@ public class RegisterService {
         orderInfoModify.setStatus(OrderStatusEnum.CANCELED.getCode());
         registerMapper.updateByPrimaryKeySelective(register);
         orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
-        throw new ShowException("挂号单取消成功，registerId：" + registerId);
+        log.info("挂号单取消成功，registerId：" + registerId);
     }
 
     /**
