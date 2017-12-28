@@ -43,6 +43,8 @@ public class DateSupport {
         }
         if(now.getTime()>afternoonTime.getTime()){
             log.info("当天14点之后");
+            // todo 增加全天可以挂号 12-28
+            dateList.add(DateTool.getAfternoonTime(0));
 
         }
         for(int i = 1;i<8;i++){

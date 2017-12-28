@@ -286,8 +286,8 @@ public class PatientInfoService {
     }
 
     public PatientInfo queryByBrIdAndAccountId(String brId,Long accountId) {
-
-        return patientInfoMapper.queryByById(brId,accountId);
+        List<PatientInfo> patientInfoList = patientInfoMapper.queryByById(brId,accountId);
+        return patientInfoList == null || patientInfoList.isEmpty() ? null : patientInfoList.get(0);
     }
 
     public List<PatientInfo> queryByBrId(String brId) {
