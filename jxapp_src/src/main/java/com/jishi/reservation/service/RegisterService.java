@@ -404,6 +404,7 @@ public class RegisterService {
 
     @Transactional
     public void unlockRegister(Long registerId) throws Exception {
+        log.info("进行号源解锁，registerId: " + registerId);
         Register register = registerMapper.queryById(registerId);
         if (register == null) {
             throw new ShowException("不存在的挂号单");
@@ -413,6 +414,7 @@ public class RegisterService {
                 || orderInfo.getStatus() != OrderStatusEnum.WAIT_PAYED.getCode()) {
             throw new ShowException("订单不是待支付");
         }
+        log.info("进行号源解锁，orderNumber: " + orderInfo.getOrderNumber());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timeStr = sdf.format(register.getAgreedTime());
         String rslt = hisOutpatient.unlockRegister(register.getBrId(), register.getHm(), timeStr,
@@ -426,8 +428,14 @@ public class RegisterService {
         OrderInfo orderInfoModify = new OrderInfo();
         orderInfoModify.setId(register.getId());
         orderInfoModify.setStatus(OrderStatusEnum.CANCELED.getCode());
-        registerMapper.updateByPrimaryKeySelective(register);
-        orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+        int code = registerMapper.updateByPrimaryKeySelective(registerModify);
+        if (code < 1) {
+            throw new ShowException("挂号单取消失败");
+        }
+        code = orderInfoMapper.updateByPrimaryKeySelective(orderInfoModify);
+        if (code < 1) {
+            throw new ShowException("挂号单取消失败");
+        }
         log.info("挂号单取消成功，registerId：" + registerId);
     }
 
@@ -442,10 +450,14 @@ public class RegisterService {
  /*       if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
             throw new Exception("预约信息为空.");*/
 
-
+        log.info("进行号源解锁，registerId: " + registerId);
         Register register = registerMapper.queryById(registerId);
+        if (register == null) {
+            throw new ShowException("不存在的挂号单");
+        }
         OrderInfo orderInfo = orderInfoMapper.queryById(register.getOrderId());
 
+        log.info("进行号源解锁，orderNumber: " + orderInfo.getOrderNumber());
         // 检查是否有资格退号
         if(!hisOutpatient.checkCancelRegister(orderInfo.getGhdh())){
             log.info("订单id:"+orderInfo.getId()+",该订单没有退号资格。");
@@ -471,12 +483,20 @@ public class RegisterService {
                 Register registerModify = new Register();
                 registerModify.setId(register.getId());
                 registerModify.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
-                registerMapper.updateByPrimaryKeySelective(registerModify);
+                int code = registerMapper.updateByPrimaryKeySelective(registerModify);
+                if (code < 1) {
+                    log.info("预约挂号退款成功，Register修改数据库失败");
+                    throw new ShowException("退款成功，订单状态未改变，请联系客服处理");
+                }
 
                 OrderInfo orderInfoModify = new OrderInfo();
                 orderInfoModify.setId(orderInfo.getId());
                 orderInfoModify.setStatus(OrderStatusEnum.CANCELED.getCode());
-                orderInfoMapper.updateByPrimaryKeySelective(orderInfoModify);
+                code = orderInfoMapper.updateByPrimaryKeySelective(orderInfoModify);
+                if (code < 1) {
+                    log.info("预约挂号退款成功，OrderInfo修改数据库失败");
+                    throw new ShowException("退款成功，订单状态未改变，请联系客服处理");
+                }
                 log.info("预约挂号退款成功，修改数据库，预约状态：" + StatusEnum.REGISTER_STATUS_CANCEL.getDesc());
                 return 0;
             } else {
