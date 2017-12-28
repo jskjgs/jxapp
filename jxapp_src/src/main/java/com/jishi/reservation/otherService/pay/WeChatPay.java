@@ -124,7 +124,6 @@ public class WeChatPay {
         }
         //判断微信标识是否为成功
         if(resp.get("return_code") == null || resp.get("result_code") == null
-                || resp.get("prepay_id") == null
                 || !"SUCCESS".equals(resp.get("return_code"))
                 || !"SUCCESS".equals(resp.get("result_code"))) {
             log.info(String.valueOf("微信错误提示return_msg：" + resp.get("return_msg")));
