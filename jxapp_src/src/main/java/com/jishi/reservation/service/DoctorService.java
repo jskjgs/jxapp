@@ -7,17 +7,23 @@ import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.dao.mapper.DepartmentMapper;
 import com.jishi.reservation.dao.mapper.DoctorMapper;
+import com.jishi.reservation.dao.mapper.DoctorWorkMapper;
 import com.jishi.reservation.dao.models.Department;
 import com.jishi.reservation.dao.models.Doctor;
+import com.jishi.reservation.dao.models.DoctorWork;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.bean.RegisteredNumberInfo;
 import com.jishi.reservation.util.Constant;
+import com.jishi.reservation.util.DateTool;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,6 +41,16 @@ public class DoctorService {
 
     @Autowired
     private IMAccountService imAccountService;
+
+
+    @Autowired
+    private HisOutpatient hisOutpatient;
+
+    @Autowired
+    private DoctorWorkMapper doctorWorkMapper;
+
+    @Autowired
+    private DoctorWorkService doctorWorkService;
 
     /**
      * 增加科室
@@ -76,7 +92,8 @@ public class DoctorService {
      * @param doctorName
      * @param type
      */
-    public List<Doctor> queryDoctor(Long doctorId, String hDoctorId,String doctorName, String departmentId,String type,Integer enable) throws Exception {
+    public List<Doctor> queryDoctor(Long doctorId, String hDoctorId,String doctorName, String departmentId,String type,Long agreeTime,Integer enable) throws Exception {
+
         log.info("查询医生 doctorId:"+doctorId+" doctorName:"+doctorName+" type:"+type +" enable:"+enable);
         Doctor queryDoctor = new Doctor();
         queryDoctor.setType(type);
@@ -86,7 +103,46 @@ public class DoctorService {
         queryDoctor.setHId(hDoctorId);
         List<Doctor> list = doctorMapper.select(queryDoctor);
         log.info("查询长度："+list.size());
+        if(agreeTime == null){
+            return list;
+        }else {
+            log.info("查询的日期不为空的科室排班表");
+//            List<Doctor> resultList = new ArrayList<>();
+//            Date date = new Date(agreeTime);
+//            //结合排班表去查找
+//            for (Doctor doctor : list) {
+//                resultList.add(doctor);
+//            }
+            return getSchedulingHB(agreeTime,list);
 
+        }
+
+    }
+
+    /**
+     * 通过医生ID,返回医生排班信息
+     * @param agreeTime
+     * @param doctorList
+     * @return
+     * @throws Exception
+     */
+    private List<Doctor>  getSchedulingHB(Long agreeTime,List<Doctor> doctorList) throws Exception {
+        SimpleDateFormat simp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = simp.format(new Date(agreeTime));
+        RegisteredNumberInfo registeredNumberInfo = hisOutpatient.queryRegisteredNumber("",simp.format(new Date(agreeTime)),"","","","","","");
+        List<Doctor> list = new ArrayList<>();
+        if(registeredNumberInfo != null && registeredNumberInfo.getGroup() !=null
+                && registeredNumberInfo.getGroup().getHblist()!=null && registeredNumberInfo.getGroup().getHblist().get(0)!=null){
+            for(RegisteredNumberInfo.Hblist hblist : registeredNumberInfo.getGroup().getHblist()){
+                for(RegisteredNumberInfo.HB hb : hblist.getHbList()){
+                    for(Doctor doctor : doctorList) {
+                        if (doctor.getHId().equals(hb.getYsid()))
+                            list.add(doctor);
+                    }
+                }
+
+            }
+        }
         return list;
     }
 
@@ -97,7 +153,7 @@ public class DoctorService {
         log.info("查询全部科室.");
         if(!Helpers.isNullOrEmpty(paging))
             PageHelper.startPage(paging.getPageNum(),paging.getPageSize(),paging.getOrderBy());
-        return new PageInfo(queryDoctor(doctorId,null,doctorName,departmentId,type,enable));
+        return new PageInfo(queryDoctor(doctorId,null,doctorName,departmentId,type,null,enable));
     }
 
     /**
@@ -153,7 +209,7 @@ public class DoctorService {
     public void topDoctor(Long doctorId) throws Exception {
         if(Helpers.isNullOrEmpty(doctorId))
             throw new Exception("医生ID不能为空.");
-        List<Doctor> doctorList = this.queryDoctor(doctorId, null,null, null, null, EnableEnum.EFFECTIVE.getCode());
+        List<Doctor> doctorList = this.queryDoctor(doctorId, null,null, null, null, null,EnableEnum.EFFECTIVE.getCode());
         if(doctorList.size()==0)
             throw new Exception("没有查询到医生");
 
@@ -165,11 +221,28 @@ public class DoctorService {
 
     }
 
-    public void getDoctorFromHis(List<RegisteredNumberInfo.HB> hbList) {
+    public void getDoctorFromHis(List<RegisteredNumberInfo.HB> hbList,Long date) {
 
         List<Doctor> list = new ArrayList<>();
+        List<DoctorWork> workList = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+        log.info("传入的查询排班时间："+sdf.format(date));
+
         for (RegisteredNumberInfo.HB hb : hbList) {
+            Date workDate = new Date(date);
             Doctor doctor = new Doctor();
+            DoctorWork doctorWork = new DoctorWork();
+            doctorWork.setEnable(EnableEnum.EFFECTIVE.getCode());
+            doctorWork.setHDoctorId(hb.getYsid());
+            doctorWork.setWorkingTime(workDate);
+            doctorWork.setCzjlid(hb.getCzjlid());
+            log.info("查询条件：医生 id:"+hb.getYsid()+"，时间："+sdf2.format(date));
+            if(!doctorWorkService.isExit(hb.getYsid(),sdf2.format(date))){
+                log.info("该医生排班表不存在,医生id:"+hb.getYsid()+",预约时间："+workDate.toLocaleString());
+                workList.add(doctorWork);
+            }
+
             doctor.setName(hb.getYs());
             doctor.setHId(hb.getYsid());
             doctor.setDepartmentId(hb.getKsid());
@@ -180,6 +253,7 @@ public class DoctorService {
             doctor.setType("0");
             doctor.setDj(hb.getDj());
             doctor.setHm(hb.getHm());
+           // doctor.setCzjlid(hb.getCzjlid());
             //如果不存在，就添加进去...
             if(!isExist(hb.getYsid())){
                 log.info(hb.getYs()+"不存在"+hb.getYsid());
@@ -200,12 +274,20 @@ public class DoctorService {
         }
 
         if(list.size() != 0){
+
+            log.info("将要入库的数据："+JSONObject.toJSONString(list));
             doctorMapper.insertList(list);
+        }
+
+        if(workList.size() != 0){
+            log.info("将要入库的排班数据："+JSONObject.toJSONString(workList));
+            doctorWorkMapper.insertList(workList);
         }
 
         //如果库里有，但是his拉去过来的没有，那就软删除
 
         List<Doctor> doctorList =  doctorMapper.queryAllValidDoctor();
+        /* 12/28   删除
         for (Doctor doctor : doctorList) {
             Boolean flag = false;
             for (RegisteredNumberInfo.HB hb : hbList) {
@@ -225,7 +307,7 @@ public class DoctorService {
                 doctor.setEnable(1);  //软删除...
                 doctorMapper.updateByPrimaryKeySelective(doctor);
             }
-        }
+        }*/
     }
 
     private boolean isExist(String hId) {

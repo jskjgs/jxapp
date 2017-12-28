@@ -5,8 +5,11 @@ import com.jishi.reservation.dao.mapper.RegisterMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.service.enumPackage.EnableEnum;
+import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
 import com.jishi.reservation.service.enumPackage.StatusEnum;
 import com.jishi.reservation.service.his.HisOutpatient;
+import com.jishi.reservation.worker.configurator.WorkerDispatcher;
+import com.jishi.reservation.worker.configurator.WorkerTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -40,6 +43,9 @@ public class RegisterOverdueWorker {
     @Autowired
     RegisterMapper registerMapper;
 
+    @Autowired
+    private WorkerDispatcher workerDispatcher;
+
     private static final Long HALF_HOUR = 60*30*1000L;
     /**
      * 每30分钟扫描一次
@@ -47,7 +53,9 @@ public class RegisterOverdueWorker {
     @Scheduled(cron = "0 0/3 * * * ?")
     @Transactional
     public void setRegisterOverdue() throws Exception {
-
+        if (!workerDispatcher.hasPermission(WorkerTypeEnum.WORKER_REGISTER_OVER_DUE)) {
+            return;
+        }
         log.info("==============开始执行预约订单过期扫描=====================");
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -59,7 +67,7 @@ public class RegisterOverdueWorker {
             //如果下单30分钟之后
             if(now.getTime() - HALF_HOUR > orderInfo.getCreateTime().getTime()){
                 log.info("订单id是"+orderInfo.getId()+"的订单超过半小时为支付，设置为过期订单");
-                orderInfo.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
+                orderInfo.setStatus(OrderStatusEnum.CANCELED.getCode());
                 orderInfo.setEnable(EnableEnum.INVALID.getCode());
                 Register register = registerMapper.queryByOrderId(orderInfo.getId());
                 register.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
@@ -81,7 +89,7 @@ public class RegisterOverdueWorker {
 
 
         }
-        log.info("==========================过期结束，半小时后再来一次==================");
+        log.info("==========================过期结束,三分钟后再来一次==================");
 
     }
 

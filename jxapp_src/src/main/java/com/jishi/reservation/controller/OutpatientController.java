@@ -115,7 +115,7 @@ public class OutpatientController extends MyBaseController {
                                  @ApiParam(value = "brId(his病人ID)", required = false) @RequestParam(value = "brId", required = false) String brId) throws Exception {
 
         //List<OutpatientQueueDetailVO> visitQueueInfoList = outpatientQueueService.generateTestData(4);
-        //List<OutpatientQueueDetailVO> visitQueueInfoList = outpatientQueueService.queryVisitQueueInfo(accountId, brId);
+        List<OutpatientQueueDetailVO> visitQueueInfoList = outpatientQueueService.queryVisitQueueInfo(accountId, brId);
         return ResponseWrapperSuccess(null);
     }
 

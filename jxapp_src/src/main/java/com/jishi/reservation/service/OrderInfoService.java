@@ -7,15 +7,11 @@ import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.Paging;
 import com.jishi.reservation.controller.protocol.OrderVO;
 import com.jishi.reservation.controller.protocol.PrePaymentRecordVO;
-import com.jishi.reservation.dao.mapper.OrderInfoMapper;
-import com.jishi.reservation.dao.mapper.PrePaymentMapper;
-import com.jishi.reservation.dao.mapper.RegisterMapper;
-import com.jishi.reservation.dao.models.Account;
-import com.jishi.reservation.dao.models.OrderInfo;
-import com.jishi.reservation.dao.models.PrePayment;
-import com.jishi.reservation.dao.models.Register;
+import com.jishi.reservation.dao.mapper.*;
+import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
 import com.jishi.reservation.service.enumPackage.*;
+import com.jishi.reservation.service.exception.ShowException;
 import com.jishi.reservation.service.his.bean.ConfirmOrder;
 import com.jishi.reservation.service.his.bean.ConfirmRegister;
 import com.jishi.reservation.service.support.JpushSupport;
@@ -58,6 +54,12 @@ public class OrderInfoService {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    DoctorMapper doctorMapper;
+
+
+    @Autowired
+    DoctorWorkMapper workMapper;
 
     public OrderVO queryOrderVoById(Long orderId,String orderNumber) throws ParseException {
 
@@ -101,18 +103,20 @@ public class OrderInfoService {
         Register register = registerMapper.queryByOrderId(orderInfo.getId());
         confirmRegister.setBrid(orderInfo.getBrId());
         confirmRegister.setJe(String.valueOf(orderInfo.getPrice().stripTrailingZeros()));
-
+        Doctor doctor = doctorMapper.queryByHid(register.getDoctorId());
         log.info("处理前："+String.valueOf(orderInfo.getPrice()));
         log.info("处理后："+String.valueOf(orderInfo.getPrice().stripTrailingZeros()));
-        confirmRegister.setCzjlid("");
+        confirmRegister.setCzjlid(register.getCzjlid());
+        log.info("出诊记录id:"+confirmRegister.getCzjlid());
         confirmRegister.setHm(register.getHm());
+
         confirmRegister.setHx(register.getHx());
         confirmRegister.setHzdw("");   //合作单位 固定传入第三方名称
         confirmRegister.setYyfs("");  //预约方式 固定传入第三方名称
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         confirmRegister.setYysj(sdf.format(register.getAgreedTime()));
         confirmRegister.setSm(""); //说明，固定传入第三方名称
-        confirmRegister.setJqm("jxyy+zczh");
+        confirmRegister.setJqm(register.getBrId());
         confirmRegister.setJsklb("");//结算卡类别，固定传入第三方名称
         confirmRegister.setJsfs("");//结算方式，传空
         //confirmRegister.setJsje(String.valueOf(orderInfo.getPrice()));
@@ -145,8 +149,10 @@ public class OrderInfoService {
 
         OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(orderId,orderNumber);
         //Preconditions.checkState(orderInfo.getStatus()==OrderStatusEnum.PAYED.getCode(),"该订单未支付，不能确认");
-        if(orderInfo.getStatus() != OrderStatusEnum.PAYED.getCode())
-            return ReturnCodeEnum.FAILED.getCode();
+//        if(orderInfo.getStatus() != OrderStatusEnum.PAYED.getCode())
+//            return ReturnCodeEnum.FAILED.getCode();
+
+        log.info("开始更新数据......orderId:"+orderId);
         orderInfo.setGhdh(confirmOrder.getGhdh());
         orderInfo.setCzsj(confirmOrder.getCzsj());
         orderInfo.setJsid(confirmOrder.getJzid());
@@ -276,4 +282,30 @@ public class OrderInfoService {
 
         return resultPage;
     }
+
+    public boolean isWaitingPay(String orderNumber) {
+        OrderInfo info = queryOrderByOrderNumber(orderNumber);
+        if (info == null) {
+            throw new ShowException("订单不存在");
+        }
+        log.info("订单号" + orderNumber + "的状态为" + info.getStatus());
+        return OrderStatusEnum.WAIT_PAYED.getCode() == info.getStatus().intValue();
+    }
+
+    public boolean setPaying(String orderNumber) {
+        OrderInfo info = queryOrderByOrderNumber(orderNumber);
+        if (info == null) {
+            throw new ShowException("订单不存在");
+        }
+        log.info("订单号" + orderNumber + "的状态为" + info.getStatus());
+        if (OrderStatusEnum.WAIT_PAYED.getCode() == info.getStatus().intValue()) {
+            OrderInfo infoNew = new OrderInfo();
+            infoNew.setId(info.getId());
+            infoNew.setStatus(OrderStatusEnum.PAYING.getCode());
+            orderInfoMapper.updateByPrimaryKeySelective(infoNew);
+            return true;
+        }
+        return false;
+    }
+
 }

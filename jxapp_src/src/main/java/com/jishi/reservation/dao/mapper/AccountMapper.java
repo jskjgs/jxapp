@@ -13,25 +13,25 @@ public interface AccountMapper extends MyMapper<Account> {
 
 
     @Select({
-            "SELECT * FROM account where account = ${account} and passwd = ${password}"
+            "SELECT * FROM account where account = ${account} and passwd = ${password} and enable=0"
     })
     Account selectByAccountAndPassword(@Param("account") String account,@Param("password") String password);
 
 
     @Select({
-            "select * from account where account = #{phone}"
+            "select * from account where account = #{phone} and enable=0"
     })
     Account queryByTelephone(@Param("phone") String phone);
 
 
     @Select({
-            "select * from account where id = #{accountId}"
+            "select * from account where id = #{accountId} and enable=0"
     })
     Account queryById(@Param("accountId") Long accountId);
 
 
     @Select({
-            "<script>select  * from account where 1 =1  " +
+            "<script>select  * from account where enable=0  " +
                     "<if test = \"key != null\"> AND ( nick like concat('%',#{key},'%') or phone like concat('%',#{key},'%') ) </if>" +
 
                     "</script>"

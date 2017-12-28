@@ -37,9 +37,9 @@ public class CheckIdCard {
      * @throws ParseException
      */
     @SuppressWarnings("unchecked")
-    public static String IDCardValidate(String IDStr) throws ParseException {
+    public static String IDCardValidate(final String IDStr) throws ParseException {
         String errorInfo = "";// 记录错误信息
-        String[] ValCodeArr = { "1", "0", "x", "9", "8", "7", "6", "5", "4",
+        String[] ValCodeArr = { "1", "0", "X", "9", "8", "7", "6", "5", "4",
                 "3", "2","X" };
         String[] Wi = { "7", "9", "10", "5", "8", "4", "2", "1", "6", "3", "7",
                 "9", "10", "5", "8", "4", "2" };
@@ -115,7 +115,7 @@ public class CheckIdCard {
         Ai = Ai + strVerifyCode;
 
         if (IDStr.length() == 18) {
-            if (Ai.equals(IDStr) == false) {
+            if (Ai.toUpperCase().equals(IDStr.toUpperCase()) == false) {
                 errorInfo = "身份证无效，不是合法的身份证号码";
                 return errorInfo;
             }

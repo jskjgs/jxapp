@@ -142,22 +142,7 @@ public class AdminDoctorController extends MyBaseController {
     }
 
 
-    @ApiOperation(value = "从his抓取医生信息入到我们自己的库")
-    @RequestMapping(value = "getDoctorFromHis", method = RequestMethod.POST)
-    @ResponseBody
-    public JSONObject getDoctorFromHis(
-    ) throws Exception {
 
-        RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", "", "", "", "", "");
-        if(info.getGroup().getHblist().get(0)!=null) {
-            List<RegisteredNumberInfo.HB> hbList = info.getGroup().getHblist().get(0).getHbList();
-
-            doctorService.getDoctorFromHis(hbList);
-        }
-
-        return ResponseWrapper().addMessage("操作成功！").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-
-    }
 
     @ApiOperation(value = "查询全部医生",response=DoctorVO.class)
     @RequestMapping(value = "queryAllDoctor", method = RequestMethod.GET)

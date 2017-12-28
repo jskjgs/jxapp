@@ -9,6 +9,8 @@ import com.jishi.reservation.service.PatientInfoService;
 import com.jishi.reservation.service.jinxin.bean.QueueCurrentNumber;
 import com.jishi.reservation.service.support.JpushSupport;
 import com.jishi.reservation.controller.protocol.OutpatientQueueDetailVO;
+import com.jishi.reservation.worker.configurator.WorkerDispatcher;
+import com.jishi.reservation.worker.configurator.WorkerTypeEnum;
 import com.jishi.reservation.worker.model.PushData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,43 +40,29 @@ public class OutpatientQueueWorker {
     @Autowired
     private OutpatientQueueService outpatientQueueService;
 
+    @Autowired
+    private WorkerDispatcher workerDispatcher;
+
 
     // 根据查询的已修改的医生门诊号序进行推送
-    //@Scheduled(cron = "0 0/1 8-22 * * ? ")
+    @Scheduled(cron = "0 0/10 7-23 * * ? ")
     public void doWork() throws Exception {
-        List<QueueCurrentNumber> queueCurrentNumberList = outpatientQueueService.queryModifiedVisitCurrentNum();
-        if (queueCurrentNumberList == null || queueCurrentNumberList.isEmpty()) {
+        if (!workerDispatcher.hasPermission(WorkerTypeEnum.WORKER_OUTPATIENT_QUEUE)) {
             return;
         }
         log.info("********************* OutpatientQueueWorker begin *********************");
-        log.info("BeginTime: " + new Date() + "QueueCurrentNumber size: " + queueCurrentNumberList.size());
-        for (QueueCurrentNumber currentNumber : queueCurrentNumberList) {
-            List<OutpatientQueueDetailVO> queueDetailList = outpatientQueueService.queryQueueByDoctorHisId(currentNumber.getDoctorHisId());
-            if (queueDetailList == null || queueDetailList.isEmpty()) {
-                continue;
-            }
-            for (OutpatientQueueDetailVO detail : queueDetailList) {
-                PatientInfo patientInfo = patientInfoService.queryByBrIdAndAccountId(detail.getBrId(),detail.getAccountId());
-                if (patientInfo == null) {
-                    log.info("当前病人未添加, brid: " + detail.getBrId());
-                    continue;
-                }
-                Account account = accountMapper.queryById(patientInfo.getAccountId());
-                if (account == null) {
-                    log.warn("当前病人账号为空, brid: " + detail.getBrId());
-                    continue;
-                }
-                jpushSupport.sendMessage(account.getPushId(), PushData.PushDataMsgTypeDef.PUSH_DATA_TYPE_OUT_QUEUE_INFO, detail);
-            }
-        }
+        outpatientQueueService.doNoticeRegisterQueue();
         log.info("EndTime: " + new Date());
         log.info("********************* OutpatientQueueWorker End *********************");
     }
 
     //  测试推送接口
-    @Scheduled(cron = "0 0/2 8-22 * * ? ")
+    //@Scheduled(cron = "0 0/2 8-22 * * ? ")
     public void doWorkTest() throws Exception {
-        List<OutpatientQueueDetailVO> queueDetailList = outpatientQueueService.generateTestData(8);
+        if (!workerDispatcher.hasPermission(WorkerTypeEnum.WORKER_OUTPATIENT_QUEUE)) {
+            return;
+        }
+        List<OutpatientQueueDetailVO> queueDetailList = outpatientQueueService.generateTestData(4);
         if (queueDetailList == null || queueDetailList.isEmpty()) {
           return;
         }

@@ -1,6 +1,7 @@
 package com.jishi.reservation.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.doraemon.base.util.RandomUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.jishi.reservation.controller.base.Paging;
@@ -10,7 +11,9 @@ import com.jishi.reservation.controller.protocol.RegisterVO;
 import com.jishi.reservation.dao.mapper.*;
 import com.jishi.reservation.dao.models.*;
 import com.jishi.reservation.otherService.pay.AlibabaPay;
+import com.jishi.reservation.otherService.pay.WeChatPay;
 import com.jishi.reservation.service.enumPackage.*;
+import com.jishi.reservation.service.exception.ShowException;
 import com.jishi.reservation.service.his.HisOutpatient;
 import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.service.his.bean.LastPrice;
@@ -62,7 +65,7 @@ public class RegisterService {
     OrderInfoService orderInfoService;
 
     @Autowired
-    HisUserManager hisUserManager;
+    DoctorWorkMapper doctorWorkMapper;
 
     @Autowired
     HisOutpatient hisOutpatient;
@@ -72,6 +75,9 @@ public class RegisterService {
 
     @Autowired
     AlibabaPay alibabaPay;
+
+    @Autowired
+    WeChatPay weChatPay;
 
 
     /**
@@ -117,7 +123,11 @@ public class RegisterService {
 
             //挂号检查
             log.info("去his检查是否能挂号");
-            if(!hisOutpatient.checkIsRegisterLimit(brid,hm,sdf.format(agreeDate),departmentId)){
+            Doctor doctor = doctorMapper.queryByHid(doctorId);
+            String timeStr = sdf.format(agreeDate);
+
+            DoctorWork doctorWork = doctorWorkMapper.queryByHIdAndDate(doctorId, timeStr);
+            if(!hisOutpatient.checkIsRegisterLimit(brid,hm,sdf.format(agreeDate),departmentId,doctorWork.getCzjlid())){
 
                 log.info("挂号检查失败，不能挂号.");
 
@@ -128,8 +138,9 @@ public class RegisterService {
 
 
 
-            //his 锁定号源,返回hx 号序
-        String hx = this.lockRegister(hm, agreeDate);
+            //his 锁定号源,返回hx 号序   传入机器码
+           // String jqm = this.generateJQM(brid);
+        String hx = this.lockRegister(hm, agreeDate,doctorWork.getCzjlid(),brid);
         if(hx.equals("invalid hx")){
             completeVO.setState(RegisterErrCodeEnum.DOCTOR_FULL.getCode());
             return completeVO;
@@ -182,6 +193,9 @@ public class RegisterService {
             register.setDepartmentId(departmentId);
             register.setDoctorId(doctorId);
             register.setBrId(brid);
+            //每个病人的机器码不一样，就用brid
+            register.setJqm(brid);
+            register.setCzjlid(doctorWork.getCzjlid());
             register.setDepartment(department);
             register.setPatientName(brName);
             register.setDoctorName(doctorName);
@@ -233,25 +247,29 @@ public class RegisterService {
             log.info("传入了订单号，更新新的订单号，带到支付宝");
             log.info("检查订单状态,,");
             //生成新的订单号，带去支付宝，不然支付宝会找到重复订单，支付失败
-            String newOrderNumber = AlibabaPay.generateUniqueOrderNumber();
+            //String newOrderNumber = AlibabaPay.generateUniqueOrderNumber();
             OrderInfo orderInfo = orderInfoMapper.queryByIdOrOrderNumber(null, orderNumber);
             if(orderInfo == null){
+                log.info("检查订单状态：" + RegisterErrCodeEnum.ORDER_NOT_EXIST.getCode());
                 completeVO.setState(RegisterErrCodeEnum.ORDER_NOT_EXIST.getCode());
                 return completeVO;
             }
 
 
             if(!orderInfo.getStatus().equals(OrderStatusEnum.WAIT_PAYED.getCode()) || !orderInfo.getType().equals(OrderTypeEnum.REGISTER.getCode())){
+                log.info("检查订单状态：" + RegisterErrCodeEnum.ORDER_STATE_NOT_MATCH.getCode());
                 completeVO.setState(RegisterErrCodeEnum.ORDER_STATE_NOT_MATCH.getCode());
                 return completeVO;
             }
             //订单的用户id要和当前操作者的用户id相匹配
             if(!orderInfo.getAccountId().equals(accountId)){
+                log.info("检查订单状态：" + RegisterErrCodeEnum.ORDER_NUMBER_NOT_MATCH_ACCOUNT.getCode());
                 completeVO.setState(RegisterErrCodeEnum.ORDER_NUMBER_NOT_MATCH_ACCOUNT.getCode());
                 return completeVO;
             }
 
-            orderInfo.setOrderNumber(newOrderNumber);
+            // 不重新生成订单号 12/27
+            //orderInfo.setOrderNumber(newOrderNumber);
 
 
             orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
@@ -276,7 +294,7 @@ public class RegisterService {
             completeVO.setPrice(orderInfo.getPrice());
             //completeVO.setPrice(BigDecimal.valueOf(0.01));
             completeVO.setCountDownTime(new Date().getTime()+30*60*1000L-new Date().getTime()>0?register.getCreateTime().getTime()+30*60*1000L-new Date().getTime():0);
-            completeVO.setOrderCode(newOrderNumber);
+            completeVO.setOrderCode(orderInfo.getOrderNumber());
             completeVO.setSerialNumber(register.getSerialNumber());
             completeVO.setSubject(subject);
             completeVO.setDes(subject);
@@ -291,6 +309,11 @@ public class RegisterService {
 
         }
 
+
+    }
+
+    private String generateJQM(String brid) throws Exception {
+        return RandomUtil.getRandomLetterAndNum(3) + brid;
 
     }
 
@@ -312,11 +335,11 @@ public class RegisterService {
     }
 
 
-    private String lockRegister(String hm, Date agreedTime) throws Exception {
+    private String lockRegister(String hm, Date agreedTime,String czjlid,String brid) throws Exception {
         log.info("开始锁定号源");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timeStr = sdf.format(agreedTime);
-        LockRegister lockRegister = hisOutpatient.lockRegister(hm, timeStr, "", "jxyy+zczh");
+        LockRegister lockRegister = hisOutpatient.lockRegister(hm, timeStr, "", brid,czjlid);
         if(lockRegister !=null)
             return lockRegister.getHx();
         return "invalid hx";
@@ -379,6 +402,43 @@ public class RegisterService {
             return null;
     }
 
+    @Transactional
+    public void unlockRegister(Long registerId) throws Exception {
+        log.info("进行号源解锁，registerId: " + registerId);
+        Register register = registerMapper.queryById(registerId);
+        if (register == null) {
+            throw new ShowException("不存在的挂号单");
+        }
+        OrderInfo orderInfo = orderInfoMapper.queryById(register.getOrderId());
+        if (orderInfo.getType() != OrderTypeEnum.REGISTER.getCode()
+                || orderInfo.getStatus() != OrderStatusEnum.WAIT_PAYED.getCode()) {
+            throw new ShowException("订单不是待支付");
+        }
+        log.info("进行号源解锁，orderNumber: " + orderInfo.getOrderNumber());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String timeStr = sdf.format(register.getAgreedTime());
+        String rslt = hisOutpatient.unlockRegister(register.getBrId(), register.getHm(), timeStr,
+                register.getHx(), register.getCzjlid(), "");
+        if (rslt == null || rslt.isEmpty()) {
+            throw new ShowException("挂号单取消失败");
+        }
+        Register registerModify = new Register();
+        registerModify.setId(register.getId());
+        registerModify.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
+        OrderInfo orderInfoModify = new OrderInfo();
+        orderInfoModify.setId(orderInfo.getId());
+        orderInfoModify.setStatus(OrderStatusEnum.CANCELED.getCode());
+        int code = registerMapper.updateByPrimaryKeySelective(registerModify);
+        if (code < 1) {
+            throw new ShowException("挂号单取消失败");
+        }
+        code = orderInfoMapper.updateByPrimaryKeySelective(orderInfoModify);
+        if (code < 1) {
+            throw new ShowException("挂号单取消失败");
+        }
+        log.info("挂号单取消成功，registerId：" + registerId);
+    }
+
     /**
      * 把就诊信息置为无效
      * @param registerId
@@ -390,13 +450,14 @@ public class RegisterService {
  /*       if(Helpers.isNullOrEmpty(registerId) || queryRegister(registerId,null,null,null) == null)
             throw new Exception("预约信息为空.");*/
 
-
+        log.info("进行号源解锁，registerId: " + registerId);
         Register register = registerMapper.queryById(registerId);
-        register.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
+        if (register == null) {
+            throw new ShowException("不存在的挂号单");
+        }
         OrderInfo orderInfo = orderInfoMapper.queryById(register.getOrderId());
-        orderInfo.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
 
-
+        log.info("进行号源解锁，orderNumber: " + orderInfo.getOrderNumber());
         // 检查是否有资格退号
         if(!hisOutpatient.checkCancelRegister(orderInfo.getGhdh())){
             log.info("订单id:"+orderInfo.getId()+",该订单没有退号资格。");
@@ -409,13 +470,37 @@ public class RegisterService {
             log.info("向支付宝发起退款请求");
             //todo 现在只有支付宝 11.30
 
-            if(alibabaPay.refund(orderInfo.getOrderNumber()) == 0){
-                registerMapper.updateByPrimaryKeySelective(register);
-                orderInfoMapper.updateByPrimaryKeySelective(orderInfo);
+            boolean refundRslt = false;
+            if (orderInfo.getPayType().intValue() == PayEnum.ALI.getCode()) {
+                refundRslt = alibabaPay.refund(orderInfo.getOrderNumber()) == 0;
+            } else {
+                refundRslt = weChatPay.refund(orderInfo.getOrderNumber());
+            }
 
+            if (refundRslt) {
+                log.info("预约挂号退款成功，修改数据库，registerId：" + registerId);
+
+                Register registerModify = new Register();
+                registerModify.setId(register.getId());
+                registerModify.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
+                int code = registerMapper.updateByPrimaryKeySelective(registerModify);
+                if (code < 1) {
+                    log.info("预约挂号退款成功，Register修改数据库失败");
+                    throw new ShowException("退款成功，订单状态未改变，请联系客服处理");
+                }
+
+                OrderInfo orderInfoModify = new OrderInfo();
+                orderInfoModify.setId(orderInfo.getId());
+                orderInfoModify.setStatus(OrderStatusEnum.CANCELED.getCode());
+                code = orderInfoMapper.updateByPrimaryKeySelective(orderInfoModify);
+                if (code < 1) {
+                    log.info("预约挂号退款成功，OrderInfo修改数据库失败");
+                    throw new ShowException("退款成功，订单状态未改变，请联系客服处理");
+                }
+                log.info("预约挂号退款成功，修改数据库，预约状态：" + StatusEnum.REGISTER_STATUS_CANCEL.getDesc());
                 return 0;
-            }else {
-                log.info("退款失败..订单号："+orderInfo.getOrderNumber());
+            } else {
+                log.info("退款失败..订单号：" + orderInfo.getOrderNumber());
                 return 1;
             }
 
@@ -453,7 +538,8 @@ public class RegisterService {
             vo.setRegisterTime(register.getAgreedTime());
             vo.setId(register.getId());
             Account account = accountMapper.queryById(register.getAccountId());
-            PatientInfo patientInfo = patientInfoMapper.queryByById(register.getBrId(),orderInfo.getAccountId());
+            List<PatientInfo> patientInfoList = patientInfoMapper.queryByById(register.getBrId(),orderInfo.getAccountId());
+            PatientInfo patientInfo = patientInfoList == null || patientInfoList.isEmpty() ? null : patientInfoList.get(0);
             vo.setPhone(account.getPhone());
             //todo  状态..
             vo.setStatus(String.valueOf(orderInfo.getStatus()));
@@ -481,8 +567,14 @@ public class RegisterService {
      * @return
      */
     public boolean checkIsPayedRegister(Long registerId) {
-
-        OrderInfo orderInfo = orderInfoMapper.queryById(registerMapper.queryById(registerId).getOrderId());
+        Register register = registerMapper.queryById(registerId);
+        if (register == null) {
+            return false;
+        }
+        OrderInfo orderInfo = orderInfoMapper.queryById(register.getOrderId());
+        if (orderInfo == null) {
+            return false;
+        }
 
         return orderInfo.getType()==OrderTypeEnum.REGISTER.getCode() && orderInfo.getStatus() == OrderStatusEnum.PAYED.getCode();
     }
@@ -506,6 +598,10 @@ public class RegisterService {
         register.setOrderCode(orderInfo.getOrderNumber());
         register.setDiscount(orderInfo.getDiscount());
         register.setLocation(Constant.HOSPITAL_LOCATION);
+
+        // todo 预约挂号'未支付'状态包括了订单'支付中'状态，把订单状态放到这里可让前端展示，待修改
+        register.setStatus(orderInfo.getStatus());
+
         Doctor doctor = doctorService.queryDoctorByHid(register.getDoctorId());
         registerVO.setRegister(register);
         registerVO.setDoctor(doctor);

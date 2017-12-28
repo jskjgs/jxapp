@@ -19,8 +19,10 @@ import com.jishi.reservation.dao.mapper.RegisterMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.Register;
 import com.jishi.reservation.otherService.pay.protocol.AliPayCallbackModel;
+import com.jishi.reservation.service.OrderInfoService;
 import com.jishi.reservation.service.enumPackage.OrderStatusEnum;
 import com.jishi.reservation.service.enumPackage.PayEnum;
+import com.jishi.reservation.service.exception.ShowException;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.OrderInfoUtil2_0;
 import com.jishi.reservation.util.PayConstant;
@@ -47,6 +49,9 @@ public class AlibabaPay {
     OrderInfoMapper orderInfoMapper;
 
     @Autowired
+    private OrderInfoService orderInfoService;
+
+    @Autowired
     private PayConfiguration payConfiguration;
 
     @Autowired
@@ -59,7 +64,7 @@ public class AlibabaPay {
      * @return
      * @throws Exception
      */
-    public Integer refund(String orderNumber) throws Exception {
+    public int refund(String orderNumber) throws Exception {
 
 
          OrderInfo orderInfo =  orderInfoMapper.queryByNumber(orderNumber);
@@ -88,6 +93,11 @@ public class AlibabaPay {
 
 
     public OrderGenerateVO generateOrder(String orderNumber,String subject, BigDecimal price) throws Exception {
+        boolean isWaitingPay = orderInfoService.isWaitingPay(orderNumber);
+        if (!isWaitingPay) {
+            throw new ShowException("不是待支付订单，不能进行支付");
+        }
+
         AlipayClient client = new DefaultAlipayClient(
                 PayConstant.SERVER_URL,
                 PayConstant.APP_ID,
@@ -120,6 +130,9 @@ public class AlibabaPay {
             AlipayTradeAppPayResponse response = client.sdkExecute(request);
             log.info("支付宝返回的处理结果：\n"+JSONObject.toJSONString(response));
 
+            if (!orderInfoService.setPaying(orderNumber)) {
+                throw new ShowException("订单状态异常");
+            }
             OrderGenerateVO vo = new OrderGenerateVO();
             vo.setOrderNumber(orderNumber);
             vo.setOrderString(response.getBody());
@@ -213,7 +226,7 @@ public class AlibabaPay {
 
     public static String generateUniqueOrderNumber() throws Exception {
 
-       String prefix = "jxt_";
+       String prefix = "jxt";
         Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String format = sdf.format(date);

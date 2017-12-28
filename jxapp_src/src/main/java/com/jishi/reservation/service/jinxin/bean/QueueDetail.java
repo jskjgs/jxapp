@@ -9,15 +9,13 @@ import java.util.Date;
  */
 @Data
 public class QueueDetail {
-    private String YSID;  //医生ID
-    private String YS;    //医生姓名
-    private String ZC;    //职称
-    private Long KSID;    //科室ID
-    private String KSMC;  //科室名称
-    private String HL;    //挂号类型
-    private Date RQ;      //挂号日期
-    private String BRID;    //病人ID
-    private String BR;    //病人姓名
-    private String BRPD;  //病人排队信息
-    private String BRPDTX;//病人排队提醒
+    private String doctorId;  //医生ID
+    private String departmentId;    //科室ID
+    private String patientId;    //病人ID
+    private String registerType;    //挂号类型
+    private Date registerDate;
+    private Integer currentNum;     //当前就诊人号码
+    private Integer queueNum;       //本病人就诊号码
+    private Integer waitingNum;    //需等待的人数
+    private Integer state;         //当前状态（0-已预约，1-等待中，2-正在就诊，3-已过号）
 }

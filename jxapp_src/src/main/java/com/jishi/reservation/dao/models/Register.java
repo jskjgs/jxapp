@@ -46,6 +46,11 @@ public class Register {
     @ApiModelProperty("his的号序 HX")
     private String hx;
 
+    @ApiModelProperty("机器码")
+    private String jqm;
+
+    @ApiModelProperty("出诊记录id")
+    private String czjlid;
     @ApiModelProperty("序列号")
     private String serialNumber;
 

@@ -15,7 +15,7 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
 
 
     @Select({
-            "select count(*) from patientInfo where account_id = #{accountId}"
+            "select count(*) from patientInfo where account_id = #{accountId} and enable=0"
     })
     Integer findMaxPatientNum(@Param("accountId") Long accountId);
 
@@ -32,9 +32,14 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
 
 
     @Select({
-            "select * from patientInfo where br_id = #{brId} and account_id = #{accountId}"
+            "select * from patientInfo where br_id = #{brId} and account_id = #{accountId} and enable=0"
     })
-    PatientInfo queryByById(@Param("brId") String brId,@Param("accountId") Long accountId);
+    List<PatientInfo> queryByById(@Param("brId") String brId,@Param("accountId") Long accountId);
+
+    @Select({
+            "select * from patientInfo where br_id = #{brId} and enable=0"
+    })
+    List<PatientInfo> queryByBrId(@Param("brId") String brId);
 
 
     @Select({
@@ -59,6 +64,11 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
             "select * from patientInfo where id_card = #{idCard}"
     })
     PatientInfo queryForExistByIdcard(@Param("idCard") String idCard);
+
+    @Select({
+            "select * from patientInfo where (id_card=#{idCard} or jzkh=#{medicalCard}) and enable=0"
+    })
+    List<PatientInfo> queryByIdCardOrMedicalCard(@Param("idCard") String idCard, @Param("medicalCard") String medicalCard);
 
     @Update({
             "update patientInfo set enable = 1 where id = #{patientInfoId}"

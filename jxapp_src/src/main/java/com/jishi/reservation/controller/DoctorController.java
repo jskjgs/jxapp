@@ -21,6 +21,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -82,7 +83,7 @@ public class DoctorController extends MyBaseController {
         if(Helpers.isNullOrEmpty(doctorId) && Helpers.isNullOrEmpty(doctorName) && Helpers.isNullOrEmpty(type))
             throw new Exception("查询参数不能全部为空");
         DoctorVO doctorVO = new DoctorVO();
-        List<Doctor> doctors = doctorService.queryDoctor(doctorId,hDoctorId,doctorName,null,null,EnableEnum.EFFECTIVE.getCode());
+        List<Doctor> doctors = doctorService.queryDoctor(doctorId,hDoctorId,doctorName,null,null,null,EnableEnum.EFFECTIVE.getCode());
         if(doctors.size()>0){
             doctorVO.setDoctor(doctors.get(0));
             //doctorVO.setDepartmentList(departmentService.batchQueryDepartment(JSONObject.parseArray(doctors.get(0).getDepartmentIds(),String.class)));
@@ -115,8 +116,6 @@ public class DoctorController extends MyBaseController {
 
         List<DateVO> dateVOList = DateSupport.generateTimeInteval();
 
-
-
         return ResponseWrapper().addMessage("返回时间列表").addData(dateVOList).ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
 
     }
@@ -141,21 +140,21 @@ public class DoctorController extends MyBaseController {
 
     }
 
-
-    @ApiOperation(value = "从his抓取医生信息入到我们自己的库")
-    @RequestMapping(value = "getDoctorFromHis", method = RequestMethod.POST)
-    @ResponseBody
-    public JSONObject getDoctorFromHis(
-    ) throws Exception {
-
-        RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", "", "", "", "", "");
-        if(info.getGroup().getHblist().get(0)!=null) {
-            List<RegisteredNumberInfo.HB> hbList = info.getGroup().getHblist().get(0).getHbList();
-
-            doctorService.getDoctorFromHis(hbList);
-        }
-        return ResponseWrapper().addMessage("操作成功！").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
-
-    }
+//
+//    @ApiOperation(value = "从his抓取医生信息入到我们自己的库")
+//    @RequestMapping(value = "getDoctorFromHis", method = RequestMethod.POST)
+//    @ResponseBody
+//    public JSONObject getDoctorFromHis(
+//    ) throws Exception {
+//
+//        RegisteredNumberInfo info = hisOutpatient.queryRegisteredNumber("", "", "", "", "", "", "", "");
+//        if(info.getGroup().getHblist().get(0)!=null) {
+//            List<RegisteredNumberInfo.HB> hbList = info.getGroup().getHblist().get(0).getHbList();
+//
+//            doctorService.getDoctorFromHis(hbList);
+//        }
+//        return ResponseWrapper().addMessage("操作成功！").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+//
+//    }
 
 }

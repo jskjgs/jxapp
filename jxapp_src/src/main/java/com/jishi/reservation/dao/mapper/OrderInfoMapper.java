@@ -65,8 +65,8 @@ public interface OrderInfoMapper extends MyMapper<OrderInfo>{
     OrderInfo queryByThirdOrderNumber(@Param("thirdOrderNumber") String thirdOrderNumber);
 
 
-    @Select({                               // 预约订单   未支付      有效
-            "select * from order_info where type = 1 and status = 1 and enable = 0  and register_id is not null"
+    @Select({                               // 预约订单   未支付/支付中      有效
+            "select * from order_info where type = 1 and (status = 1 or status = 3) and enable = 0  and register_id is not null"
     })
     List<OrderInfo> queryAllWaitPayRegister();
 }

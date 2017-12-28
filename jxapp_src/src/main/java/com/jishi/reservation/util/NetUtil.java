@@ -1,5 +1,7 @@
 package com.jishi.reservation.util;
 
+import org.junit.Test;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,6 +30,7 @@ public class NetUtil {
             while (addresses.hasMoreElements())
             {
                 ip = (InetAddress) addresses.nextElement();
+                System.out.println(ip);
                 if (ip != null && ip instanceof Inet4Address)
                 {
                     if (!"127.0.0.1".equals(ip.getHostAddress())) {
@@ -37,6 +40,10 @@ public class NetUtil {
             }
         }
         return null;
+    }
+
+    public static String getHostName() throws Exception {
+        return InetAddress.getLocalHost().getHostName();
     }
 
     public static String getV4IP() throws Exception {

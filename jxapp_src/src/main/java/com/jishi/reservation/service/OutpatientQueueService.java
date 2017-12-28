@@ -1,11 +1,16 @@
 package com.jishi.reservation.service;
 
+import com.alibaba.fastjson.JSON;
+import com.doraemon.base.redis.RedisOperation;
 import com.jishi.reservation.controller.protocol.OutpatientQueueDetailVO;
 import com.jishi.reservation.dao.mapper.QueueLengthMapper;
 import com.jishi.reservation.dao.models.*;
+import com.jishi.reservation.service.enumPackage.EnableEnum;
 import com.jishi.reservation.service.jinxin.JinxinQueue;
-import com.jishi.reservation.service.jinxin.bean.QueueCurrentNumber;
 import com.jishi.reservation.service.jinxin.bean.QueueDetail;
+import com.jishi.reservation.service.support.JpushSupport;
+import com.jishi.reservation.util.Constant;
+import com.jishi.reservation.worker.model.PushData;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +38,13 @@ public class OutpatientQueueService {
     @Autowired
     private DepartmentService departmentService;
     @Autowired
-    public RegisterService registerService;
+    private RegisterService registerService;
+    @Autowired
+    private RedisOperation redisOperation;
+    @Autowired
+    private JpushSupport jpushSupport;
+    @Autowired
+    private AccountService accountService;
 
     // 默认门诊队列通知长度
     public static final int DEFAULT_NOTIFY_LENGTH = 10;
@@ -48,7 +59,11 @@ public class OutpatientQueueService {
     **/
     public List<OutpatientQueueDetailVO> queryVisitQueueInfo(Long accountId, String brId) throws Exception {
         if (brId != null && !brId.isEmpty()) {
-            return Arrays.asList(queryVisitQueueInfo(brId));
+            OutpatientQueueDetailVO vo = queryVisitQueueInfo(brId);
+            if (vo == null) {
+                return Collections.emptyList();
+            }
+            return Arrays.asList(vo);
         }
         List<PatientInfo> patientInfoList = patientInfoService.queryPatientInfo(null, accountId, 0);
         if (patientInfoList == null || patientInfoList.isEmpty()) {
@@ -71,37 +86,65 @@ public class OutpatientQueueService {
      * @param brId 病人id
      * @throws Exception
      **/
-    public OutpatientQueueDetailVO queryVisitQueueInfo(String brId) {
-        QueueDetail detail = jinxinQueue.queryQueueByBrId(brId);
-        return getDetailVO(detail);
+    public OutpatientQueueDetailVO queryVisitQueueInfo(String brId) throws Exception {
+        String value = redisOperation.usePool().get(brId);
+        log.info("病人id为 " + brId + " 的分诊排队信息redis缓存为：" + value);
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
+        QueueDetail queueDetail = JSON.parseObject(value, QueueDetail.class);
+        return getDetailVO(queueDetail);
     }
 
     /**
-     * @description 获取有过改变的门诊信息
-     * @throws
-    **/
-    public List<QueueCurrentNumber> queryModifiedVisitCurrentNum() {
-        return jinxinQueue.queryCurrentNumber();
-    }
-
-    /**
-     * @description 获取医生id下的排队信息
-     * @param doctorHisId
-     * @throws
-    **/
-    public List<OutpatientQueueDetailVO> queryQueueByDoctorHisId(String doctorHisId) {
-        List<QueueDetail> queueDetailList = jinxinQueue.queryQueueByDoctorHisId(doctorHisId, getQueueNotifyLength(doctorHisId));
-        if (queueDetailList == null || queueDetailList.isEmpty()) {
+     * @description 获取有过改变的所有排队信息
+     **/
+    public List<QueueDetail> queryQueueByDepartmentId(String departmentId) throws Exception {
+        List<QueueDetail> allData = jinxinQueue.queryQueueByDepartmentId(departmentId);
+        if (allData == null || allData.isEmpty()) {
             return Collections.emptyList();
         }
-        List<OutpatientQueueDetailVO> detailVOList = new ArrayList<OutpatientQueueDetailVO>();
-        for (QueueDetail detail : queueDetailList) {
-            OutpatientQueueDetailVO detailVO = getDetailVO(detail);
-            if (detailVO != null) {
-                detailVOList.add(detailVO);
+        return allData;
+    }
+
+    public void doNoticeRegisterQueue() throws Exception {
+        List<Department> departmentList = departmentService.queryAllDepartment();
+        if (departmentList == null || departmentList.isEmpty()) {
+            return;
+        }
+        for (Department department : departmentList) {
+            if (EnableEnum.EFFECTIVE.equals(department.getEnable())) {
+                List<QueueDetail> allData = queryQueueByDepartmentId(department.getHId());
+                queueNotification(allData);
             }
         }
-        return detailVOList;
+    }
+
+    public void queueNotification(List<QueueDetail> queueDetailList) throws Exception {
+        if (queueDetailList == null || queueDetailList.isEmpty()) {
+            return;
+        }
+        for (QueueDetail queueDetail : queueDetailList) {
+            String detailJson = JSON.toJSONString(queueDetail);
+            String value = redisOperation.usePool().get(queueDetail.getPatientId());
+            if (detailJson.equals(value)) {
+                continue;
+            }
+            redisOperation.usePool().set(queueDetail.getPatientId(), detailJson);
+            redisOperation.usePool().expire(queueDetail.getPatientId(), Constant.QUEUE_EXPIRE_TIME_CACHE);
+            List<PatientInfo> patientInfo = patientInfoService.queryByBrId(queueDetail.getPatientId());
+            if (patientInfo == null || patientInfo.isEmpty()) {
+                log.info("当前病人未添加, brid: " + queueDetail.getPatientId());
+                continue;
+            }
+            Account account = accountService.queryAccountById(patientInfo.get(0).getAccountId());
+            if (account == null) {
+                log.warn("当前病人账号为空, brid: " + queueDetail.getPatientId());
+                continue;
+            }
+            jpushSupport.sendMessage(account.getPushId(), PushData.PushDataMsgTypeDef.PUSH_DATA_TYPE_OUT_QUEUE_INFO
+                    , getDetailVO(queueDetail));
+        }
     }
 
     /**
@@ -136,7 +179,7 @@ public class OutpatientQueueService {
      * @param doctorHisId his医生id
      **/
     public QueueLength queryDoctorQueueLength(String doctorHisId) {
-      return queueLengthMapper.queryByDoctorHisId(doctorHisId);
+        return queueLengthMapper.queryByDoctorHisId(doctorHisId);
     }
 
 
@@ -145,7 +188,7 @@ public class OutpatientQueueService {
      * @param departHisId his部门id
      **/
     public QueueLength queryDepartQueueLength(String departHisId) {
-      return queueLengthMapper.queryByDepartHisId(departHisId);
+        return queueLengthMapper.queryByDepartHisId(departHisId);
     }
 
     /**
@@ -191,22 +234,21 @@ public class OutpatientQueueService {
           return null;
         }
         OutpatientQueueDetailVO vo = new OutpatientQueueDetailVO();
-        vo.setBrId(detail.getBRID());
-        vo.setDepartId(detail.getKSID());
-        vo.setDepartName(detail.getKSMC());
-        vo.setDoctorHisId(detail.getYSID());
-        vo.setDoctorName(detail.getYS());
-        vo.setDoctorTitle(detail.getZC());
-        vo.setName(detail.getBR());
-        vo.setQueueeMinder(detail.getBRPDTX());
-        vo.setQueueInfo(detail.getBRPD());
-        vo.setRegisterDate(detail.getRQ());
-        vo.setRegisterType(detail.getHL());
-        // TODO 解析当前号码，病人的号码
-        vo.setCurrentNum(0);
-        vo.setQueueNum(12);
-        vo.setNeedWaitNum(6);
-        vo.setStatus(1);
+        vo.setBrId(detail.getPatientId());
+        vo.setDepartId(Long.valueOf(detail.getDepartmentId()));
+        //vo.setDepartName(detail.getKSMC());
+        vo.setDoctorHisId(detail.getDoctorId());
+        //vo.setDoctorName(detail.getYS());
+        //vo.setDoctorTitle(detail.getZC());
+        //vo.setName(detail.getBR());
+        //vo.setQueueeMinder(detail.getBRPDTX());
+        //vo.setQueueInfo(detail.getBRPD());
+        //vo.setRegisterDate(detail.getRQ());
+        vo.setRegisterType(detail.getRegisterType());
+        vo.setCurrentNum(detail.getCurrentNum());
+        vo.setQueueNum(detail.getQueueNum());
+        vo.setNeedWaitNum(detail.getWaitingNum());
+        vo.setStatus(detail.getState());
         return vo;
     }
 

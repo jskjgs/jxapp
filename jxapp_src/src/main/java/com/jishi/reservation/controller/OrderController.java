@@ -64,7 +64,7 @@ public class OrderController extends MyBaseController {
         log.info("处理his的确认订单接口");
         ConfirmOrder confirmOrder = hisOutpatient.confirmRegister(confirmRegister);
         if(confirmOrder!=null){
-            log.info("his系统处理成功，更新自己系统数据.");
+            log.info("<<<confirmRegister>>> his系统处理成功，更新自己系统数据.");
             Integer status = orderInfoService.confirmOrderHis(orderId, orderNumber, confirmOrder);
             switch (status){
                 case 200:
@@ -72,7 +72,8 @@ public class OrderController extends MyBaseController {
                 case 406:
                     return ResponseWrapper().addMessage("该订单尚未付款，不能确认").ExeFaild(ReturnCodeEnum.FAILED.getCode());
             }
-        }else {
+        } else {
+            log.info("<<<confirmRegister>>> his系统处理失败，更新自己系统数据失败.");
             return  ResponseWrapper().addMessage("his系统订单确认失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
 
         }

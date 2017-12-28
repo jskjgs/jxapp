@@ -171,7 +171,7 @@ public class IMAccountService {
             imAccount.setAccountId(accId);
             imAccount.setType(0); //普通用户
         } else {
-            List<Doctor> doctorList = doctorService.queryDoctor(doctorId, doctorHisId, null, null, null, 0);
+            List<Doctor> doctorList = doctorService.queryDoctor(doctorId, doctorHisId, null, null, null,null, 0);
             if (doctorList == null || doctorList.size() != 1) {
                 log.error("医生列表为空或大于1：doctorId " + doctorId + " doctorHisId " +  doctorHisId);
                 return null;
@@ -221,6 +221,9 @@ public class IMAccountService {
     public IMChatInfo chatToDocter(Long accountId, Long doctorId) throws Exception {
         IMAccount imUserAccount = getUserIMAccount(accountId);
         IMAccount imDoctorAccount = getDoctorIMAccount(doctorId);
+        if (imUserAccount == null || imDoctorAccount == null) {
+            throw new BussinessException(ReturnCodeEnum.IM_ERR_GET_ACCOUNT_FAILED);
+        }
         IMChatInfo info = new IMChatInfo();
         info.setImSourceId(imUserAccount.getImAccId());
         info.setImDestId(imDoctorAccount.getImAccId());
@@ -264,7 +267,7 @@ public class IMAccountService {
             return Collections.emptyList();
         }
         List<Doctor> doctorList = new ArrayList<Doctor>();
-        List<Doctor> doctorAllList = doctorService.queryDoctor(null, null, null, null, null, 0);
+        List<Doctor> doctorAllList = doctorService.queryDoctor(null, null, null, null, null, null,0);
         for (IMAccessRecord accessRecord : accessRecordList) {
             for (Doctor item : doctorAllList) {
                 if (item.getId().equals(accessRecord.getDoctorId())) {

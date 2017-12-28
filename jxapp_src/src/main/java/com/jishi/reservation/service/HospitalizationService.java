@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -101,6 +102,9 @@ public class HospitalizationService {
         TotalDepositBalancePayDetail payDetail = hisHospitalization.selectTotalPayDetail(brId, String.valueOf(zycs), "2");  //2是按日期查
         List<TotalDepositBalancePayDetail.Item> list = payDetail.getItemList();
         log.info(JSONObject.toJSONString(list));
+        if (list == null) {
+            return Collections.emptyList();
+        }
         List<PayItem> voList = new ArrayList<>();
         for (TotalDepositBalancePayDetail.Item item : list) {
             //JSONObject.toJSONString("遍历的对象"+item);

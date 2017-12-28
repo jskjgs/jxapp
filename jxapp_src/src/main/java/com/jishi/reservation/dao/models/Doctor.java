@@ -42,6 +42,7 @@ public class Doctor {
     private Integer orderNumber;
 
 
+
     @ApiModelProperty("科室名称")
     private String ksmc;
 
