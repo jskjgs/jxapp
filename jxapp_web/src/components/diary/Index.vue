@@ -145,9 +145,10 @@
           default: (scope) => {
             return (
               <div class="flex--vcenter operations">
-                <span class="operate-item flex--vcenter" style="width: 110px;">
+                <span class={ 'operate-item flex--vcenter' + (scope.row.status !== 0 ? ' disabled' : '') } style="width: 110px;">
                   <el-switch
                     style="margin-right: 10px;"
+                    disabled={scope.row.status !== 0}
                     value={scope.row.isTop}
                     onInput={(isTop) => (scope.row.isTop = isTop)}
                     onChange={() => this.switchTop(scope.row)}
@@ -396,6 +397,12 @@
         color: #ff4949;
         background: rgba(255,73,73,0.10);
         border: 1px solid rgba(255,73,73,0.20);
+      }
+    }
+
+    .operate-item {
+      &.disabled {
+        color: #bfcbd9;
       }
     }
   }

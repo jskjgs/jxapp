@@ -117,7 +117,8 @@ export default {
     }
 
     return {
-      project: '',
+      departments: [],
+      // project: '',
       department: '',
       departmentId: '',
       doctorName: '',
@@ -146,6 +147,9 @@ export default {
   },
   created () {
     this.placeholderImg = placeholderImg
+    this.searchDepartment().then(departments => {
+      this.departments = departments
+    })
   },
   watch: {
     editDialogVisible (val) {
@@ -162,28 +166,26 @@ export default {
   methods: {
     searchProject () {
     },
-    searchDepartment (queryString, cb) {
-      console.log(queryString)
-      queryDepartmentApi({
+    searchDepartment () {
+      // console.log(queryString)
+      return queryDepartmentApi({
         pageNum: 1,
         pageSize: this.pageSize
       }).then(res => {
         let content = res.content || []
-        let filters = content.filter(item => {
-          return item.name.indexOf(queryString) !== -1
-        }).map(item => {
+        let departments = content.map(item => {
           return {
-            value: item.name,
-            id: item.id
+            value: item.id,
+            label: item.name
           }
         })
-        cb(filters)
+        return departments
       })
     },
     handleProjectSelect () {},
-    handleDepartmentSelect (item) {
-      this.departmentId = item.id
-    },
+    // handleDepartmentSelect (item) {
+    //   this.departmentId = item.id
+    // },
     handleSearch () {
       this.apiKeysMap = Object.assign({}, this.apiKeysMap, {
         departmentId: {
@@ -250,7 +252,7 @@ export default {
       :list-api="listApi"
       :api-keys-map="apiKeysMap">
       <div class="table-tools flex--vcenter" slot="table-tools">
-        <div class="tool-item">
+        <!-- <div class="tool-item">
           选择项目：
           <el-autocomplete
             v-model="project"
@@ -258,15 +260,23 @@ export default {
             placeholder="输入内容搜索"
             @select="handleProjectSelect"
           ></el-autocomplete>
-        </div>
+        </div> -->
         <div class="tool-item">
           选择科室：
-          <el-autocomplete
+          <!-- <el-autocomplete
             v-model="department"
             :fetch-suggestions="searchDepartment"
             placeholder="输入内容搜索"
             @select="handleDepartmentSelect"
-          ></el-autocomplete>
+          ></el-autocomplete> -->
+          <el-select v-model="departmentId" placeholder="选择科室">
+            <el-option
+              v-for="item in departments"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </div>
         <div class="tool-item">
           医生姓名：
