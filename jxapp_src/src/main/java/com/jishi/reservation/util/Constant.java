@@ -38,6 +38,7 @@ public class Constant {
     public final static String PAY_API = "https://api.mch.weixin.qq.com/pay/micropay";
     public final static String PAY_QUERY_API = "https://api.mch.weixin.qq.com/pay/orderquery";
     public final static String REFUND_API = "https://api.mch.weixin.qq.com/secapi/pay/refund";
+    public final static String WECHAT_CERTIFICATE_P12_NAME = "apiclient_cert.p12";
 
     public final static String HIS_TOKEN="359894CB16E4B68531A11083F2046B0E";
     public final static String HIS_KEYS = "929A715701492111";

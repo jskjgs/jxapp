@@ -15,7 +15,7 @@ public interface PatientInfoMapper extends MyMapper<PatientInfo> {
 
 
     @Select({
-            "select count(*) from patientInfo where account_id = #{accountId}"
+            "select count(*) from patientInfo where account_id = #{accountId} and enable=0"
     })
     Integer findMaxPatientNum(@Param("accountId") Long accountId);
 

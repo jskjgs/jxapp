@@ -1,6 +1,6 @@
 package com.jishi.reservation.otherService.pay;
 
-import java.io.IOException;
+import java.io.*;
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
@@ -23,10 +23,25 @@ import com.jishi.reservation.service.exception.ShowException;
 import com.jishi.reservation.util.Constant;
 import com.jishi.reservation.util.Helpers;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
+
+import java.security.KeyStore;
+
+import javax.net.ssl.SSLContext;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.conn.ssl.SSLContexts;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -98,9 +113,9 @@ public class WeChatPay {
         Map param = generateRefundParam(orderNumber, orderInfo.getPrice());
 
         String xmlStr = XMLParser.toXMLString(param);
-        log.info("微信支付统一下单请求数据：" + xmlStr);
-        String response = HttpAgent.create().sendPost(Constant.REFUND_API, xmlStr);
-        log.info("微信支付统一下单返回数据：" + response);
+        log.info("微信退款请求数据：" + xmlStr);
+        String response = doWechatRefund(param);
+        log.info("微信退款返回数据：" + response);
         //对返回结果进行解析
         Map<String,Object> resp = XMLParser.getMapFromXML(response);
         //校验签名
@@ -109,13 +124,11 @@ public class WeChatPay {
         }
         //判断微信标识是否为成功
         if(resp.get("return_code") == null || resp.get("result_code") == null
-                || resp.get("prepay_id") == null
                 || !"SUCCESS".equals(resp.get("return_code"))
                 || !"SUCCESS".equals(resp.get("result_code"))) {
             log.info(String.valueOf("微信错误提示return_msg：" + resp.get("return_msg")));
             return false;
         }
-
         return true;
     }
 
@@ -126,16 +139,12 @@ public class WeChatPay {
         Map<String,Object> map = new HashMap<>();
         map.put("appid", Constant.WECHAT_PAY_APPID);
         map.put("mch_id", Constant.WECHAT_PAY_MCHID);
-        map.put("noncestr", RandomUtil.getRandomStringByLength(32).toUpperCase());
-        map.put("timestamp", String.valueOf(System.currentTimeMillis()).substring(0,10));
-        map.put("package", "Sign=WXPay");
-
+        map.put("nonce_str", RandomUtil.getRandomStringByLength(32).toUpperCase());
         map.put("out_trade_no", out_trade_no);
         map.put("out_refund_no", out_trade_no);
         map.put("total_fee", total_fee);
         map.put("refund_fee", total_fee);
-        map.put("refund_fee_type", "CNY");
-        map.put("refund_desc", "APP正常退款");
+        map.put("refund_desc", "APP");
 
         String sign = WXSignature.getSign(map);
         map.put("sign",sign);
@@ -231,10 +240,7 @@ public class WeChatPay {
             if (entry.getKey() == null || entry.getValue() == null) {
                 continue;
             }
-            if (entry.getValue() instanceof String && "".equals(entry.getValue())) {
-                continue;
-            }
-            String v = (String)entry.getValue();
+            Object v = entry.getValue();
             //if ("attach".equalsIgnoreCase(k)||"body".equalsIgnoreCase(k)) {
             if (false) {
                 sb.append("<"+k+">"+"<![CDATA["+v+"]]></"+k+">");
@@ -252,4 +258,59 @@ public class WeChatPay {
         return sb.toString();
     }
 
+    private String doWechatRefund(Map param) throws Exception {
+        KeyStore keyStore  = KeyStore.getInstance("PKCS12");
+        ClassPathResource resource = new ClassPathResource(Constant.WECHAT_CERTIFICATE_P12_NAME);
+        //FileInputStream instream = new FileInputStream(resource.getFile());
+        InputStream instream = resource.getInputStream();
+        try {
+            keyStore.load(instream, Constant.WECHAT_PAY_MCHID.toCharArray());
+        } finally {
+            instream.close();
+        }
+
+        String xmlStr = getRequestXml(param);
+        System.out.println("微信支付退款请求数据：" + xmlStr);
+
+        SSLContext sslcontext = SSLContexts.custom()
+                .loadKeyMaterial(keyStore, Constant.WECHAT_PAY_MCHID.toCharArray())
+                .build();
+        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+                sslcontext,
+                new String[] { "TLSv1" },
+                null,
+                SSLConnectionSocketFactory.BROWSER_COMPATIBLE_HOSTNAME_VERIFIER);
+        CloseableHttpClient httpclient = HttpClients.custom()
+                .setSSLSocketFactory(sslsf)
+                .build();
+        String refundResponse = null;
+        try {
+            HttpPost httppost = new HttpPost(Constant.REFUND_API);
+            StringEntity se = new StringEntity(xmlStr);
+            httppost.setEntity(se);
+
+            CloseableHttpResponse response = httpclient.execute(httppost);
+            try {
+                HttpEntity entity = response.getEntity();
+
+                log.info(response.getStatusLine().toString());
+                if (entity != null) {
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(entity.getContent()));
+                    String text;
+                    StringBuffer sb = new StringBuffer();
+                    while ((text = bufferedReader.readLine()) != null) {
+                        sb.append(text);
+                    }
+                    refundResponse = sb.toString();
+                    log.info("微信支付退款返回数据：" + refundResponse);
+                }
+                EntityUtils.consume(entity);
+            } finally {
+                response.close();
+            }
+        } finally {
+            httpclient.close();
+        }
+        return refundResponse;
+    }
 }

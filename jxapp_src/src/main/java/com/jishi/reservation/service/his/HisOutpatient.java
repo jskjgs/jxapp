@@ -393,7 +393,7 @@ public class HisOutpatient {
         sb.append("<CZ>").append("0").append("</CZ>");
         sb.append("<HX>").append(hx).append("</HX>");
         sb.append("<HZDW>").append(hzdw).append("</HZDW>");
-        sb.append("<JQM>").append("JQM"+brid).append("</JQM>");
+        sb.append("<JQM>").append(brid).append("</JQM>");
         log.info("取消挂号请求数据：\n"+sb.toString());
         String reData = hisTool.toXMLString("Register.UnLock.Modify", sb.toString());
         OutPatientResponseOutPatientResult result = execute(reData);
