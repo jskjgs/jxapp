@@ -567,6 +567,7 @@ public class RegisterService {
      * @return
      */
     public boolean checkIsPayedRegister(Long registerId) {
+        log.info("registerId:" + registerId);
         Register register = registerMapper.queryById(registerId);
         if (register == null) {
             return false;
@@ -575,6 +576,7 @@ public class RegisterService {
         if (orderInfo == null) {
             return false;
         }
+        log.info("orderNumber:" + orderInfo.getOrderNumber() + " status: " + orderInfo.getStatus()) ;
 
         return orderInfo.getType()==OrderTypeEnum.REGISTER.getCode() && orderInfo.getStatus() == OrderStatusEnum.PAYED.getCode();
     }
