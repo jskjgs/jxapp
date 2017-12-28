@@ -1,6 +1,7 @@
 package com.jishi.reservation.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.doraemon.base.exceptions.ShowExceptions;
 import com.github.pagehelper.PageInfo;
 import com.google.common.base.Preconditions;
 import com.jishi.reservation.controller.base.MyBaseController;
@@ -81,12 +82,13 @@ public class HisDoctorController extends MyBaseController {
             @ApiParam(value = "医生姓名") @RequestParam(value = "name", defaultValue = "") String name,
             @ApiParam(value = "页数", required = false) @RequestParam(value = "startPage", defaultValue = "1") Integer startPage,
             @ApiParam(value = "每页多少条", required = false) @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) throws Exception {
+        //todo zhoubinshan 临时对代码进行过滤处理,防传入时间格式错误
+        if ( agreeTime == null || String.valueOf(agreeTime).length() < 10)
+             throw new ShowExceptions("时间格式不正确");
         if(agreeTime != null && String.valueOf(agreeTime).length()==10)
             agreeTime = agreeTime*100;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String timeStr = sdf.format(new Date(agreeTime));
-
-
         PageInfo<Doctor> pageInfo = new PageInfo<>();
         List<Doctor> list = new ArrayList<>();
         pageInfo.setList(list);
