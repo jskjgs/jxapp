@@ -426,7 +426,7 @@ public class RegisterService {
         registerModify.setId(register.getId());
         registerModify.setStatus(StatusEnum.REGISTER_STATUS_CANCEL.getCode());
         OrderInfo orderInfoModify = new OrderInfo();
-        orderInfoModify.setId(register.getId());
+        orderInfoModify.setId(orderInfo.getId());
         orderInfoModify.setStatus(OrderStatusEnum.CANCELED.getCode());
         int code = registerMapper.updateByPrimaryKeySelective(registerModify);
         if (code < 1) {
