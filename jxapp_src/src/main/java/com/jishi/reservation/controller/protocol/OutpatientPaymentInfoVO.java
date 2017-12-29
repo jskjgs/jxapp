@@ -53,6 +53,9 @@ public class OutpatientPaymentInfoVO implements Comparable<OutpatientPaymentInfo
     @ApiModelProperty("医嘱列表")
     private List<OutpatientAdviceVO> adviceList;
 
+    @ApiModelProperty("就诊卡号")
+    private String jzkh;
+
     // 按时间和单据号排序
     @Override
     public int compareTo(OutpatientPaymentInfoVO o) {

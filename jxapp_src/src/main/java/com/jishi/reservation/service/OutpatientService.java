@@ -3,6 +3,7 @@ package com.jishi.reservation.service;
 import com.alibaba.fastjson.JSONObject;
 import com.jishi.reservation.controller.protocol.*;
 import com.jishi.reservation.dao.mapper.OutpatientPaymentMapper;
+import com.jishi.reservation.dao.mapper.PatientInfoMapper;
 import com.jishi.reservation.dao.models.Account;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.dao.models.OutpatientPayment;
@@ -52,6 +53,9 @@ public class OutpatientService {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    PatientInfoMapper patientInfoMapper;
+
 
       /**Y
        * 获取用户门诊缴费列表
@@ -85,12 +89,17 @@ public class OutpatientService {
                 if (gh == null) {
                     continue;
                 }
+
+
                 BigDecimal unpaidAmount = new BigDecimal("0");
                 BigDecimal totalAmount = new BigDecimal("0");
                 String unpaidDocIds = "";
                 Date lastDocDate = null;
                 OutpatientPaymentInfoVO paymentInfo = new OutpatientPaymentInfoVO();
                 paymentInfo.setBrid(info.getBrId());
+                //add by csr
+                paymentInfo.setJzkh(info.getJzkh());
+
                 paymentInfo.setPatientName(info.getName());
                 paymentInfo.setDocumentNum(gh.getDjh());
                 paymentInfo.setRegisterType(gh.getHl());
