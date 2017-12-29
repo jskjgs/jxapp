@@ -197,7 +197,9 @@ public class AlibabaPay {
                     //Preconditions.checkState(orderInfo.getStatus() == OrderStatusEnum.WAIT_PAYED.getCode(),"该订单不是待支付状态.");
                     orderInfo.setStatus(OrderStatusEnum.PAYED.getCode());
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    orderInfo.setPayTime(sdf.parse(payTime));
+                    //orderInfo.setPayTime(sdf.parse(payTime));
+                    //之前用的是支付宝返回的时候，发现有误差，大概十个小时，现在换成当前时间
+                    orderInfo.setPayTime(new Date());
                     orderInfo.setBuyerEmail(buyerEmail);
                     orderInfo.setSellerEmail(sellerEmail);
                     orderInfo.setBuyerId(buyerId);
