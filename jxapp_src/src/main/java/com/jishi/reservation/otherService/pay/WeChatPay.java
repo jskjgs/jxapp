@@ -123,7 +123,7 @@ public class WeChatPay {
             throw new BussinessException(ReturnCodeEnum.WEICHART_PAY_ERR_SIGN_CHECK_FAILED);
         }
         //判断微信标识是否为成功
-        log.info("微信返回的退款数据：\n"+JSONObject.toJSONString(resp));
+        log.info("微信返回的退款数据~~~~~~~~~~~~~~~~~~~~~~~~~~~~：\n"+JSONObject.toJSONString(resp));
 
         if(resp.get("return_code") == null || resp.get("result_code") == null
                 || !"SUCCESS".equals(resp.get("return_code"))
