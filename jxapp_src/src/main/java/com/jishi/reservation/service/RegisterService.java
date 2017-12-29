@@ -478,7 +478,7 @@ public class RegisterService {
     //    if(hisOutpatient.cancelRegister(orderInfo.getGhdh())){
 
             log.info("预约取消成功..");
-            log.info("向支付宝发起退款请求");
+            //log.info("向支付宝发起退款请求");
             //todo 现在只有支付宝 11.30
 
         try {
