@@ -6,6 +6,7 @@ import com.jishi.reservation.controller.base.MyBaseController;
 import com.jishi.reservation.controller.protocol.HospitalizationInfoVO;
 import com.jishi.reservation.controller.protocol.OrderVO;
 import com.jishi.reservation.controller.protocol.PrePaymentRecordVO;
+import com.jishi.reservation.dao.mapper.PatientInfoMapper;
 import com.jishi.reservation.dao.models.OrderInfo;
 import com.jishi.reservation.service.AccountService;
 import com.jishi.reservation.service.HospitalizationService;
@@ -46,6 +47,10 @@ public class HospitalizationController extends MyBaseController {
 
     @Autowired
     OrderInfoService orderInfoService;
+
+
+    @Autowired
+    PatientInfoMapper patientInfoMapper;
 
 
 
@@ -219,6 +224,7 @@ public class HospitalizationController extends MyBaseController {
         hospitalizationInfoVO.setYujiaojine(depositBalanceDetail.getYujiaojine());
         hospitalizationInfoVO.setBrid(brId);
         hospitalizationInfoVO.setZyh(depositBalanceDetail.getZyh());
+        hospitalizationInfoVO.setJzkh(patientInfoMapper.queryByBrId(brId).get(0).getJzkh());
 
         //todo
         hospitalizationInfoVO.setPayTime(new Date());

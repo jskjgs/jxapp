@@ -37,6 +37,9 @@ public class HospitalizationInfoVO {
     @ApiModelProperty("病人id")
     String brid;
 
+    @ApiModelProperty("就诊卡号")
+    String jzkh;
+
 
     @ApiModelProperty("开单时间")
     Date createTime;
