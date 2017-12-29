@@ -459,17 +459,29 @@ public class RegisterService {
 
         log.info("进行号源解锁，orderNumber: " + orderInfo.getOrderNumber());
         // 检查是否有资格退号
-        if(!hisOutpatient.checkCancelRegister(orderInfo.getGhdh())){
-            log.info("订单id:"+orderInfo.getId()+",该订单没有退号资格。");
-            return 1;
+
+
+        //1229两个try,一个去his退款，一个去支付宝。。为了保证两边都执行，分为两个try.
+        try {
+            if(!hisOutpatient.checkCancelRegister(orderInfo.getGhdh())){
+                log.info("订单id:"+orderInfo.getId()+",该订单没有退号资格。");
+                return 1;
+            }
+            hisOutpatient.cancelRegister(orderInfo.getGhdh());
+
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
+
         //开始退号
-        if(hisOutpatient.cancelRegister(orderInfo.getGhdh())){
+    //    if(hisOutpatient.cancelRegister(orderInfo.getGhdh())){
 
             log.info("预约取消成功..");
             log.info("向支付宝发起退款请求");
             //todo 现在只有支付宝 11.30
 
+        try {
             boolean refundRslt = false;
             if (orderInfo.getPayType().intValue() == PayEnum.ALI.getCode()) {
                 refundRslt = alibabaPay.refund(orderInfo.getOrderNumber()) == 0;
@@ -503,15 +515,21 @@ public class RegisterService {
                 log.info("退款失败..订单号：" + orderInfo.getOrderNumber());
                 return 1;
             }
-
-
-        }else {
-            log.info("订单id:"+orderInfo.getId()+",该订单退号同步到his的时候失败。");
-
-            return 1;
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
 
+
+
+//        }else {
+//            log.info("订单id:"+orderInfo.getId()+",该订单退号同步到his的时候失败。");
+//
+//            return 1;
+//        }
+
+
+        return 0;
     }
 
     public Register queryByOrderId(Long orderId) {

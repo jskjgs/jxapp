@@ -16,6 +16,7 @@ import com.jishi.reservation.service.enumPackage.ReturnCodeEnum;
 import com.jishi.reservation.service.exception.BussinessException;
 import com.jishi.reservation.service.his.HisUserManager;
 import com.jishi.reservation.service.his.bean.Credentials;
+import com.jishi.reservation.service.his.bean.PatientsList;
 import com.jishi.reservation.service.his.util.HisMedicalCardType;
 import com.jishi.reservation.util.CheckIdCard;
 import com.jishi.reservation.util.Constant;
@@ -77,40 +78,61 @@ public class PatientInfoService {
         // 判断身份证不能重复 11-29 单独根据身份证来判断
         Preconditions.checkState(!isExistPatient(idCard, medicalCard),"此病人已存在,添加失败");
 
-        // 12-22 现在不能主动向his添加病人了，只能通过就诊卡号绑定
-        Credentials credentials = hisUserManager.getUserInfoByRegNO(idCard, HisMedicalCardType.ID_CARD.getCardType(), name,
-                medicalCard, HisMedicalCardType.MEDICAL_CARD.getCardType());
-        if (credentials == null) {
-            throw new BussinessException(ReturnCodeEnum.PATIENT_GET_HIS_PATIENT_FAILD);
+        //1229 去请求BindCard.UserInfoByCardNO.Query 来对比就诊卡号
+
+        PatientsList userInfoByCode = hisUserManager.getUserInfoByCode(idCard, HisMedicalCardType.ID_CARD.getCardType());
+        List<PatientsList.Credentials> jzkList = userInfoByCode.getList().getJzkList();
+
+        if(jzkList!= null && jzkList.size() != 0){
+
+            PatientsList.Credentials credentialsFirst = jzkList.get(0);
+            if(credentialsFirst.getIdNumber().equals(medicalCard)){
+           // if(true){   //先不加。。等待测试
+                // 12-22 现在不能主动向his添加病人了，只能通过就诊卡号绑定
+                Credentials credentials = hisUserManager.getUserInfoByRegNO(idCard, HisMedicalCardType.ID_CARD.getCardType(), name,
+                        medicalCard, HisMedicalCardType.MEDICAL_CARD.getCardType());
+                if (credentials == null) {
+                    throw new BussinessException(ReturnCodeEnum.PATIENT_GET_HIS_PATIENT_FAILD);
+                }
+
+                //添加到his系统
+                // Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
+                log.info("his系统返回的病人信息：\n"+ JSONObject.toJSONString(credentials));
+
+
+                PatientInfo newPatientInfo = new PatientInfo();
+                newPatientInfo.setAccountId(accountId);
+                newPatientInfo.setName(name);
+                newPatientInfo.setPhone(phone);
+                newPatientInfo.setIdCard(idCard);
+                newPatientInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
+                newPatientInfo.setBrId(credentials.getBRID());
+                newPatientInfo.setMzh(credentials.getMZH());
+                newPatientInfo.setJzkh(medicalCard);
+                patientInfoMapper.insertReturnId(newPatientInfo);
+
+
+                Pregnant newPregnant = new Pregnant();
+                newPregnant.setName(name);
+                newPregnant.setAccountId(accountId);
+                newPregnant.setCreateTime(new Date());
+                newPregnant.setEnable(EnableEnum.EFFECTIVE.getCode());
+                newPregnant.setPatientId(newPatientInfo.getId());
+                pregnantMapper.insert(newPregnant);
+                log.info("添加孕妇信息："+JSONObject.toJSONString(newPregnant));
+
+                return newPatientInfo.getId();
+            }else {
+                throw new Exception("无效的就诊卡号信息");
+            }
+
+
         }
 
-        //添加到his系统
-       // Credentials credentials = hisUserManager.addUserInfo(idCard, idCardType, name, phone);
-        log.info("his系统返回的病人信息：\n"+ JSONObject.toJSONString(credentials));
+
+        return null;
 
 
-        PatientInfo newPatientInfo = new PatientInfo();
-        newPatientInfo.setAccountId(accountId);
-        newPatientInfo.setName(name);
-        newPatientInfo.setPhone(phone);
-        newPatientInfo.setIdCard(idCard);
-        newPatientInfo.setEnable(EnableEnum.EFFECTIVE.getCode());
-        newPatientInfo.setBrId(credentials.getBRID());
-        newPatientInfo.setMzh(credentials.getMZH());
-        newPatientInfo.setJzkh(medicalCard);
-        patientInfoMapper.insertReturnId(newPatientInfo);
-
-
-        Pregnant newPregnant = new Pregnant();
-        newPregnant.setName(name);
-        newPregnant.setAccountId(accountId);
-        newPregnant.setCreateTime(new Date());
-        newPregnant.setEnable(EnableEnum.EFFECTIVE.getCode());
-        newPregnant.setPatientId(newPatientInfo.getId());
-        pregnantMapper.insert(newPregnant);
-        log.info("添加孕妇信息："+JSONObject.toJSONString(newPregnant));
-
-        return newPatientInfo.getId();
 
     }
 
