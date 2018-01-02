@@ -228,7 +228,7 @@ export default {
       }).then(res => {
         this.$message({
           type: 'success',
-          message: rowData.top ? '置顶成功' : '操作失败'
+          message: rowData.top ? '置顶成功' : '取消置顶成功'
         })
       }).finally(() => {
         this.$refs.searchTable.init()
