@@ -81,7 +81,7 @@ public class PatientInfoService {
         Preconditions.checkState(!isExistPatient(idCard, medicalCard),"此病人已存在,添加失败");
 
         //1229 去请求BindCard.UserInfoByCardNO.Query 来对比就诊卡号
-        DPreconditions.checkState(checkMedicalCardHis(idCard, medicalCard), "无效的就诊卡号信息");
+        DPreconditions.checkState(checkMedicalCardHis(idCard, medicalCard), "身份证号和就诊卡号不匹配");
 
         // 12-22 现在不能主动向his添加病人了，只能通过就诊卡号绑定
         Credentials credentials = hisUserManager.getUserInfoByRegNO(idCard, HisMedicalCardType.ID_CARD.getCardType(), name,
