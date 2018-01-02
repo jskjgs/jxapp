@@ -1,6 +1,6 @@
 module.exports =  {
   '/reservation': {
-    target: 'http://doc.hpx10.com/',
+    target: 'http://jinxinapp.hpx10.com//',
     changeOrigin: true,
     // pathRewrite: {
     //   '^/admin': '/admin'
