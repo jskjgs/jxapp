@@ -240,11 +240,11 @@ public class RegisterController extends MyBaseController {
         Integer status = registerService.failureRegister(registerId);
         switch (status){
             case 0:
-                return ResponseWrapper().addData("取消预约成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
+                return ResponseWrapper().addMessage("取消预约成功").ExeSuccess(ReturnCodeEnum.SUCCESS.getCode());
             case 1:
-                return ResponseWrapper().addData("取消预约失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+                return ResponseWrapper().addMessage("取消预约失败").ExeFaild(ReturnCodeEnum.FAILED.getCode());
         }
-        return ResponseWrapper().addData("取消预约失败.").ExeFaild(ReturnCodeEnum.FAILED.getCode());
+        return ResponseWrapper().addMessage("取消预约失败.").ExeFaild(ReturnCodeEnum.FAILED.getCode());
 
     }
 

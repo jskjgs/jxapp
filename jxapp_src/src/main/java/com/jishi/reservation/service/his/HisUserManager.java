@@ -28,6 +28,9 @@ public class HisUserManager {
     private HisTool hisTool;
 
 
+
+
+
     /**
      * 获取用户信息
      *
@@ -111,5 +114,6 @@ public class HisUserManager {
         ZL_InformationServiceSoap_PortType service = locator.getZL_InformationServiceSoap();
         return service.userManager(reData);
     }
+
 
 }

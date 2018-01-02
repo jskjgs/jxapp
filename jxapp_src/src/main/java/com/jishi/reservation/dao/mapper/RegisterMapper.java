@@ -18,7 +18,7 @@ public interface RegisterMapper extends MyMapper<Register> {
      * @return
      */
     @Select({
-            "select * from register where status = 2"
+            "select * from register where status = 0"
     })
     List<Register> queryEnableRegister();
 
